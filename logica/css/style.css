@@ -11,7 +11,7 @@ html, body{
 }
 #screen>svg{
 	border : 1px solid #000;
-	background :url("../img/grid.png") repeat center center rgba(0, 0, 0, .1);
+	background : rgba(0, 0, 0, .1);
 	border-radius : 20px;
 	box-sizing : border-box;
 }
