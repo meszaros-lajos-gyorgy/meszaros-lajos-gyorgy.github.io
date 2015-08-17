@@ -1,143 +1,126 @@
-function addFreq(ctx, oscillators, freq){
+function addFreq(ctx, freq){
 	var o = ctx.createOscillator();
 	o.type = 'sine';
 	o.frequency.value = freq;
 	o.start();
-	oscillators.push(o);
 	return o;
-}
-
-function connectAll(oscillators, gain){
-	oscillators.forEach(function(o){
-		connect(o, gain);
-	});
-}
-
-function connect(o, gain){
-	o.connect(gain);
-}
-
-function disconnectAll(oscillators, gain){
-	oscillators.forEach(function(o){
-		o.disconnect(gain);
-	});
-}
-
-function setVolume(gain, volume){
-	gain.gain.value = volume;
 }
 
 // ---------
 
 var ctx;
-try {
+try{
 	ctx = new (window.AudioContext || window.webkitAudioContext)();
-} catch (e) {
+}catch(e){
 	alert('Web Audio API is not supported by this browser');
 }
 
 var mainGain = ctx.createGain();
 mainGain.connect(ctx.destination);
-setVolume(mainGain, 1);
+mainGain.gain.value = 1;
 
-var baseFreq = 100;
-var oscillators = [];
-var gains = [];
+var oscillators = {};
+var gains = {};
 
-function changeVolume(id, value){
-	setVolume(gains[id - 1], value / 100);
-}
-
-function changeFreq(id, value){
-	oscillators[id - 1].frequency.value = baseFreq * value;
-}
-
-function onRangeChange(input){
-	input.nextSibling.value = input.value;
-	changeFreq(input.parentNode.getAttribute('data-id'), input.value);
-}
-
-function onRangeVolumeChange(input){
-	changeVolume(input.parentNode.getAttribute('data-id'), input.value);
-}
-
-function onInputChange(input){
-	input.previousSibling.value = input.value;
-	changeFreq(input.parentNode.getAttribute('data-id'), input.value);
-}
-
-var prevs = {};
-
-window.onload = function(){
-	[].slice.call(document.querySelectorAll('input[type="range"]')).forEach(function(input){
-		if(input.className === 'freq'){
-			prevs['freq' + input.parentNode.getAttribute('data-id')] = input.value;
-			prevs['freq2' + input.parentNode.getAttribute('data-id')] = input.value;
-			input.addEventListener('input', function(){
-				if(this.value !== prevs['freq' + this.parentNode.getAttribute('data-id')]){
-					onRangeChange(this);
-					prevs['freq' + this.parentNode.getAttribute('data-id')] = this.value;
-				}
+(function(){
+	'use strict';
+	
+	var app = angular.module('Monochord', []);
+	
+	app.controller('MainCtrl', ['$scope', function($scope){
+		var lastId = 0;
+		$scope.strings = [];
+		
+		$scope.baseFrequency = 100;
+		
+		$scope.addString = function(){
+			lastId++;
+			
+			$scope.strings.push({
+				id : lastId,
+				volume : 0,
+				multiplier : 1
 			});
-			input.addEventListener('change', function(){
-				if(this.value !== prevs['freq' + this.parentNode.getAttribute('data-id')]){
-					onRangeChange(this);
-					prevs['freq' + this.parentNode.getAttribute('data-id')] = this.value;
+			
+			return lastId;
+		};
+		
+		$scope.removeString = function(id){
+			for(var i = 0; i < $scope.strings.length; i++){
+				if($scope.strings[i].id === id){
+					var string = $scope.strings.splice(i, 1);
+					break;
+				}
+			}
+		};
+		
+		$scope.$watch('baseFrequency', function(newValue, oldValue){
+			$scope.strings.forEach(function(string){
+				oscillators[string.id].frequency.value = newValue * string.multiplier;
+			});
+		}, true);
+		
+		$scope.$watch('strings', function(newValue, oldValue){
+			var changed = [];
+			var removed = [];
+			var added = [];
+			
+			newValue.forEach(function(value){
+				(
+					oldValue.some(function(oldValue){
+						return (value.id === oldValue.id);
+					})
+					? changed
+					: added
+				).push(value);
+			});
+			
+			oldValue.forEach(function(value){
+				if(!changed.some(function(chg){
+					return (chg.id === value.id);
+				}) && !added.some(function(add){
+					return (add.id === value.id);
+				})){
+					removed.push(value);
 				}
 			});
 			
-			input.nextSibling.addEventListener('change', function(){
-				if(this.value !== prevs['freq2' + this.parentNode.getAttribute('data-id')]){
-					onInputChange(this);
-					prevs['freq2' + this.parentNode.getAttribute('data-id')] = this.value;
-				}
+			changed.forEach(function(string){
+				oscillators[string.id].frequency.value = $scope.baseFrequency * string.multiplier;
+				gains[string.id].gain.value = string.volume / 100;
 			});
-			input.nextSibling.addEventListener('input', function(){
-				if(this.value !== prevs['freq2' + this.parentNode.getAttribute('data-id')]){
-					onInputChange(this);
-					prevs['freq2' + this.parentNode.getAttribute('data-id')] = this.value;
-				}
+			
+			added.forEach(function(string){
+				var o = addFreq(ctx, $scope.baseFrequency * string.multiplier);
+				var g = ctx.createGain();
+				g.connect(mainGain);
+				o.connect(g);
+				g.gain.value = string.volume / 100;
+				
+				oscillators[lastId] = o;
+				gains[lastId] = g;
 			});
-		}else if(input.className === 'volume'){
-			prevs['volume' + input.parentNode.getAttribute('data-id')] = input.value;
-			input.addEventListener('input', function(){
-				if(this.value !== prevs['volume' + this.parentNode.getAttribute('data-id')]){
-					onRangeVolumeChange(this);
-					prevs['volume' + this.parentNode.getAttribute('data-id')] = this.value;
-				}
+			
+			removed.forEach(function(string){
+				gains[string.id].disconnect(mainGain);
+				oscillators[string.id].stop();
+				delete gains[string.id];
+				delete oscillators[string.id];
 			});
-			input.addEventListener('change', function(){
-				if(this.value !== prevs['volume' + this.parentNode.getAttribute('data-id')]){
-					onRangeVolumeChange(this);
-					prevs['volume' + this.parentNode.getAttribute('data-id')] = this.value;
-				}
-			});
-		}
-	});
+		}, true);
+	}]);
 	
-	document.getElementById('basefreq').addEventListener('input', function(){
-		if(this.value !== baseFreq){
-			baseFreq = this.value;
-			[].slice.call(document.querySelectorAll('input[type="range"].freq')).forEach(function(input){
-				changeFreq(input.parentNode.getAttribute('data-id'), input.value);
-			});
-		}
+	app.directive('stringToNumber', function() {
+		return {
+			require: 'ngModel',
+			link: function(scope, element, attrs, ngModel) {
+				ngModel.$parsers.push(function(value) {
+					return '' + value;
+				});
+				ngModel.$formatters.push(function(value) {
+					return parseFloat(value, 10);
+				});
+			}
+		};
 	});
-	document.getElementById('basefreq').addEventListener('change', function(){
-		if(this.value !== baseFreq){
-			baseFreq = this.value;
-			[].slice.call(document.querySelectorAll('input[type="range"].freq')).forEach(function(input){
-				changeFreq(input.parentNode.getAttribute('data-id'), input.value);
-			});
-		}
-	});
-	
-	[].slice.call(document.querySelectorAll('div[data-id]')).forEach(function(div){
-		var o = addFreq(ctx, oscillators, baseFreq * div.querySelector('input[type="range"].freq').value);
-		var oGain = ctx.createGain();
-		oGain.connect(mainGain);
-		gains.push(oGain);
-		setVolume(oGain, div.querySelector('input[type="range"].volume').value / 100);
-		connect(o, oGain);
-	});
-};
+})();

@@ -3,23 +3,32 @@
 <head>
 	<meta charset="utf-8" />
 	<title></title>
-	<style>
+	<style>/*<![CDATA[*/
+/*
 .freq{
 	width : 800px;
 }
-	</style>
+*/
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+	display: none!important;
+}
+	/*]]>*/</style>
+	<script src="js/lib/angular-1.4.4.min.js"></script>
 	<script src="js/script.js"></script>
 </head>
-<body>
-	<input type="number" autocomplete="off" value="100" id="basefreq" />
-	<div data-id="1">
-		<input type="range" class="freq" min="1" max="100" value="1" autocomplete="off" /><input type="number" min="1" max="100" value="1" autocomplete="off" />
-		<input type="range" class="volume" min="0" max="100" value="0" autocomplete="off" />
-	</div>
-	<br />
-	<div data-id="2">
-		<input type="range" class="freq" min="1" max="100" value="2" autocomplete="off" /><input type="number" min="1" max="100" value="2" autocomplete="off" />
-		<input type="range" class="volume" min="0" max="100" value="0" autocomplete="off" />
+<body ng-app="Monochord">
+	<div ng-controller="MainCtrl">
+		<input type="number" min="1" autocomplete="off" ng-model="baseFrequency" />
+		<div ng-repeat="string in strings">
+			<input type="range" class="freq" min="1" max="100" autocomplete="off" ng-model="string.multiplier" />
+			<input type="number" min="1" max="100" autocomplete="off" string-to-number ng-model="string.multiplier" />
+			
+			<input type="range" class="volume" min="0" max="100" autocomplete="off" ng-model="string.volume" />
+			
+			<button ng-click="removeString(string.id)">delete this string</button>
+		</div>
+		<button ng-click="addString()">add a new string</button>
 	</div>
 </body>
 </html>
