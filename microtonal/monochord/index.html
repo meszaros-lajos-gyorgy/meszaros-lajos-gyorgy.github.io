@@ -2,33 +2,35 @@
 <html>
 <head>
 	<meta charset="utf-8" />
-	<title></title>
-	<style>/*<![CDATA[*/
-/*
-.freq{
-	width : 800px;
-}
-*/
-
-[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
-	display: none!important;
-}
-	/*]]>*/</style>
+	<title>Monochord | Microtonal Ear Training</title>
+	
+	<link rel="stylesheet" href="css/style.css" />
+	
 	<script src="js/lib/angular-1.4.4.min.js"></script>
 	<script src="js/script.js"></script>
 </head>
-<body ng-app="Monochord">
-	<div ng-controller="MainCtrl">
-		<input type="number" min="1" autocomplete="off" ng-model="baseFrequency" />
-		<div ng-repeat="string in strings">
-			<input type="range" class="freq" min="1" max="100" autocomplete="off" ng-model="string.multiplier" />
-			<input type="number" min="1" max="100" autocomplete="off" string-to-number ng-model="string.multiplier" />
-			
-			<input type="range" class="volume" min="0" max="100" autocomplete="off" ng-model="string.volume" />
-			
-			<button ng-click="removeString(string.id)">delete this string</button>
+<body>
+	<div ng-app="Monochord">
+		<div ng-controller="MainCtrl">
+			<input type="number" min="1" autocomplete="off" ng-model="baseFrequency" />
+			<div ng-repeat="string in strings" ng-class="string.volume > 0 ? 'on' : 'off'">
+				<!--
+				ha mindenhol ugyanaz az alap frekvencia, akkor otonality van
+				-->
+				<input type="range" class="freq" min="1" max="100" autocomplete="off" ng-model="string.multiplier" />
+				<input type="number" min="1" max="100" autocomplete="off" string-to-number ng-model="string.multiplier" />
+				
+				<input type="range" class="volume" min="0" max="100" autocomplete="off" ng-model="string.volume" />
+				
+				<button ng-click="removeString(string.id)">delete this string</button>
+			</div>
+			<br />
+			<br />
+			<button ng-click="addString()">add a new string</button>
+			<br />
+			<br />
+			<button ng-repeat="ratio in ratios" ng-click="setStrings(ratio.ratio)">{{ratio.name + ' (' + ratio.ratio[0] + ':' + ratio.ratio[1] + ')'}}</button>
 		</div>
-		<button ng-click="addString()">add a new string</button>
 	</div>
 </body>
 </html>
