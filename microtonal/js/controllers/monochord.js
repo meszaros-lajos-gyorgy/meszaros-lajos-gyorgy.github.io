@@ -1,4 +1,4 @@
-(function(){
+define(['app', 'components/menu'], function(app){
 	'use strict';
 	
 	function addFreq(ctx, freq){
@@ -15,17 +15,15 @@
 	}catch(e){
 		alert('Web Audio API is not supported by this browser');
 	}
-
+	
 	var mainGain = ctx.createGain();
 	mainGain.connect(ctx.destination);
 	mainGain.gain.value = 1;
-
+	
 	var oscillators = {};
 	var gains = {};
 	
-	var app = angular.module('Monochord', []);
-	
-	app.controller('MainCtrl', ['$scope', function($scope){
+	app.controller('MonochordCtrl', ['$scope', function($scope){
 		var lastId = 0;
 		
 		$scope.strings = [];
@@ -97,10 +95,6 @@
 			{
 				name : 'bp septimal major third',
 				ratio : [9, 7]
-			},
-			{
-				name : 'bp lesser septimal tritone',
-				ratio : [7, 5]
 			},
 			{
 				name : 'bp fifth',
@@ -236,4 +230,4 @@
 			}
 		};
 	});
-})();
+});
