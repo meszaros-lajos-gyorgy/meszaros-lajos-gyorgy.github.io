@@ -18,13 +18,13 @@ body::before{
 	position : fixed;
 	z-index : -1;
 	font-size : 72px;
-	color : rgba(17, 56, 162, .05);
+	color : rgba(17, 56, 162, .02);
 	font-weight : bold;
 	text-align : center;
 	top : calc(50% - 36px);
 	text-shadow :
 		1px 4px 6px #fff,
-		0 0 0 rgba(17, 56, 162, .03),
+		0 0 0 rgba(17, 56, 162, .02),
 		1px 4px 6px #fff
 	;
 }
@@ -44,6 +44,7 @@ body::before{
 	line-height : 50px;
 	padding : 0 10px;
 }
+.component.menu a.active,
 .component.menu a:hover{
 	background : #4160b5;
 	color : #e7ebf6;
@@ -57,4 +58,57 @@ body::before{
 }
 .component.menu .logo{
 	float : right;
+}
+
+.component.monochord{
+	
+}
+.component.monochord input[type="range"].freq{
+	width : 80%;
+}
+.component.monochord input[type="number"].freq{
+	width : 10%;
+}
+.component.monochord input[type="range"].volume{
+	width : 90%;
+}
+.component.monochord table tr td{
+	border-left : 3px double #aaa;
+	border-right : 3px double #aaa;
+	border-top : 1px solid #eee;
+	border-bottom : 1px solid #eee;
+}
+.component.monochord table tr td::first-child
+.component.monochord table tr td::last-child {
+	border : 0;
+}
+.component.monochord table{
+	width : 100%;
+	border-collapse : collapse;
+}
+.component.monochord table td{
+	text-align : center;
+}
+
+.component button{
+	background : #4160b5;
+	border-radius : 4px;
+	border : none;
+	color : #e7ebf6;
+	font-size : inherit;
+	font-family : inherit;
+	cursor : pointer;
+	padding : 0;
+	line-height : 30px;
+	height : 30px;
+	margin : 3px 5px;
+	padding : 0 10px;
+	outline : none;
+}
+
+.component button:focus,
+.component button:active,
+.component button:hover{
+	background : #7088c7;
+	color : #fff;
 }

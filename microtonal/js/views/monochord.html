@@ -1,21 +1,34 @@
 <menu></menu>
-
+<br />
+<br />
 <div class="component monochord">
-	<input type="number" min="1" autocomplete="off" ng-model="baseFrequency" />
+	<label>Base frequency: <input type="number" min="1" autocomplete="off" ng-model="baseFrequency" /> Hz</label>
 	<br />
 	<br />
-	<div ng-repeat="string in strings" ng-class="string.volume > 0 ? 'on' : 'off'">
-		<!-- ha mindenhol ugyanaz az alap frekvencia, akkor otonality van -->
-		<input type="range" class="freq" min="1" max="100" autocomplete="off" ng-model="string.multiplier" />
-		<input type="number" min="1" max="100" autocomplete="off" string-to-number ng-model="string.multiplier" />
-		
-		<input type="range" class="volume" min="0" max="100" autocomplete="off" ng-model="string.volume" />
-		
-		<button ng-click="removeString(string.id)">delete this string</button>
-	</div>
+	<table ng-show="strings.length > 0" class="hidden">
+		<thead>
+		<tr>
+			<th>Harmonic of the base frequency</th>
+			<th>Volume</th>
+			<th></th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr ng-repeat="string in strings">
+			<td>
+				<input type="range" class="freq" min="1" max="100" autocomplete="off" ng-model="string.multiplier" />
+				<input type="number" class="freq" min="1" max="100" autocomplete="off" string-to-number ng-model="string.multiplier" />
+			</td>
+			<td><input type="range" class="volume" min="0" max="100" autocomplete="off" ng-model="string.volume" /></td>
+			<td><button ng-click="removeString(string.id)">delete this string</button></td>
+		</tr>
+		</tbody>
+	</table>
 	<br />
 	<button ng-click="addString()">add a new string</button>
 	<br />
 	<br />
 	<button ng-repeat="ratio in ratios" ng-click="setStrings(ratio.ratio)">{{ratio.name + ' (' + ratio.ratio[0] + ':' + ratio.ratio[1] + ')'}}</button>
 </div>
+
+<!-- footer -->

@@ -4,7 +4,9 @@ define('components/menu', ['app'], function(app){
 			restrict    : 'E',
 			templateUrl : 'js/components/menu.template.html',
 			link        : function(scope, element, attr){
-				
+				scope.isActive = function(pattern){
+					return new RegExp('^' + pattern).test(location.hash);
+				}
 			}
 		};
 	}]);
