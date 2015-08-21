@@ -3,11 +3,7 @@ define('components/menu', ['app'], function(app){
 		return {
 			restrict    : 'E',
 			templateUrl : 'js/components/menu.template.html',
-			link        : function(scope, element, attr){
-				scope.isActive = function(pattern){
-					return new RegExp('^' + pattern).test(location.hash);
-				}
-			}
+			link        : function(scope, element, attr){}
 		};
 	}]);
 });

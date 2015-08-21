@@ -1,4 +1,4 @@
-define(['app', 'components/menu'], function(app){
+define(['app', 'components/menu', 'components/string-to-number'], function(app){
 	'use strict';
 	
 	function addFreq(ctx, freq){
@@ -7,6 +7,20 @@ define(['app', 'components/menu'], function(app){
 		o.frequency.value = freq;
 		o.start();
 		return o;
+	}
+	
+	function stopAll(){
+		Object.keys(gains).forEach(function(key){
+			var gain = gains[key];
+			gain.gain.value = 0;
+			gain.disconnect(mainGain);
+			
+			var oscillator = oscillators[key];
+			oscillator.stop();
+			oscillator.disconnect(gain);
+		});
+		gains = [];
+		oscillators = [];
 	}
 	
 	var ctx;
@@ -22,119 +36,24 @@ define(['app', 'components/menu'], function(app){
 	
 	var oscillators = {};
 	var gains = {};
+	var lastId = 0;
 	
-	app.controller('MonochordCtrl', ['$scope', function($scope){
-		var lastId = 0;
+	app.controller('MonochordCtrl', ['$scope', '$http', '$stateParams', '$state', '$rootScope', function($scope, $http, $stateParams, $state, $rootScope){
+		// https://en.wikipedia.org/wiki/List_of_pitch_intervals
+		// https://en.wikipedia.org/wiki/Equal_temperament
 		
+		var BASE_HREF = '/monochord/';
+		var loadedFromURL = false; // change type of $scope.strings: false = by UI, null = by URL, true = should ignore, because we changed URL by code
+		
+		$scope.ratios = [];
 		$scope.strings = [];
 		$scope.baseFrequency = 100;
 		
-		// https://en.wikipedia.org/wiki/List_of_pitch_intervals
-		// https://en.wikipedia.org/wiki/Equal_temperament
-		$scope.ratios = [
-			{
-				name : 'unision',
-				ratio : [1, 1]
-			},
-			{
-				name : 'ji minor second',
-				ratio : [16, 15]
-			},
-			{
-				name : 'ji major second',
-				ratio : [9, 8]
-			},
-			{
-				name : 'ji minor third',
-				ratio : [6, 5]
-			},
-			{
-				name : 'ji major third',
-				ratio : [5, 4]
-			},
-			{
-				name : 'ji perfect fourth',
-				ratio : [4, 3]
-			},
-			{
-				name : 'ji tritone',
-				ratio : [7, 5]
-			},
-			{
-				name : 'ji perfect fifth',
-				ratio : [3, 2]
-			},
-			{
-				name : 'ji minor sixth',
-				ratio : [8, 5]
-			},
-			{
-				name : 'ji major sixth',
-				ratio : [5, 3]
-			},
-			{
-				name : 'ji minor seventh',
-				ratio : [16, 9]
-			},
-			{
-				name : 'ji major seventh',
-				ratio : [15, 8]
-			},
-			{
-				name : 'octave',
-				ratio : [2, 1]
-			},
-			{
-				name : 'bp great limma',
-				ratio : [27, 25]
-			},
-			{
-				name : 'bp quasi-tempered minor third',
-				ratio : [25, 21]
-			},
-			{
-				name : 'bp septimal major third',
-				ratio : [9, 7]
-			},
-			{
-				name : 'bp fifth',
-				ratio : [75, 49]
-			},
-			{
-				name : 'bp greater just minor seventh',
-				ratio : [9, 5]
-			},
-			{
-				name : 'bp eighth',
-				ratio : [49, 25]
-			},
-			{
-				name : 'bp septimal minor ninth',
-				ratio : [15, 7]
-			},
-			{
-				name : 'bp septimal minimal tenth',
-				ratio : [7, 3]
-			},
-			{
-				name : 'bp quasi-tempered major tenth',
-				ratio : [63, 25]
-			},
-			{
-				name : 'bp classic augmented eleventh',
-				ratio : [25, 9]
-			},
-			{
-				name : 'just twelfth/bp tritave',
-				ratio : [3, 1]
-			}
-		];
+		// ------------------
 		
 		$scope.addString = function(){
-			lastId++;
-			
 			$scope.strings.push({
-				id : lastId,
+				id : ++lastId,
 				volume : 0,
 				multiplier : 1
 			});
@@ -161,16 +80,29 @@ define(['app', 'components/menu'], function(app){
 			$scope.strings = strings;
 		};
 		
+		// ------------------
+		
 		$scope.$watch('baseFrequency', function(newValue, oldValue){
 			$scope.strings.forEach(function(string){
-				oscillators[string.id].frequency.value = newValue * string.multiplier;
+				if(oscillators[string.id]){
+					oscillators[string.id].frequency.value = newValue * string.multiplier;
+				}
 			});
 		}, true);
 		
 		$scope.$watch('strings', function(newValue, oldValue){
+			if(JSON.stringify(newValue) === '[]' && JSON.stringify(oldValue) === '[]'){
+				return ;
+			}
+			
 			var changed = [];
 			var removed = [];
 			var added = [];
+			var ratios = [];
+			
+			if(loadedFromURL === null){
+				stopAll();
+			}
 			
 			newValue.forEach(function(value){
 				(
@@ -180,6 +112,7 @@ define(['app', 'components/menu'], function(app){
 					? changed
 					: added
 				).push(value);
+				ratios.push(value.multiplier);
 			});
 			
 			oldValue.forEach(function(value){
@@ -214,20 +147,46 @@ define(['app', 'components/menu'], function(app){
 				delete gains[string.id];
 				delete oscillators[string.id];
 			});
-		}, true);
-	}]);
-	
-	app.directive('stringToNumber', function() {
-		return {
-			require: 'ngModel',
-			link: function(scope, element, attrs, ngModel) {
-				ngModel.$parsers.push(function(value) {
-					return '' + value;
-				});
-				ngModel.$formatters.push(function(value) {
-					return parseFloat(value, 10);
-				});
+			
+			var url = 'basefreq/' + $scope.baseFrequency + '/ratios/' + decodeURIComponent(encodeURIComponent(ratios));
+			$state.go('monochord', {route : url}, {notify : false});
+			
+			if(loadedFromURL !== false){
+				loadedFromURL = false;
 			}
-		};
-	});
+		}, true);
+		
+		// ------------------
+		
+		$http.get('ratios.json').success(function(data){
+			$scope.ratios = data;
+		});
+		
+		$rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
+			loadedFromURL = true;
+		});
+		
+		setTimeout(function(){
+			var rawRoute = ($stateParams.route.trim() || '').split('/');
+			var route = {};
+			for(var i = 0; i < (rawRoute.length & -2); i += 2){
+				route[rawRoute[i]] = rawRoute[i + 1];
+			}
+			
+			if(route.ratios){
+				if(loadedFromURL !== true){
+					loadedFromURL = null;
+				}
+				try{
+					$scope.setStrings(JSON.parse('[' + route.ratios + ']'));
+				}catch(e){}
+			}
+			if(route.basefreq){
+				if(loadedFromURL !== true){
+					loadedFromURL = null;
+				}
+				$scope.baseFrequency = parseInt(route.basefreq);
+			}
+		}, 0);
+	}]);
 });

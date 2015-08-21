@@ -1,37 +1,47 @@
-define(['angularAMD', 'angular-route'], function(angularAMD){
+define(['angularAMD', 'angularUIRouter'], function(angularAMD){
 	'use strict';
 	
-	var app = angular.module('Microtonal', ['ngRoute']);
+	var app = angular.module('Microtonal', ['ui.router']);
 	
-	app.config(function($routeProvider){
-		var titlePostfix = 'Microtonal Ear Training';
+	app.config(['$urlRouterProvider', '$stateProvider', '$urlMatcherFactoryProvider', function($urlRouterProvider, $stateProvider, $urlMatcherFactoryProvider){
+		function valToString(val) {
+			return val !== null ? val.toString() : val;
+		}
+
+		$urlMatcherFactoryProvider.type('nonURIEncoded', {
+			encode: valToString,
+			decode: valToString,
+			is: function () { return true; }
+		});
+		
+		$urlRouterProvider.otherwise('/');
+		
 		var
 			indexRoute = angularAMD.route({
-				title         : titlePostfix,
-				templateUrl   : 'js/views/index.html',
-				controller    : 'IndexCtrl',
-				controllerUrl : 'controllers/index'
+				url            : '/',
+				templateUrl    : 'js/views/index.html',
+				controller     : 'IndexCtrl',
+				controllerUrl  : 'controllers/index'
 			}),
 			monochordRoute = angularAMD.route({
-				title         : 'Monochord | ' + titlePostfix,
-				templateUrl   : 'js/views/monochord.html',
-				controller    : 'MonochordCtrl',
-				controllerUrl : 'controllers/monochord'
+				url            : '/monochord/{route:nonURIEncoded}',
+				title          : 'Monochord',
+				templateUrl    : 'js/views/monochord.html',
+				controller     : 'MonochordCtrl',
+				controllerUrl  : 'controllers/monochord'
 			})
 		;
 		
-		$routeProvider
-			.when('/',           indexRoute)
-			.when('/monochord/', monochordRoute)
-			.otherwise({
-				redirectTo : '/'
-			})
+		$stateProvider
+			.state('index', indexRoute)
+			.state('monochord', monochordRoute)
 		;
-	});
+	}]);
 	
-	app.run(['$rootScope', '$route', function($rootScope, $route){
-		$rootScope.$on('$routeChangeSuccess', function(){
-			document.title = $route.current.title;
+	// set title for every page
+	app.run(['$rootScope', function($rootScope){
+		$rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
+			document.title = (toState.title || '') + (toState.title ? ' | ' : '') + 'Microtonal Ear Training';
 		});
 	}]);
 	

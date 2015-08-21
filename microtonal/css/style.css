@@ -22,6 +22,7 @@ body::before{
 	font-weight : bold;
 	text-align : center;
 	top : calc(50% - 36px);
+	cursor : default;
 	text-shadow :
 		1px 4px 6px #fff,
 		0 0 0 rgba(17, 56, 162, .02),
@@ -78,8 +79,8 @@ body::before{
 	border-top : 1px solid #eee;
 	border-bottom : 1px solid #eee;
 }
-.component.monochord table tr td::first-child
-.component.monochord table tr td::last-child {
+.component.monochord table tr td:first-child
+.component.monochord table tr td:last-child {
 	border : 0;
 }
 .component.monochord table{
