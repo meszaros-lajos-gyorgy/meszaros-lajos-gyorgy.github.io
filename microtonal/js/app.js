@@ -5,7 +5,7 @@ define(['angularAMD', 'angularUIRouter'], function(angularAMD){
 	
 	app.config(['$urlRouterProvider', '$stateProvider', '$urlMatcherFactoryProvider', function($urlRouterProvider, $stateProvider, $urlMatcherFactoryProvider){
 		function valToString(val) {
-			return val !== null ? val.toString() : val;
+			return val !== null && val !== undefined ? val.toString() : val;
 		}
 
 		$urlMatcherFactoryProvider.type('nonURIEncoded', {

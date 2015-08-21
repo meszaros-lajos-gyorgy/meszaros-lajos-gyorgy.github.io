@@ -158,6 +158,7 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 		
 		// ------------------
 		
+		// this loads unnecessarily many times
 		$http.get('ratios.json').success(function(data){
 			$scope.ratios = data;
 		});
@@ -167,7 +168,7 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 		});
 		
 		setTimeout(function(){
-			var rawRoute = ($stateParams.route.trim() || '').split('/');
+			var rawRoute = ($stateParams.route || '').trim().split('/');
 			var route = {};
 			for(var i = 0; i < (rawRoute.length & -2); i += 2){
 				route[rawRoute[i]] = rawRoute[i + 1];
