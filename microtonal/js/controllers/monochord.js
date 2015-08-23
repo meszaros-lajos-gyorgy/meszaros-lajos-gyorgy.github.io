@@ -1,6 +1,55 @@
 define(['app', 'components/menu', 'components/string-to-number'], function(app){
 	'use strict';
 	
+	app.controller('MonochordCtrl', ['$scope', '$http', '$stateParams', '$state', '$rootScope', function($scope, $http, $stateParams, $state, $rootScope){
+		
+		$scope.sets = [{
+			id : 1,
+			normalize : '????',
+			strings : [{
+				id : 1,
+				volume : 0.3,
+				multiplier : 4
+			}, {
+				id : 2,
+				volume : 0.3,
+				multiplier : 5
+			}, {
+				id : 3,
+				volume : 0.3,
+				multiplier : 6
+			}]
+		}, {
+			id : 2,
+			normalize : '????',
+			strings : [{
+				id : 4,
+				volume : 0.3,
+				multiplier : 21
+			}, {
+				id : 5,
+				volume : 0.3,
+				multiplier : 25
+			}]
+		}];
+		
+		$scope.removeString = function(stringId){
+			
+		};
+		$scope.addString = function(){
+			
+		};
+		$scope.removeSet = function(setId){
+			
+		};
+		$scope.addSet = function(){
+			
+		};
+		
+		
+	}]);
+	
+	/*
 	function addFreq(ctx, freq){
 		var o = ctx.createOscillator();
 		o.type = 'sine';
@@ -229,4 +278,5 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 			}
 		}, 0);
 	}]);
+	*/
 });

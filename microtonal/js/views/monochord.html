@@ -3,33 +3,56 @@
 <br />
 <div class="component monochord">
 	<label>Base frequency: <input type="number" min="1" autocomplete="off" ng-model="baseFrequency" /> Hz</label>
-	<label><input type="checkbox" autocomplete="off" ng-model="normalize" />Normalize to this frequency</label>
 	<br />
 	<br />
-	<table ng-show="strings.length > 0" class="hidden">
-		<thead>
-		<tr>
-			<th>Harmonic of the base frequency</th>
-			<th>Volume</th>
-			<th></th>
-		</tr>
-		</thead>
-		<tbody>
-		<tr ng-repeat="string in strings">
-			<td>
-				<input type="range" class="freq" min="1" max="100" autocomplete="off" ng-model="string.multiplier" />
-				<input type="number" class="freq" min="1" max="100" autocomplete="off" string-to-number ng-model="string.multiplier" />
-			</td>
-			<td><input type="range" class="volume" min="0" max="100" autocomplete="off" ng-model="string.volume" /></td>
-			<td><button ng-click="removeString(string.id)">delete this string</button></td>
-		</tr>
-		</tbody>
-	</table>
+	<section ng-repeat="set in sets">
+		
+		<table ng-show="set.strings.length > 0" class="hidden">
+			<thead>
+			<tr>
+				<th>
+					<select autocomplete="off" ng-model="set.normalize">
+						<option value="off">none</option>
+						<option value="lowest">(auto) lowest harmony</option>
+						<option value="highest">(auto) highest harmony</option>
+						<option value="manual">(manual) user select</option>
+					</select>
+				</th>
+				<th>Harmonic of the base frequency</th>
+				<th>Volume</th>
+				<th></th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr ng-repeat="string in set.strings">
+				<td>
+					<input type="radio" autocomplete="off" />
+				</td>
+				<td>
+					<input type="range" class="freq" min="1" max="100" autocomplete="off" ng-model="string.multiplier" />
+					<input type="number" class="freq" min="1" max="100" autocomplete="off" string-to-number ng-model="string.multiplier" />
+				</td>
+				<td><input type="range" class="volume" min="0" max="100" autocomplete="off" ng-model="string.volume" /></td>
+				<td><button ng-click="removeString(string.id)">delete this string</button></td>
+			</tr>
+			</tbody>
+		</table>
+		<br />
+		
+		<button ng-click="addString()">add a new string</button>
+		<br />
+		<br />
+		<button ng-click="removeSet(set.id)">delete this set</button>
+	</section>
 	<br />
-	<button ng-click="addString()">add a new string</button>
+	<br />
+	<button ng-click="addSet()">add a new set</button>
+	
+	<!--
 	<br />
 	<br />
 	<button ng-repeat="ratio in ratios" ng-click="setStrings(ratio.ratio)">{{ratio.name + ' (' + ratio.ratio[0] + ':' + ratio.ratio[1] + ')'}}</button>
+	-->
 </div>
 
 <!-- footer -->
