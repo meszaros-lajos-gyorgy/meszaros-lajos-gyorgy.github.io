@@ -48,6 +48,7 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 		$scope.ratios = [];
 		$scope.strings = [];
 		$scope.baseFrequency = 100;
+		$scope.normalize = false;
 		
 		// ------------------
 		
@@ -70,7 +71,9 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 		
 		$scope.setStrings = function(ratios){
 			var strings = [];
-			ratios.forEach(function(multiplier){
+			ratios.sort(function(a, b){
+				return a - b;
+			}).forEach(function(multiplier){
 				strings.push({
 					id : ++lastId,
 					volume : 0,
@@ -89,6 +92,30 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 				}
 			});
 		}, true);
+		
+		$scope.$watch('normalize', function(newValue){
+			if(newValue){
+				var ratios = [];
+				$scope.strings.forEach(function(string){
+					ratios.push(string.multiplier);
+				});
+				ratios = ratios.sort(function(a, b){
+					return a - b;
+				});
+				var normalizedBaseFreq = $scope.baseFrequency / ratios[0];
+				var i = 0;
+				Object.keys(oscillators).forEach(function(stringId){
+					oscillators[stringId].frequency.value = normalizedBaseFreq * ratios[i];
+					i++;
+				})
+			}else{
+				$scope.strings.forEach(function(string){
+					if(oscillators[string.id]){
+						oscillators[string.id].frequency.value = $scope.baseFrequency * string.multiplier;
+					}
+				});
+			}
+		});
 		
 		$scope.$watch('strings', function(newValue, oldValue){
 			if(JSON.stringify(newValue) === '[]' && JSON.stringify(oldValue) === '[]'){
@@ -147,6 +174,18 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 				delete gains[string.id];
 				delete oscillators[string.id];
 			});
+			
+			ratios = ratios.sort(function(a, b){
+				return a - b;
+			});
+			if($scope.normalize){
+				var normalizedBaseFreq = $scope.baseFrequency / ratios[0];
+				var i = 0;
+				Object.keys(oscillators).forEach(function(stringId){
+					oscillators[stringId].frequency.value = normalizedBaseFreq * ratios[i];
+					i++;
+				})
+			}
 			
 			var url = 'basefreq/' + $scope.baseFrequency + '/ratios/' + decodeURIComponent(encodeURIComponent(ratios));
 			$state.go('monochord', {route : url}, {notify : false});
