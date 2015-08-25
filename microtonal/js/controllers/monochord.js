@@ -1,11 +1,18 @@
 define(['app', 'components/menu', 'components/string-to-number'], function(app){
 	'use strict';
 	
+	var lastStringId = 0;
+	var lastSetId = 0;
+	
 	app.controller('MonochordCtrl', ['$scope', '$http', '$stateParams', '$state', '$rootScope', function($scope, $http, $stateParams, $state, $rootScope){
-		
+		$scope.baseFrequency = 100;
 		$scope.sets = [{
 			id : 1,
-			normalize : '????',
+			normalize : {
+				type : 'manual',
+				target : 2
+			},
+			volume : 100,
 			strings : [{
 				id : 1,
 				volume : 0.3,
@@ -21,7 +28,11 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 			}]
 		}, {
 			id : 2,
-			normalize : '????',
+			normalize : {
+				type : 'manual',
+				target : 4
+			},
+			volume : 100,
 			strings : [{
 				id : 4,
 				volume : 0.3,
@@ -33,20 +44,68 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 			}]
 		}];
 		
-		$scope.removeString = function(stringId){
-			
-		};
-		$scope.addString = function(){
-			
+		$scope.addSet = function(){
+			$scope.sets.push({
+				id : ++lastSetId,
+				normalize : {
+					type : 'off',
+					target : 0
+				},
+				volume : 100,
+				strings : []
+			});
 		};
 		$scope.removeSet = function(setId){
-			
-		};
-		$scope.addSet = function(){
-			
+			$scope.sets.some(function(set, index, array){
+				if(set.id === setId){
+					array.splice(index, 1);
+					return true;
+				}
+			});
 		};
 		
+		$scope.addString = function(setId){
+			$scope.sets.some(function(set){
+				if(set.id === setId){
+					set.strings.push({
+						id : ++lastStringId,
+						volume : 0,
+						multiplier : 1
+					});
+					return true;
+				}
+			});
+		};
+		$scope.removeString = function(stringId){
+			$scope.sets.some(function(set){
+				return set.strings.some(function(string, index, array){
+					if(string.id === stringId){
+						array.splice(index, 1);
+						return true;
+					}
+				});
+			});
+		};
 		
+		function calculateFrequency(stringId){
+			// this did not include the normalize procedure
+			// return $scope.baseFrequency * string.multiplier;
+			return $scope.baseFrequency; // todo
+		}
+		
+		function calculateVolume(stringId){
+			return 0; // todo
+		}
+		
+		$scope.$watch('baseFrequency', function(){
+			$scope.sets.forEach(function(set){
+				set.strings.forEach(function(string){
+					if(oscillators[string.id]){
+						oscillators[string.id].frequency.value = calculateFrequency(string.id);
+					}
+				});
+			});
+		}, true);
 	}]);
 	
 	/*

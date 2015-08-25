@@ -10,43 +10,49 @@
 		<table ng-show="set.strings.length > 0" class="hidden">
 			<thead>
 			<tr>
+				<th>Normalize</th>
+				<th>Harmonic of the base frequency</th>
+				<th>Volume</th>
+				<th></th>
+			</tr>
+			<tr>
 				<th>
-					<select autocomplete="off" ng-model="set.normalize">
+					<select autocomplete="off" ng-model="set.normalize.type">
 						<option value="off">none</option>
 						<option value="lowest">(auto) lowest harmony</option>
 						<option value="highest">(auto) highest harmony</option>
 						<option value="manual">(manual) user select</option>
 					</select>
 				</th>
-				<th>Harmonic of the base frequency</th>
-				<th>Volume</th>
+				<th></th>
+				<th>
+					<input type="range" class="master" min="1" max="100" autocomplete="off" ng-model="set.volume" />
+				</th>
 				<th></th>
 			</tr>
 			</thead>
 			<tbody>
 			<tr ng-repeat="string in set.strings">
 				<td>
-					<input type="radio" autocomplete="off" />
+					<input ng-show="set.normalize.type === 'manual'" type="radio" autocomplete="off" ng-value="string.id" ng-model="set.normalize.target" />
 				</td>
 				<td>
 					<input type="range" class="freq" min="1" max="100" autocomplete="off" ng-model="string.multiplier" />
 					<input type="number" class="freq" min="1" max="100" autocomplete="off" string-to-number ng-model="string.multiplier" />
 				</td>
 				<td><input type="range" class="volume" min="0" max="100" autocomplete="off" ng-model="string.volume" /></td>
-				<td><button ng-click="removeString(string.id)">delete this string</button></td>
+				<td><button ng-click="removeString(string.id)">x | delete this string</button></td>
 			</tr>
 			</tbody>
 		</table>
 		<br />
-		
-		<button ng-click="addString()">add a new string</button>
+		{{set.id}}
+		<button ng-click="addString(set.id)">+ | add a new string</button>
+		<button ng-click="removeSet(set.id)">x | delete this set</button>
 		<br />
 		<br />
-		<button ng-click="removeSet(set.id)">delete this set</button>
 	</section>
-	<br />
-	<br />
-	<button ng-click="addSet()">add a new set</button>
+	<button ng-click="addSet()">+ | add a new set</button>
 	
 	<!--
 	<br />
