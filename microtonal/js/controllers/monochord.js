@@ -3,6 +3,9 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 	
 	var lastStringId = 0;
 	var lastSetId = 0;
+	var oscillators = {};
+	var stringGains = {};
+	var setGains = {};
 	
 	app.controller('MonochordCtrl', ['$scope', '$http', '$stateParams', '$state', '$rootScope', function($scope, $http, $stateParams, $state, $rootScope){
 		$scope.baseFrequency = 100;
@@ -96,6 +99,9 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 		function calculateVolume(stringId){
 			return 0; // todo
 		}
+		function calculateMasterVolume(setId){
+			return 0; // todo
+		}
 		
 		$scope.$watch('baseFrequency', function(){
 			$scope.sets.forEach(function(set){
@@ -142,10 +148,6 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 	mainGain.connect(ctx.destination);
 	mainGain.gain.value = 1;
 	
-	var oscillators = {};
-	var gains = {};
-	var lastId = 0;
-	
 	app.controller('MonochordCtrl', ['$scope', '$http', '$stateParams', '$state', '$rootScope', function($scope, $http, $stateParams, $state, $rootScope){
 		// https://en.wikipedia.org/wiki/List_of_pitch_intervals
 		// https://en.wikipedia.org/wiki/Equal_temperament
@@ -155,27 +157,9 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 		
 		$scope.ratios = [];
 		$scope.strings = [];
-		$scope.baseFrequency = 100;
 		$scope.normalize = false;
 		
 		// ------------------
-		
-		$scope.addString = function(){
-			$scope.strings.push({
-				id : ++lastId,
-				volume : 0,
-				multiplier : 1
-			});
-		};
-		
-		$scope.removeString = function(id){
-			for(var i = 0; i < $scope.strings.length; i++){
-				if($scope.strings[i].id === id){
-					var string = $scope.strings.splice(i, 1);
-					break;
-				}
-			}
-		};
 		
 		$scope.setStrings = function(ratios){
 			var strings = [];
@@ -192,14 +176,6 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 		};
 		
 		// ------------------
-		
-		$scope.$watch('baseFrequency', function(newValue, oldValue){
-			$scope.strings.forEach(function(string){
-				if(oscillators[string.id]){
-					oscillators[string.id].frequency.value = newValue * string.multiplier;
-				}
-			});
-		}, true);
 		
 		$scope.$watch('normalize', function(newValue){
 			if(newValue){
