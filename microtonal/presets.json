@@ -1,0 +1,49 @@
+{
+	"tunings" : [{
+		"name" : "Bohlen-Pierce",
+		"ratios" : [{
+			"name" : "unision",
+			"ratio" : [1, 1]
+		},{
+			"name" : "great limma",
+			"ratio" : [27, 25]
+		},{
+			"name" : "quasi-tempered minor third",
+			"ratio" : [25, 21]
+		},{
+			"name" : "septimal major third",
+			"ratio" : [9, 7]
+		},{
+			"name" : "lesser septimal tritone",
+			"ratio" : [7, 5]
+		},{
+			"name" : "fifth",
+			"ratio" : [75, 49]
+		},{
+			"name" : "just major sixth",
+			"ratio" : [5, 3]
+		},{
+			"name" : "greater just minor seventh",
+			"ratio" : [9, 5]
+		},{
+			"name" : "eighth",
+			"ratio" : [49, 25]
+		},{
+			"name" : "septimal minor ninth",
+			"ratio" : [15, 7]
+		},{
+			"name" : "septimal minimal tenth",
+			"ratio" : [7, 3]
+		},{
+			"name" : "quasi-tempered major tenth",
+			"ratio" : [63, 25]
+		},{
+			"name" : "classic augmented eleventh",
+			"ratio" : [25, 9]
+		},{
+			"name" : "tritave",
+			"ratio" : [3, 1]
+		}]
+	}],
+	"misc" : []
+}
