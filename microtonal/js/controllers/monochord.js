@@ -4,9 +4,6 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 	// https://en.wikipedia.org/wiki/List_of_pitch_intervals
 	// https://en.wikipedia.org/wiki/Equal_temperament
 	
-	var lastStringId = 0;
-	var lastSetId = 0;
-	
 	var oscillators = {};
 	var stringGains = {};
 	var setGains = {};
@@ -37,25 +34,46 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 		o.start();
 		return o;
 	}
+	*/
 	
 	var ctx;
 	try{
 		ctx = new (window.AudioContext || window.webkitAudioContext)();
 	}catch(e){
-		alert('Web Audio API is not supported by this browser');
+		alert('Web Audio API is not supported by this browser. To see, which browsers support the Web Audio API, visit: http://caniuse.com/#feat=audio-api');
 	}
 	
 	var mainGain = ctx.createGain();
 	mainGain.connect(ctx.destination);
 	mainGain.gain.value = 1;
-	*/
 	
 	// ---------------------
+	
+	var lastStringId = 0;
+	var lastSetId = 0;
 	
 	app.controller('MonochordCtrl', ['$scope', '$http', '$stateParams', '$state', '$rootScope', function($scope, $http, $stateParams, $state, $rootScope){
 		$scope.baseFrequency = 100;
 		$scope.sets = [];
 		$scope.presets = {};
+		$scope.presetVolume = 0;
+		
+		function findSetById(setId, run){
+			$scope.sets.some(function(set){
+				if(set.id === setId){
+					run(set);
+					return true;
+				};
+			});
+		}
+		function findSetIndexById(setId, run){
+			$scope.sets.some(function(set, index){
+				if(set.id === setId){
+					run(index);
+					return true;
+				}
+			});
+		}
 		
 		$scope.addSet = function(){
 			$scope.sets.push({
@@ -69,24 +87,18 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 			});
 		};
 		$scope.removeSet = function(setId){
-			$scope.sets.some(function(set, index, array){
-				if(set.id === setId){
-					array.splice(index, 1);
-					return true;
-				}
+			findSetIndexById(setId, function(index){
+				$scope.sets.splice(index, 1);
 			});
 		};
 		
 		$scope.addString = function(setId){
-			$scope.sets.some(function(set){
-				if(set.id === setId){
-					set.strings.push({
-						id : ++lastStringId,
-						volume : 0,
-						multiplier : 1
-					});
-					return true;
-				}
+			findSetById(setId, function(set){
+				set.strings.push({
+					id : ++lastStringId,
+					volume : 0,
+					multiplier : 1
+				});
 			});
 		};
 		$scope.removeString = function(stringId){
@@ -100,8 +112,33 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 			});
 		};
 		
+		$scope.lowerHarmonics = function(setId){
+			findSetById(setId, function(set){
+				set.strings.forEach(function(string){
+					if(string.multiplier > 0){
+						string.multiplier--;
+					}
+				});
+			});
+		};
+		$scope.raiseHarmonics = function(setId){
+			findSetById(setId, function(set){
+				set.strings.forEach(function(string){
+					if(string.multiplier < 100){
+						string.multiplier++;
+					}
+				});
+			});
+		};
+		
+		$scope.addPreset = function(tuningName, ratioData){
+			
+		};
+		
 		function _import(){
 			// todo
+			lastStringId = 5;
+			lastSetId = 2;
 			return [{
 				id : 1,
 				normalize : {
@@ -263,6 +300,7 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 		// this was loading unnecessarily many times in the previous version:
 		$http.get('presets.json').success(function(data){
 			$scope.presets = data;
+			$scope.activePresetTuning = $scope.presets.tunings[0];
 		});
 		
 		// temporary code:

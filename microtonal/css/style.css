@@ -84,7 +84,7 @@ body::before{
 	border : 0;
 }
 .component.monochord table{
-	width : 100%;
+	width : calc(100% - 2px);
 	border-collapse : collapse;
 }
 .component.monochord table td{
