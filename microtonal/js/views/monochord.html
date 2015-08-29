@@ -73,7 +73,7 @@
 		<br />
 		<div ng-repeat="tuning in presets.tunings">
 			<div ng-show="tuning == activePresetTuning">
-				<button ng-repeat="ratio in tuning.ratios" ng-click="addPreset(tuning.name, ratio)">{{ratio.name + ' (' + ratio.ratio.join(':') + ')'}}</button>
+				<button ng-repeat="ratio in tuning.ratios" ng-click="addPreset(ratio.ratio, presetVolume)">{{ratio.name + ' (' + ratio.ratio.join(':') + ')'}}</button>
 			</div>
 		</div>
 	</div>

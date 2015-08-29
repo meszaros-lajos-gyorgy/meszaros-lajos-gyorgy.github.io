@@ -9,18 +9,17 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 	var setGains = {};
 	
 	function stopAll(){
-		// todo
-		/*
-		Object.keys(gains).forEach(function(key){
-			var gain = gains[key];
-			gain.gain.value = 0;
-			gain.disconnect(mainGain);
-			
-			var oscillator = oscillators[key];
-			oscillator.stop();
-			oscillator.disconnect(gain);
+		Object.keys(oscillators).forEach(function(key){
+			oscillators[key].stop();
+			oscillators[key].disconnect();
 		});
-		*/
+		Object.keys(stringGains).forEach(function(key){
+			stringGains[key].disconnect();
+		});
+		Object.keys(setGains).forEach(function(key){
+			setGains[key].disconnect();
+		});
+		
 		oscillators = {};
 		stringGains = {};
 		setGains = {};
@@ -40,7 +39,7 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 	try{
 		ctx = new (window.AudioContext || window.webkitAudioContext)();
 	}catch(e){
-		alert('Web Audio API is not supported by this browser. To see, which browsers support the Web Audio API, visit: http://caniuse.com/#feat=audio-api');
+		alert('Web Audio API is not supported by this browser.\nTo see, which browsers support the Web Audio API, visit: http://caniuse.com/#feat=audio-api');
 	}
 	
 	var mainGain = ctx.createGain();
@@ -59,19 +58,21 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 		$scope.presetVolume = 0;
 		
 		function findSetById(setId, run){
-			$scope.sets.some(function(set){
+			$scope.sets.some(function(set, index, array){
 				if(set.id === setId){
-					run(set);
+					run(set, index, array);
 					return true;
 				};
 			});
 		}
-		function findSetIndexById(setId, run){
-			$scope.sets.some(function(set, index){
-				if(set.id === setId){
-					run(index);
-					return true;
-				}
+		function findStringById(stringId, run){
+			$scope.sets.some(function(set){
+				return set.strings.some(function(string, index, array){
+					if(string.id === stringId){
+						run(string, index, array, set.id);
+						return true;
+					}
+				});
 			});
 		}
 		
@@ -85,30 +86,27 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 				volume : 100,
 				strings : []
 			});
+			return lastSetId;
 		};
 		$scope.removeSet = function(setId){
-			findSetIndexById(setId, function(index){
-				$scope.sets.splice(index, 1);
+			findSetById(setId, function(set, index, array){
+				array.splice(index, 1);
 			});
 		};
 		
-		$scope.addString = function(setId){
+		$scope.addString = function(setId, multiplier, volume){
 			findSetById(setId, function(set){
 				set.strings.push({
 					id : ++lastStringId,
-					volume : 0,
-					multiplier : 1
+					multiplier : multiplier || 1,
+					volume : volume || 0
 				});
 			});
+			return lastStringId;
 		};
 		$scope.removeString = function(stringId){
-			$scope.sets.some(function(set){
-				return set.strings.some(function(string, index, array){
-					if(string.id === stringId){
-						array.splice(index, 1);
-						return true;
-					}
-				});
+			findStringById(stringId, function(string, index, array){
+				array.splice(index, 1);
 			});
 		};
 		
@@ -131,51 +129,19 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 			});
 		};
 		
-		$scope.addPreset = function(tuningName, ratioData){
-			
+		$scope.addPreset = function(ratio, volume){
+			var setId = $scope.addSet();
+			ratio.sort(function(a, b){
+				return a - b;
+			}).forEach(function(multiplier){
+				$scope.addString(setId, multiplier, volume);
+			});
 		};
 		
 		function _import(){
-			// todo
-			lastStringId = 5;
-			lastSetId = 2;
-			return [{
-				id : 1,
-				normalize : {
-					type : 'manual',
-					target : 2
-				},
-				volume : 100,
-				strings : [{
-					id : 1,
-					volume : 0.3,
-					multiplier : 4
-				}, {
-					id : 2,
-					volume : 0.3,
-					multiplier : 5
-				}, {
-					id : 3,
-					volume : 0.3,
-					multiplier : 6
-				}]
-			}, {
-				id : 2,
-				normalize : {
-					type : 'manual',
-					target : 4
-				},
-				volume : 100,
-				strings : [{
-					id : 4,
-					volume : 0.3,
-					multiplier : 21
-				}, {
-					id : 5,
-					volume : 0.3,
-					multiplier : 25
-				}]
-			}];
+			// todo, load from URL; temporary code:
+			$scope.addPreset([4, 5, 6], 30);
+			$scope.addPreset([21, 25], 30);
 		};
 		function _export(){
 			return ''; // todo
@@ -188,20 +154,30 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 		}
 		
 		function calculateVolume(stringId){
-			return 0; // todo
+			var volume = 0;
+			findStringById(stringId, function(string){
+				volume = string.volume / 100;
+			});
+			return volume;
 		}
 		function calculateMasterVolume(setId){
-			return 0; // todo
+			var volume = 0;
+			findSetById(setId, function(set){
+				volume = set.volume / 100;
+			});
+			return volume;
 		}
 		
-		$scope.$watch('baseFrequency', function(){
-			$scope.sets.forEach(function(set){
-				set.strings.forEach(function(string){
-					if(oscillators[string.id]){
-						oscillators[string.id].frequency.value = calculateFrequency(string.id);
-					}
+		$scope.$watch('baseFrequency', function(newValue, oldValue){
+			if(newValue !== oldValue){
+				$scope.sets.forEach(function(set){
+					set.strings.forEach(function(string){
+						if(oscillators[string.id]){
+							oscillators[string.id].frequency.value = calculateFrequency(string.id);
+						}
+					});
 				});
-			});
+			}
 		}, true);
 		
 		function diffSets(newValue, oldValue){
@@ -239,62 +215,64 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 		}
 		
 		$scope.$watch('sets', function(newValue, oldValue){
-			if(JSON.stringify(newValue) === '[]' && JSON.stringify(oldValue) === '[]'){
-				return ;
-			}
-			
-			var diff = diffSets(newValue, oldValue);
-			
-			// todo
-			/*
-			var ratios = [];
-			
-			if(loadedFromURL === null){
-				stopAll();
-			}
-			
-			changed.forEach(function(string){
-				oscillators[string.id].frequency.value = $scope.baseFrequency * string.multiplier;
-				gains[string.id].gain.value = string.volume / 100;
-			});
-			
-			added.forEach(function(string){
-				var o = addFreq(ctx, $scope.baseFrequency * string.multiplier);
-				var g = ctx.createGain();
-				g.connect(mainGain);
-				o.connect(g);
-				g.gain.value = string.volume / 100;
+			if(newValue !== oldValue){
+				if(JSON.stringify(newValue) === '[]' && JSON.stringify(oldValue) === '[]'){
+					return ;
+				}
 				
-				oscillators[string.id] = o;
-				gains[string.id] = g;
-			});
-			
-			removed.forEach(function(string){
-				gains[string.id].disconnect(mainGain);
-				oscillators[string.id].stop();
-				delete gains[string.id];
-				delete oscillators[string.id];
-			});
-			
-			ratios = ratios.sort(function(a, b){
-				return a - b;
-			});
-			if($scope.normalize){
-				var normalizedBaseFreq = $scope.baseFrequency / ratios[0];
-				var i = 0;
-				Object.keys(oscillators).forEach(function(stringId){
-					oscillators[stringId].frequency.value = normalizedBaseFreq * ratios[i];
-					i++;
-				})
+				var diff = diffSets(newValue, oldValue);
+				
+				// todo
+				/*
+				var ratios = [];
+				
+				if(loadedFromURL === null){
+					stopAll();
+				}
+				
+				changed.forEach(function(string){
+					oscillators[string.id].frequency.value = $scope.baseFrequency * string.multiplier;
+					gains[string.id].gain.value = string.volume / 100;
+				});
+				
+				added.forEach(function(string){
+					var o = addFreq(ctx, $scope.baseFrequency * string.multiplier);
+					var g = ctx.createGain();
+					g.connect(mainGain);
+					o.connect(g);
+					g.gain.value = string.volume / 100;
+					
+					oscillators[string.id] = o;
+					gains[string.id] = g;
+				});
+				
+				removed.forEach(function(string){
+					gains[string.id].disconnect(mainGain);
+					oscillators[string.id].stop();
+					delete gains[string.id];
+					delete oscillators[string.id];
+				});
+				
+				ratios = ratios.sort(function(a, b){
+					return a - b;
+				});
+				if($scope.normalize){
+					var normalizedBaseFreq = $scope.baseFrequency / ratios[0];
+					var i = 0;
+					Object.keys(oscillators).forEach(function(stringId){
+						oscillators[stringId].frequency.value = normalizedBaseFreq * ratios[i];
+						i++;
+					})
+				}
+				
+				var url = 'basefreq/' + $scope.baseFrequency + '/ratios/' + decodeURIComponent(encodeURIComponent(ratios));
+				$state.go('monochord', {route : url}, {notify : false});
+				
+				if(loadedFromURL !== false){
+					loadedFromURL = false;
+				}
+				*/
 			}
-			
-			var url = 'basefreq/' + $scope.baseFrequency + '/ratios/' + decodeURIComponent(encodeURIComponent(ratios));
-			$state.go('monochord', {route : url}, {notify : false});
-			
-			if(loadedFromURL !== false){
-				loadedFromURL = false;
-			}
-			*/
 		});
 		
 		// this was loading unnecessarily many times in the previous version:
@@ -303,8 +281,7 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 			$scope.activePresetTuning = $scope.presets.tunings[0];
 		});
 		
-		// temporary code:
-		$scope.sets = _import();
+		_import();
 	}]);
 	
 	/*
