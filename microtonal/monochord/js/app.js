@@ -406,6 +406,6 @@
 			$scope.activePresetTuning = $scope.presets.tunings[0];
 		});
 		
-		_import();
+		setTimeout(_import, 0);
 	}]);
 })();
