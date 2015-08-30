@@ -1,4 +1,4 @@
-define(['app', 'components/menu', 'components/string-to-number'], function(app){
+(function(){
 	'use strict';
 	
 	// https://en.wikipedia.org/wiki/List_of_pitch_intervals
@@ -51,7 +51,23 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 	var lastStringId = 0;
 	var lastSetId = 0;
 	
-	app.controller('MonochordCtrl', ['$scope', '$http', '$stateParams', '$state', '$rootScope', function($scope, $http, $stateParams, $state, $rootScope){
+	var app = angular.module('Microtonal', []);
+	
+	app.directive('stringToNumber', function() {
+		return {
+			require: 'ngModel',
+			link: function(scope, element, attrs, ngModel) {
+				ngModel.$parsers.push(function(value) {
+					return '' + value;
+				});
+				ngModel.$formatters.push(function(value) {
+					return parseFloat(value, 10);
+				});
+			}
+		};
+	});
+	
+	app.controller('MonochordCtrl', ['$scope', '$http', '$rootScope', '$location', function($scope, $http, $rootScope, $location){
 		$scope.baseFrequency = 100;
 		$scope.sets = [];
 		$scope.presets = {};
@@ -361,4 +377,4 @@ define(['app', 'components/menu', 'components/string-to-number'], function(app){
 		}, 0);
 	}]);
 	*/
-});
+})();
