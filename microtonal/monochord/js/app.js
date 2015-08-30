@@ -72,24 +72,44 @@
 		$scope.sets = [];
 		$scope.presets = {};
 		$scope.presetVolume = 0;
+		$scope._normalizeStringTargets = {};
 		
 		function findSetById(setId, run){
 			$scope.sets.some(function(set, index, array){
 				if(set.id === setId){
 					run(set, index, array);
-					return true;
-				};
+				}
 			});
 		}
 		function findStringById(stringId, run){
 			$scope.sets.some(function(set){
 				return set.strings.some(function(string, index, array){
 					if(string.id === stringId){
-						run(string, index, array, set.id);
-						return true;
+						run(string, index, array, set);
 					}
 				});
 			});
+		}
+		function getNormalizeStringTargets(excludedSetId){
+			var list = [{
+				label : 'Base frequency (' + $scope.baseFrequency + ' Hz)',
+				value : 0,
+				group : 'Miscellaneous'
+			}];
+			
+			$scope.sets.filter(function(set){
+				return set.id !== excludedSetId
+			}).forEach(function(set){
+				set.strings.forEach(function(string){
+					list.push({
+						label : 'String with harmonic level ' + string.multiplier,
+						value : string.id,
+						group : 'String set #' + set.id
+					});
+				});
+			});
+			
+			return list;
 		}
 		
 		$scope.addSet = function(){
@@ -97,6 +117,7 @@
 				id : ++lastSetId,
 				normalize : {
 					type : 'off',
+					subject : 0,
 					target : 0
 				},
 				volume : 100,
@@ -155,6 +176,9 @@
 		};
 		
 		function _import(){
+			$scope.sets = [];
+			stopAll();
+			
 			// todo, load from URL; temporary code:
 			$scope.addPreset([4, 5, 6], 30);
 			$scope.addPreset([21, 25], 30);
@@ -163,10 +187,65 @@
 			return ''; // todo
 		}
 		
-		function calculateFrequency(stringId){
-			// this did not include the normalize procedure
-			// return $scope.baseFrequency * string.multiplier;
-			return $scope.baseFrequency; // todo
+		function calculateFrequency(stringId, stack){
+			var frequency;
+			var baseFrequency;
+			
+			if(set.normalize.target > 0){
+				stack = stack || [];
+				if(stack.indexOf(stringId) !== -1){
+					alert('Normalize target hook! There are no sets, that normalize to the default baseFrequency!');
+					return 0;
+				}else{
+					stack.push(stringId);
+					baseFrequency = calculateFrequency(set.normalize.target, stack);
+				}
+			}else{
+				baseFrequency = $scope.baseFrequency
+			}
+			
+			findStringById(stringId, function(string, index, array, set){
+				if(set.normalize.type === 'off'){
+					frequency = baseFrequency * string.multiplier;
+				}else{
+					var normalizedBaseFreq;
+					
+					switch(set.normalize.type){
+						case 'lowest' : {
+							var ratios = [];
+							set.strings.forEach(function(string){
+								ratios.push(string.multiplier);
+							});
+							ratios = ratios.sort(function(a, b){
+								return a - b;
+							});
+							normalizedBaseFreq = baseFrequency / ratios[0];
+							break;
+						}
+						case 'highest' : {
+							var ratios = [];
+							set.strings.forEach(function(string){
+								ratios.push(string.multiplier);
+							});
+							ratios = ratios.sort(function(a, b){
+								return b - a;
+							});
+							normalizedBaseFreq = baseFrequency / ratios[0];
+							break;
+						}
+						case 'manual' : {
+							findStringById(set.normalize.subject, function(string){
+								normalizedBaseFreq = baseFrequency / string.multiplier;
+							})
+							break;
+						}
+					}
+					
+					frequency = normalizedBaseFreq * string.multiplier;
+				}
+			});
+			
+			return frequency;
 		}
 		
 		function calculateVolume(stringId){
@@ -184,6 +263,13 @@
 			return volume;
 		}
 		
+		function updateNormalizeStringTargets(){
+			$scope._normalizeStringTargets = {};
+			$scope.sets.forEach(function(set){
+				$scope._normalizeStringTargets[set.id] = getNormalizeStringTargets(set.id);
+			});
+		}
+		
 		$scope.$watch('baseFrequency', function(newValue, oldValue){
 			if(newValue !== oldValue){
 				$scope.sets.forEach(function(set){
@@ -194,41 +280,8 @@
 					});
 				});
 			}
-		}, true);
-		
-		function diffSets(newValue, oldValue){
-			var diff = {
-				changed : [],
-				added : [],
-				removed : []
-			};
-			
-			// todo
-			/*
-			newValue.forEach(function(value){
-				(
-					oldValue.some(function(oldValue){
-						return (value.id === oldValue.id);
-					})
-					? changed
-					: added
-				).push(value);
-				ratios.push(value.multiplier);
-			});
-			
-			oldValue.forEach(function(value){
-				if(!changed.some(function(chg){
-					return (chg.id === value.id);
-				}) && !added.some(function(add){
-					return (add.id === value.id);
-				})){
-					removed.push(value);
-				}
-			});
-			*/
-			
-			return diff;
-		}
+			updateNormalizeStringTargets();
+		});
 		
 		$scope.$watch('sets', function(newValue, oldValue){
 			if(newValue !== oldValue){
@@ -236,7 +289,7 @@
 					return ;
 				}
 				
-				var diff = diffSets(newValue, oldValue);
+				
 				
 				// todo
 				/*
@@ -245,6 +298,27 @@
 				if(loadedFromURL === null){
 					stopAll();
 				}
+				
+				newValue.forEach(function(value){
+					(
+						oldValue.some(function(oldValue){
+							return (value.id === oldValue.id);
+						})
+						? changed
+						: added
+					).push(value);
+					ratios.push(value.multiplier);
+				});
+				
+				oldValue.forEach(function(value){
+					if(!changed.some(function(chg){
+						return (chg.id === value.id);
+					}) && !added.some(function(add){
+						return (add.id === value.id);
+					})){
+						removed.push(value);
+					}
+				});
 				
 				changed.forEach(function(string){
 					oscillators[string.id].frequency.value = $scope.baseFrequency * string.multiplier;
@@ -280,16 +354,11 @@
 						i++;
 					})
 				}
-				
-				var url = 'basefreq/' + $scope.baseFrequency + '/ratios/' + decodeURIComponent(encodeURIComponent(ratios));
-				$state.go('monochord', {route : url}, {notify : false});
-				
-				if(loadedFromURL !== false){
-					loadedFromURL = false;
-				}
 				*/
+				
+				updateNormalizeStringTargets();
 			}
-		});
+		}, true);
 		
 		// this was loading unnecessarily many times in the previous version:
 		$http.get('presets.json').success(function(data){
@@ -302,24 +371,6 @@
 	
 	/*
 	app.controller('MonochordCtrl', ['$scope', '$http', '$stateParams', '$state', '$rootScope', function($scope, $http, $stateParams, $state, $rootScope){
-		var BASE_HREF = '/monochord/';
-		var loadedFromURL = false; // change type of $scope.strings: false = by UI, null = by URL, true = should ignore, because we changed URL by code
-		
-		// ------------------
-		
-		$scope.setStrings = function(ratios){
-			var strings = [];
-			ratios.sort(function(a, b){
-				return a - b;
-			}).forEach(function(multiplier){
-				strings.push({
-					id : ++lastId,
-					volume : 0,
-					multiplier : multiplier
-				});
-			});
-			$scope.strings = strings;
-		};
 		
 		// ------------------
 		
@@ -346,35 +397,6 @@
 				});
 			}
 		});
-		
-		// ------------------
-		
-		$rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
-			loadedFromURL = true;
-		});
-		
-		setTimeout(function(){
-			var rawRoute = ($stateParams.route || '').trim().split('/');
-			var route = {};
-			for(var i = 0; i < (rawRoute.length & -2); i += 2){
-				route[rawRoute[i]] = rawRoute[i + 1];
-			}
-			
-			if(route.ratios){
-				if(loadedFromURL !== true){
-					loadedFromURL = null;
-				}
-				try{
-					$scope.setStrings(JSON.parse('[' + route.ratios + ']'));
-				}catch(e){}
-			}
-			if(route.basefreq){
-				if(loadedFromURL !== true){
-					loadedFromURL = null;
-				}
-				$scope.baseFrequency = parseInt(route.basefreq);
-			}
-		}, 0);
 	}]);
 	*/
 })();
