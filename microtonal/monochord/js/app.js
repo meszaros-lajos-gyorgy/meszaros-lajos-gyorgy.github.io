@@ -48,9 +48,6 @@
 	
 	// ---------------------
 	
-	var lastStringId = 0;
-	var lastSetId = 0;
-	
 	var app = angular.module('Microtonal', []);
 	
 	app.directive('stringToNumber', function() {
@@ -66,6 +63,9 @@
 			}
 		};
 	});
+	
+	var lastStringId = 0;
+	var lastSetId = 0;
 	
 	app.controller('MonochordCtrl', ['$scope', '$http', '$rootScope', '$location', function($scope, $http, $rootScope, $location){
 		$scope.baseFrequency = 100;
@@ -193,12 +193,14 @@
 			$scope.sets = [];
 			stopAll();
 			
-			// todo, load from URL; temporary code:
+			// todo, load from URL
 			$scope.addPreset([4, 5, 6], 30);
 			$scope.addPreset([21, 25], 30);
+			
+			// todo, load normalization
 		};
 		function _export(){
-			return ''; // todo; targets = url and localStorage?
+			return ''; // todo: export to url or localStorage?
 		}
 		
 		function calculateFrequency(stringId, stack){
@@ -303,32 +305,73 @@
 		
 		$scope.$watch('sets', function(newValue, oldValue){
 			if(newValue !== oldValue){
+				var sets = {
+					added : [],
+					removed : [],
+					changed : []
+				};
+				var strings = {
+					added : [],
+					removed : [],
+					changed : []
+				};
 				
-				
-				
-				// todo
-				/*
-				newValue.forEach(function(value){
-					(
-						oldValue.some(function(oldValue){
-							return (value.id === oldValue.id);
-						})
-						? changed
-						: added
-					).push(value);
-					ratios.push(value.multiplier);
+				newValue.forEach(function(newSet){
+					var group = 'added';
+					var oldSet;
+					oldValue.some(function(_oldSet){
+						if(_oldSet.id === newSet.id){
+							oldSet = _oldSet;
+							group = 'changed';
+							return true;
+						}
+					});
+					
+					sets[group].push(newSet);
+					
+					newSet.strings.forEach(function(newString){
+						strings[
+							group !== 'added'
+							&& oldSet.strings.some(function(oldString){
+								return oldString.id == newString.id;
+							})
+							? 'changed'
+							: 'added'
+						].push(newString);
+					});
 				});
 				
-				oldValue.forEach(function(value){
-					if(!changed.some(function(chg){
-						return (chg.id === value.id);
-					}) && !added.some(function(add){
-						return (add.id === value.id);
-					})){
-						removed.push(value);
+				oldValue.forEach(function(oldSet){
+					if(
+						!sets.added.some(function(addedSet){
+							return addedSet.id === oldSet.id;
+						})
+						&& !sets.changed.some(function(changedSet){
+							return changedSet.id === oldSet.id;
+						})
+					){
+						sets.removed.push(oldSet);
+						oldSet.strings.forEach(function(oldString){
+							strings.removed.push(oldString);
+						});
+					}else{
+						oldSet.strings.forEach(function(oldString){
+							if(
+								!strings.added.some(function(addedString){
+									return addedString.id === oldString.id;
+								})
+								&& !strings.changed.some(function(changedString){
+									return changedString.id === oldString.id;
+								})
+							){
+								strings.removed.push(oldString);
+							}
+						});
 					}
 				});
 				
+				// todo
+				/*
 				changed.forEach(function(string){
 					oscillators[string.id].frequency.value = $scope.baseFrequency * string.multiplier;
 					gains[string.id].gain.value = string.volume / 100;
@@ -353,6 +396,7 @@
 				});
 				*/
 				
+				updateFrequencies();
 				updateNormalizeStringTargets();
 			}
 		}, true);
