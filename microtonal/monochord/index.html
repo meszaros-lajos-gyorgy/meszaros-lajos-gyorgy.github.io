@@ -2,13 +2,14 @@
 <html>
 <head>
 	<meta charset="utf-8" />
-	<title>Microtonal Ear Training</title>
+	<title>Monochord | Microtonal Ear Training</title>
 	<link rel="stylesheet" href="css/style.css" />
 	
 	<script src="js/lib/angular-1.4.4.min.js"></script>
 	<script src="js/app.js"></script>
 </head>
 <body ng-app="Microtonal">
+	<h1>The Monochord</h1>
 	<div ng-controller="MonochordCtrl">
 		<div class="component monochord">
 			<label>Base frequency: <input type="number" min="1" autocomplete="off" ng-model="baseFrequency" /> Hz</label>
@@ -16,14 +17,12 @@
 			<br />
 			<section ng-repeat="set in sets">
 				
-				Normalize to:
-					<input type="radio" /> Base Frequency
-					<input type="radio" /> String
-						<select>
-							<option>string #1</option>
-							<option>string #2</option>
-							<option>string #3</option>
-						</select>
+				<!--
+				Base frequency:
+					<label><input type="radio" /> Default</label>
+					<label><input type="radio" /> String</label>
+					<select ng-options="select all the strings, group by sets, where set is not the current set"></select>
+				-->
 				
 				<table ng-show="set.strings.length > 0" class="hidden">
 					<thead>
@@ -56,17 +55,15 @@
 							<input ng-show="set.normalize.type === 'manual'" type="radio" autocomplete="off" ng-value="string.id" ng-model="set.normalize.target" />
 						</td>
 						<td rowspan="{{set.strings.length}}" ng-show="$first">
-							<button ng-click="lowerHarmonics(set.id)">ˇ | lower all harmonics</button>
+							<button ng-click="lowerHarmonics(set.id)">▼ | lower all harmonics</button>
 						</td>
 						<td>
 							<input type="range" class="freq" min="1" max="100" autocomplete="off" ng-model="string.multiplier" />
 							<input type="number" class="freq" min="1" max="100" autocomplete="off" string-to-number ng-model="string.multiplier" />
-							
-							<button>assign to key</button>
-							
+							<!-- <button>assign to key</button> -->
 						</td>
 						<td rowspan="{{set.strings.length}}" ng-show="$first">
-							<button ng-click="raiseHarmonics(set.id)">^ | raise all harmonics</button>
+							<button ng-click="raiseHarmonics(set.id)">▲ | raise all harmonics</button>
 						</td>
 						<td><input type="range" class="volume" min="0" max="100" autocomplete="off" ng-model="string.volume" /></td>
 						<td><button ng-click="removeString(string.id)">x | delete this string</button></td>
