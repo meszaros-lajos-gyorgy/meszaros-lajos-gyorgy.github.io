@@ -78,6 +78,7 @@
 			$scope.sets.some(function(set, index, array){
 				if(set.id === setId){
 					run(set, index, array);
+					return true;
 				}
 			});
 		}
@@ -86,6 +87,7 @@
 				return set.strings.some(function(string, index, array){
 					if(string.id === stringId){
 						run(string, index, array, set);
+						return true;
 					}
 				});
 			});
@@ -97,16 +99,16 @@
 				group : 'Miscellaneous'
 			}];
 			
-			$scope.sets.filter(function(set){
-				return set.id !== excludedSetId
-			}).forEach(function(set){
-				set.strings.forEach(function(string){
-					list.push({
-						label : 'String with harmonic level ' + string.multiplier,
-						value : string.id,
-						group : 'String set #' + set.id
+			$scope.sets.forEach(function(set, index){
+				if(set.id !== excludedSetId){
+					set.strings.forEach(function(string){
+						list.push({
+							label : 'String with harmonic level ' + string.multiplier,
+							value : string.id,
+							group : 'String set #' + (index + 1)
+						});
 					});
-				});
+				}
 			});
 			
 			return list;
@@ -149,20 +151,32 @@
 		
 		$scope.lowerHarmonics = function(setId){
 			findSetById(setId, function(set){
+				var ratios = [];
 				set.strings.forEach(function(string){
-					if(string.multiplier > 0){
-						string.multiplier--;
-					}
+					ratios.push(string.multiplier);
 				});
+				if(ratios.sort(function(a, b){
+					return a - b;
+				})[0] > 1){
+					set.strings.forEach(function(string){
+						string.multiplier--;
+					});
+				}
 			});
 		};
 		$scope.raiseHarmonics = function(setId){
 			findSetById(setId, function(set){
+				var ratios = [];
 				set.strings.forEach(function(string){
-					if(string.multiplier < 100){
-						string.multiplier++;
-					}
+					ratios.push(string.multiplier);
 				});
+				if(ratios.sort(function(a, b){
+					return b - a;
+				})[0] < 100){
+					set.strings.forEach(function(string){
+						string.multiplier++;
+					});
+				}
 			});
 		};
 		
@@ -184,7 +198,7 @@
 			$scope.addPreset([21, 25], 30);
 		};
 		function _export(){
-			return ''; // todo
+			return ''; // todo; targets = url and localStorage?
 		}
 		
 		function calculateFrequency(stringId, stack){
@@ -194,7 +208,7 @@
 			if(set.normalize.target > 0){
 				stack = stack || [];
 				if(stack.indexOf(stringId) !== -1){
-					alert('Normalize target hook! There are no sets, that normalize to the default baseFrequency!');
+					alert('Infinite normalization target loop! There are no sets, that normalize to the default baseFrequency!');
 					return 0;
 				}else{
 					stack.push(stringId);
@@ -270,35 +284,30 @@
 			});
 		}
 		
+		function updateFrequencies(){
+			$scope.sets.forEach(function(set){
+				set.strings.forEach(function(string){
+					if(oscillators[string.id]){
+						oscillators[string.id].frequency.value = calculateFrequency(string.id);
+					}
+				});
+			});
+		}
+		
 		$scope.$watch('baseFrequency', function(newValue, oldValue){
 			if(newValue !== oldValue){
-				$scope.sets.forEach(function(set){
-					set.strings.forEach(function(string){
-						if(oscillators[string.id]){
-							oscillators[string.id].frequency.value = calculateFrequency(string.id);
-						}
-					});
-				});
+				updateFrequencies();
 			}
 			updateNormalizeStringTargets();
 		});
 		
 		$scope.$watch('sets', function(newValue, oldValue){
 			if(newValue !== oldValue){
-				if(JSON.stringify(newValue) === '[]' && JSON.stringify(oldValue) === '[]'){
-					return ;
-				}
 				
 				
 				
 				// todo
 				/*
-				var ratios = [];
-				
-				if(loadedFromURL === null){
-					stopAll();
-				}
-				
 				newValue.forEach(function(value){
 					(
 						oldValue.some(function(oldValue){
@@ -342,25 +351,12 @@
 					delete gains[string.id];
 					delete oscillators[string.id];
 				});
-				
-				ratios = ratios.sort(function(a, b){
-					return a - b;
-				});
-				if($scope.normalize){
-					var normalizedBaseFreq = $scope.baseFrequency / ratios[0];
-					var i = 0;
-					Object.keys(oscillators).forEach(function(stringId){
-						oscillators[stringId].frequency.value = normalizedBaseFreq * ratios[i];
-						i++;
-					})
-				}
 				*/
 				
 				updateNormalizeStringTargets();
 			}
 		}, true);
 		
-		// this was loading unnecessarily many times in the previous version:
 		$http.get('presets.json').success(function(data){
 			$scope.presets = data;
 			$scope.activePresetTuning = $scope.presets.tunings[0];
@@ -368,35 +364,4 @@
 		
 		_import();
 	}]);
-	
-	/*
-	app.controller('MonochordCtrl', ['$scope', '$http', '$stateParams', '$state', '$rootScope', function($scope, $http, $stateParams, $state, $rootScope){
-		
-		// ------------------
-		
-		$scope.$watch('normalize', function(newValue){
-			if(newValue){
-				var ratios = [];
-				$scope.strings.forEach(function(string){
-					ratios.push(string.multiplier);
-				});
-				ratios = ratios.sort(function(a, b){
-					return a - b;
-				});
-				var normalizedBaseFreq = $scope.baseFrequency / ratios[0];
-				var i = 0;
-				Object.keys(oscillators).forEach(function(stringId){
-					oscillators[stringId].frequency.value = normalizedBaseFreq * ratios[i];
-					i++;
-				})
-			}else{
-				$scope.strings.forEach(function(string){
-					if(oscillators[string.id]){
-						oscillators[string.id].frequency.value = $scope.baseFrequency * string.multiplier;
-					}
-				});
-			}
-		});
-	}]);
-	*/
 })();
