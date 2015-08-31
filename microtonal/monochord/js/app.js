@@ -32,14 +32,6 @@
 		setGains = {};
 	}
 	
-	function addFrequency(frequency){
-		var o = ctx.createOscillator();
-		o.type = 'sine';
-		o.frequency.value = frequency;
-		o.start();
-		return o;
-	}
-	
 	var mainGain = ctx.createGain();
 	mainGain.connect(ctx.destination);
 	mainGain.gain.value = 1;
@@ -205,20 +197,20 @@
 			var frequency;
 			var baseFrequency;
 			
-			if(set.normalize.target > 0){
-				stack = stack || [];
-				if(stack.indexOf(stringId) !== -1){
-					alert('Infinite normalization target loop! There are no sets, that normalize to the default baseFrequency!');
-					return 0;
-				}else{
-					stack.push(stringId);
-					baseFrequency = calculateFrequency(set.normalize.target, stack);
-				}
-			}else{
-				baseFrequency = $scope.baseFrequency
-			}
-			
 			findStringById(stringId, function(string, index, array, set){
+				if(set.normalize.target > 0){
+					stack = stack || [];
+					if(stack.indexOf(stringId) !== -1){
+						alert('Infinite normalization target loop! There are no sets, that normalize to the default baseFrequency!');
+						return 0;
+					}else{
+						stack.push(stringId);
+						baseFrequency = calculateFrequency(set.normalize.target, stack);
+					}
+				}else{
+					baseFrequency = $scope.baseFrequency
+				}
+				
 				if(set.normalize.type === 'off'){
 					frequency = baseFrequency * string.multiplier;
 				}else{
@@ -248,9 +240,13 @@
 							break;
 						}
 						case 'manual' : {
-							findStringById(set.normalize.subject, function(string){
-								normalizedBaseFreq = baseFrequency / string.multiplier;
-							})
+							if(set.normalize.subject > 0){
+								findStringById(set.normalize.subject, function(string){
+									normalizedBaseFreq = baseFrequency / string.multiplier;
+								})
+							}else{
+								normalizedBaseFreq = baseFrequency;
+							}
 							break;
 						}
 					}
@@ -260,21 +256,6 @@
 			});
 			
 			return frequency;
-		}
-		
-		function calculateVolume(stringId){
-			var volume = 0;
-			findStringById(stringId, function(string){
-				volume = string.volume / 100;
-			});
-			return volume;
-		}
-		function calculateMasterVolume(setId){
-			var volume = 0;
-			findSetById(setId, function(set){
-				volume = set.volume / 100;
-			});
-			return volume;
 		}
 		
 		function updateNormalizeStringTargets(){
@@ -369,58 +350,54 @@
 			if(newValue !== oldValue){
 				var diff = diffSetsChange(newValue, oldValue);
 				
-				// sets first
-				
-				console.log(JSON.stringify(diff));
-				
-				/*
-				diff.strings.added.forEach(function(string){
-					var o = addFrequency(calculateFrequency(string.id));
-					var g = ctx.createGain();
-					g.connect(mainGain); // should connect to the setGain
-					o.connect(g);
-					g.gain.value = string.volume / 100;
-					
-					oscillators[string.id] = o;
-					stringGains[string.id] = g;
+				diff.sets.removed.forEach(function(setId){
+					setGains[setId].disconnect();
+					delete setGains[setId];
 				});
-				diff.strings.removed.forEach(function(string){
-					
+				diff.sets.added.forEach(function(setId){
+					findSetById(setId, function(set){
+						var g = ctx.createGain();
+						g.connect(mainGain);
+						g.gain.value = set.volume / 100;
+						
+						setGains[setId] = g;
+					});
 				});
-				diff.strings.changed.forEach(function(string){
-					
-				});
-				*/
-				
-				
-				
-				// todo
-				/*
-				changed.forEach(function(string){
-					oscillators[string.id].frequency.value = $scope.baseFrequency * string.multiplier;
-					gains[string.id].gain.value = string.volume / 100;
+				diff.sets.changed.forEach(function(setId){
+					findSetById(setId, function(set){
+						setGains[setId].gain.value = set.volume / 100;
+					});
 				});
 				
-				added.forEach(function(string){
-					var o = addFreq(ctx, $scope.baseFrequency * string.multiplier);
-					var g = ctx.createGain();
-					g.connect(mainGain);
-					o.connect(g);
-					g.gain.value = string.volume / 100;
-					
-					oscillators[string.id] = o;
-					gains[string.id] = g;
+				diff.strings.removed.forEach(function(stringId){
+					oscillators[stringId].stop();
+					oscillators[stringId].disconnect();
+					delete oscillators[stringId];
+					stringGains[stringId].disconnect();
+					delete stringGains[stringId];
+				});
+				diff.strings.added.forEach(function(stringId){
+					findStringById(stringId, function(string, index, array, set){
+						var g = ctx.createGain();
+						g.connect(setGains[set.id]);
+						g.gain.value = string.volume / 100;
+						var o = ctx.createOscillator();
+						o.type = 'sine';
+						o.frequency.value = calculateFrequency(stringId);
+						o.connect(g);
+						o.start();
+						
+						stringGains[stringId] = g;
+						oscillators[stringId] = o;
+					});
+				});
+				diff.strings.changed.forEach(function(stringId){
+					findStringById(stringId, function(string, index, array, set){
+						oscillators[stringId].frequency.value = calculateFrequency(stringId);
+						stringGains[stringId].gain.value = string.volume / 100;
+					});
 				});
 				
-				removed.forEach(function(string){
-					gains[string.id].disconnect(mainGain);
-					oscillators[string.id].stop();
-					delete gains[string.id];
-					delete oscillators[string.id];
-				});
-				*/
-				
-				updateFrequencies();
 				updateNormalizeStringTargets();
 			}
 		}, true);
