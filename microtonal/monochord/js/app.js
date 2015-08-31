@@ -4,9 +4,16 @@
 	// https://en.wikipedia.org/wiki/List_of_pitch_intervals
 	// https://en.wikipedia.org/wiki/Equal_temperament
 	
+	var ctx;
 	var oscillators = {};
 	var stringGains = {};
 	var setGains = {};
+	
+	try{
+		ctx = new (window.AudioContext || window.webkitAudioContext)();
+	}catch(e){
+		alert('Web Audio API is not supported by this browser.\nTo see, which browsers support the Web Audio API, visit: http://caniuse.com/#feat=audio-api');
+	}
 	
 	function stopAll(){
 		Object.keys(oscillators).forEach(function(key){
@@ -25,21 +32,12 @@
 		setGains = {};
 	}
 	
-	/*
-	function addFreq(ctx, freq){
+	function addFrequency(frequency){
 		var o = ctx.createOscillator();
 		o.type = 'sine';
-		o.frequency.value = freq;
+		o.frequency.value = frequency;
 		o.start();
 		return o;
-	}
-	*/
-	
-	var ctx;
-	try{
-		ctx = new (window.AudioContext || window.webkitAudioContext)();
-	}catch(e){
-		alert('Web Audio API is not supported by this browser.\nTo see, which browsers support the Web Audio API, visit: http://caniuse.com/#feat=audio-api');
 	}
 	
 	var mainGain = ctx.createGain();
@@ -319,7 +317,7 @@
 					}
 				});
 				
-				sets[group].push(newSet);
+				sets[group].push(newSet.id);
 				
 				newSet.strings.forEach(function(newString){
 					strings[
@@ -329,34 +327,26 @@
 						})
 						? 'changed'
 						: 'added'
-					].push(newString);
+					].push(newString.id);
 				});
 			});
 			
 			oldValue.forEach(function(oldSet){
 				if(
-					!sets.added.some(function(addedSet){
-						return addedSet.id === oldSet.id;
-					})
-					&& !sets.changed.some(function(changedSet){
-						return changedSet.id === oldSet.id;
-					})
+					sets.added.indexOf(oldSet.id) === -1
+					&& sets.changed.indexOf(oldSet.id) === -1
 				){
-					sets.removed.push(oldSet);
+					sets.removed.push(oldSet.id);
 					oldSet.strings.forEach(function(oldString){
-						strings.removed.push(oldString);
+						strings.removed.push(oldString.id);
 					});
 				}else{
 					oldSet.strings.forEach(function(oldString){
 						if(
-							!strings.added.some(function(addedString){
-								return addedString.id === oldString.id;
-							})
-							&& !strings.changed.some(function(changedString){
-								return changedString.id === oldString.id;
-							})
+							strings.added.indexOf(oldString.id) === -1
+							&& strings.changed.indexOf(oldString.id) === -1
 						){
-							strings.removed.push(oldString);
+							strings.removed.push(oldString.id);
 						}
 					});
 				}
@@ -378,6 +368,29 @@
 		$scope.$watch('sets', function(newValue, oldValue){
 			if(newValue !== oldValue){
 				var diff = diffSetsChange(newValue, oldValue);
+				
+				// sets first
+				
+				console.log(JSON.stringify(diff));
+				
+				/*
+				diff.strings.added.forEach(function(string){
+					var o = addFrequency(calculateFrequency(string.id));
+					var g = ctx.createGain();
+					g.connect(mainGain); // should connect to the setGain
+					o.connect(g);
+					g.gain.value = string.volume / 100;
+					
+					oscillators[string.id] = o;
+					stringGains[string.id] = g;
+				});
+				diff.strings.removed.forEach(function(string){
+					
+				});
+				diff.strings.changed.forEach(function(string){
+					
+				});
+				*/
 				
 				
 				
