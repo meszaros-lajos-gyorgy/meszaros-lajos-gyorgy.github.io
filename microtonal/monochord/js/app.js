@@ -296,6 +296,78 @@
 			});
 		}
 		
+		function diffSetsChange(newValue, oldValue){
+			var sets = {
+				added : [],
+				removed : [],
+				changed : []
+			};
+			var strings = {
+				added : [],
+				removed : [],
+				changed : []
+			};
+			
+			newValue.forEach(function(newSet){
+				var group = 'added';
+				var oldSet;
+				oldValue.some(function(_oldSet){
+					if(_oldSet.id === newSet.id){
+						oldSet = _oldSet;
+						group = 'changed';
+						return true;
+					}
+				});
+				
+				sets[group].push(newSet);
+				
+				newSet.strings.forEach(function(newString){
+					strings[
+						group !== 'added'
+						&& oldSet.strings.some(function(oldString){
+							return oldString.id == newString.id;
+						})
+						? 'changed'
+						: 'added'
+					].push(newString);
+				});
+			});
+			
+			oldValue.forEach(function(oldSet){
+				if(
+					!sets.added.some(function(addedSet){
+						return addedSet.id === oldSet.id;
+					})
+					&& !sets.changed.some(function(changedSet){
+						return changedSet.id === oldSet.id;
+					})
+				){
+					sets.removed.push(oldSet);
+					oldSet.strings.forEach(function(oldString){
+						strings.removed.push(oldString);
+					});
+				}else{
+					oldSet.strings.forEach(function(oldString){
+						if(
+							!strings.added.some(function(addedString){
+								return addedString.id === oldString.id;
+							})
+							&& !strings.changed.some(function(changedString){
+								return changedString.id === oldString.id;
+							})
+						){
+							strings.removed.push(oldString);
+						}
+					});
+				}
+			});
+			
+			return {
+				sets : sets,
+				strings : strings
+			};
+		}
+		
 		$scope.$watch('baseFrequency', function(newValue, oldValue){
 			if(newValue !== oldValue){
 				updateFrequencies();
@@ -305,70 +377,9 @@
 		
 		$scope.$watch('sets', function(newValue, oldValue){
 			if(newValue !== oldValue){
-				var sets = {
-					added : [],
-					removed : [],
-					changed : []
-				};
-				var strings = {
-					added : [],
-					removed : [],
-					changed : []
-				};
+				var diff = diffSetsChange(newValue, oldValue);
 				
-				newValue.forEach(function(newSet){
-					var group = 'added';
-					var oldSet;
-					oldValue.some(function(_oldSet){
-						if(_oldSet.id === newSet.id){
-							oldSet = _oldSet;
-							group = 'changed';
-							return true;
-						}
-					});
-					
-					sets[group].push(newSet);
-					
-					newSet.strings.forEach(function(newString){
-						strings[
-							group !== 'added'
-							&& oldSet.strings.some(function(oldString){
-								return oldString.id == newString.id;
-							})
-							? 'changed'
-							: 'added'
-						].push(newString);
-					});
-				});
 				
-				oldValue.forEach(function(oldSet){
-					if(
-						!sets.added.some(function(addedSet){
-							return addedSet.id === oldSet.id;
-						})
-						&& !sets.changed.some(function(changedSet){
-							return changedSet.id === oldSet.id;
-						})
-					){
-						sets.removed.push(oldSet);
-						oldSet.strings.forEach(function(oldString){
-							strings.removed.push(oldString);
-						});
-					}else{
-						oldSet.strings.forEach(function(oldString){
-							if(
-								!strings.added.some(function(addedString){
-									return addedString.id === oldString.id;
-								})
-								&& !strings.changed.some(function(changedString){
-									return changedString.id === oldString.id;
-								})
-							){
-								strings.removed.push(oldString);
-							}
-						});
-					}
-				});
 				
 				// todo
 				/*
