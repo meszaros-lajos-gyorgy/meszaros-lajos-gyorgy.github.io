@@ -27,7 +27,7 @@
 					</tr>
 					<tr>
 						<th>
-							Subject: <select autocomplete="off" ng-model="set.normalize.type">
+							Type: <select autocomplete="off" ng-model="set.normalize.type">
 								<option value="off">none</option>
 								<option value="lowest">(auto) lowest harmony</option>
 								<option value="highest">(auto) highest harmony</option>
@@ -54,7 +54,6 @@
 						<td>
 							<input type="range" class="freq" min="1" max="100" autocomplete="off" ng-model="string.multiplier" />
 							<input type="number" class="freq" min="1" max="100" autocomplete="off" string-to-number ng-model="string.multiplier" />
-							<!-- <button>assign to key</button> -->
 						</td>
 						<td rowspan="{{set.strings.length}}" ng-show="$first">
 							<button ng-click="raiseHarmonics(set.id)">▲ | raise all harmonics</button>
@@ -67,6 +66,7 @@
 				<br />
 				<button ng-click="addString(set.id)">+ | add a new string</button>
 				<button ng-click="removeSet(set.id)">x | delete this set</button>
+				<button>assign to key</button>
 				<br />
 				<br />
 			</section>
@@ -88,6 +88,19 @@
 						<button ng-repeat="ratio in tuning.ratios" ng-click="addPreset(ratio.ratio, presetVolume)">{{ratio.name + ' (' + ratio.ratio.join(':') + ')'}}</button>
 					</div>
 				</div>
+			</div>
+			
+			<br />
+			<br />
+			
+			<hr />
+			
+			<div>
+				<h3>Import/Export</h3>
+				
+				<textarea ng-model="rawImportData"></textarea>
+				<br />
+				<button ng-click="">import</button>
 			</div>
 		</div>
 	</div>

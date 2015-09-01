@@ -1,3 +1,15 @@
+/*
+Todos:
+	- find lastStringId in _import()
+	- normalize ids in _export()
+	- minimal design for the textarea, so that it becomes larger
+	- default volume for all strings
+	- displaying volume numerically
+	- mainGain volume control
+	- display Hz for every string
+	- assign set to key
+*/
+
 (function(){
 	'use strict';
 	
@@ -63,6 +75,7 @@
 		$scope.presets = {};
 		$scope.presetVolume = 0;
 		$scope._normalizeStringTargets = {};
+		$scope.rawImportData = '[{"id":3,"normalize":{"type":"off","subject":0,"target":0},"volume":100,"strings":[{"id":6,"multiplier":4,"volume":"25"},{"id":7,"multiplier":5,"volume":"50"},{"id":8,"multiplier":"6","volume":"50"}]},{"id":5,"normalize":{"type":"manual","subject":9,"target":7},"volume":100,"strings":[{"id":9,"multiplier":21,"volume":"0"},{"id":10,"multiplier":25,"volume":"50"}]}]';
 		
 		function findSetById(setId, run){
 			$scope.sets.some(function(set, index, array){
@@ -180,17 +193,36 @@
 		};
 		
 		function _import(){
-			$scope.sets = [];
-			stopAll();
+			var raw = null;
 			
-			// todo, load from URL
-			$scope.addPreset([4, 5, 6], 30);
-			$scope.addPreset([21, 25], 30);
+			try{
+				raw = JSON.parse($scope.rawImportData);
+			}catch(e){
+				alert('Invalid data');
+			}
 			
-			// todo, load normalization
+			// todo: validate
+			
+			if(raw !== null){
+				stopAll();
+				$scope.sets = raw;
+				
+				lastSetId = raw.reduce(function(previousValue, currentValue){
+					previousValue.push(currentValue.id);
+					return previousValue;
+				}, []).sort(function(a, b){
+					return b - a;
+				})[0] || 0;
+				
+				lastStringId = 0; // todo
+			}
 		};
 		function _export(){
-			return ''; // todo: export to url or localStorage?
+			var raw = angular.copy($scope.sets);
+			
+			// todo: normalize ID-s
+			
+			$scope.rawImportData = JSON.stringify(raw);
 		}
 		
 		function calculateFrequency(stringId, stack){
@@ -398,6 +430,7 @@
 					});
 				});
 				
+				_export();
 				updateNormalizeStringTargets();
 			}
 		}, true);
