@@ -12,6 +12,8 @@
 	<h1>The Monochord</h1>
 	<div ng-controller="MonochordCtrl">
 		<div class="component monochord">
+			<label>Default volume for strings: <input type="range" min="0" max="100" autocomplete="off" ng-model="defaultVolume" /></label>
+			<br />
 			<label>Base frequency: <input type="number" min="1" autocomplete="off" ng-model="baseFrequency" /> Hz</label>
 			<br />
 			<br />
@@ -79,13 +81,12 @@
 			<div ng-show="presets.tunings">
 				<h3>Presets</h3>
 				
-				<label>Default volume: <input type="range" min="0" max="100" autocomplete="off" ng-model="presetVolume" /></label><br />
 				<br />
 				<label>Tuning: <select autocomplete="off" ng-model="activePresetTuning" ng-options="tuning.name for tuning in presets.tunings"></select></label><br />
 				<br />
 				<div ng-repeat="tuning in presets.tunings">
 					<div ng-show="tuning == activePresetTuning">
-						<button ng-repeat="ratio in tuning.ratios" ng-click="addPreset(ratio.ratio, presetVolume)">{{ratio.name + ' (' + ratio.ratio.join(':') + ')'}}</button>
+						<button ng-repeat="ratio in tuning.ratios" ng-click="addPreset(ratio.ratio, defaultVolume)">{{ratio.name + ' (' + ratio.ratio.join(':') + ')'}}</button>
 					</div>
 				</div>
 			</div>
@@ -100,7 +101,7 @@
 				
 				<textarea ng-model="rawImportData"></textarea>
 				<br />
-				<button ng-click="">import</button>
+				<button ng-click="_import()">import</button>
 			</div>
 		</div>
 	</div>

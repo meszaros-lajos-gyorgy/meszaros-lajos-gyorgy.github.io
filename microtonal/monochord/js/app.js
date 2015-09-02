@@ -1,13 +1,11 @@
 /*
 Todos:
-	- find lastStringId in _import()
-	- normalize ids in _export()
 	- minimal design for the textarea, so that it becomes larger
-	- default volume for all strings
+	- display Hz for every string
+	- normalize ids in _export()
 	- displaying volume numerically
 	- mainGain volume control
-	- display Hz for every string
-	- assign set to key
+	- 'assign set to key' feature
 */
 
 (function(){
@@ -73,7 +71,7 @@ Todos:
 		$scope.baseFrequency = 100;
 		$scope.sets = [];
 		$scope.presets = {};
-		$scope.presetVolume = 0;
+		$scope.defaultVolume = 0;
 		$scope._normalizeStringTargets = {};
 		$scope.rawImportData = '[{"id":3,"normalize":{"type":"off","subject":0,"target":0},"volume":100,"strings":[{"id":6,"multiplier":4,"volume":"25"},{"id":7,"multiplier":5,"volume":"50"},{"id":8,"multiplier":"6","volume":"50"}]},{"id":5,"normalize":{"type":"manual","subject":9,"target":7},"volume":100,"strings":[{"id":9,"multiplier":21,"volume":"0"},{"id":10,"multiplier":25,"volume":"50"}]}]';
 		
@@ -141,7 +139,7 @@ Todos:
 				set.strings.push({
 					id : ++lastStringId,
 					multiplier : multiplier || 1,
-					volume : volume || 0
+					volume : volume || $scope.defaultVolume
 				});
 			});
 			return lastStringId;
@@ -214,7 +212,16 @@ Todos:
 					return b - a;
 				})[0] || 0;
 				
-				lastStringId = 0; // todo
+				lastStringId = raw.reduce(function(previousValue, currentValue){
+					currentValue.strings.forEach(function(string){
+						previousValue.push(string.id);
+					});
+					return previousValue;
+				}, []).sort(function(a, b){
+					return b - a;
+				})[0] || 0;
+				
+				console.log(lastSetId, lastStringId);
 			}
 		};
 		function _export(){
@@ -224,6 +231,8 @@ Todos:
 			
 			$scope.rawImportData = JSON.stringify(raw);
 		}
+		
+		$scope._import = _import;
 		
 		function calculateFrequency(stringId, stack){
 			var frequency;
@@ -440,6 +449,6 @@ Todos:
 			$scope.activePresetTuning = $scope.presets.tunings[0];
 		});
 		
-		setTimeout(_import, 0);
+		// setTimeout(_import, 0);
 	}]);
 })();
