@@ -1,11 +1,13 @@
 /*
 Todos:
+	- alternative waveforms (audioContext.createPeriodicWave()
 	- minimal design for the textarea, so that it becomes larger
 	- display Hz for every string
 	- normalize ids in _export()
 	- displaying volume numerically
 	- mainGain volume control
 	- 'assign set to key' feature
+	- import/export to Dave Ryan's notation/format
 */
 
 (function(){
@@ -423,7 +425,7 @@ Todos:
 						g.connect(setGains[set.id]);
 						g.gain.value = string.volume / 100;
 						var o = ctx.createOscillator();
-						o.type = 'sine';
+						o.type = 'sine'; // square|square|sawtooth|triangle|custom
 						o.frequency.value = calculateFrequency(stringId);
 						o.connect(g);
 						o.start();
