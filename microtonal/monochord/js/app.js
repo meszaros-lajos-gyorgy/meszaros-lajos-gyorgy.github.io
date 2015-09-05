@@ -36,6 +36,7 @@ Todos:
 	});
 	
 	app.factory('AudioService', [function(){
+		// https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Porting_webkitAudioContext_code_to_standards_based_AudioContext
 		function createContext(){
 			return new (window.AudioContext || window.webkitAudioContext)();
 		}
@@ -44,7 +45,13 @@ Todos:
 		}
 		
 		function createGain(ctx){
-			return ctx.createGain();
+			var gain;
+			try{
+				gain = ctx.createGain();
+			}catch(e){
+				gain = ctx.createGainNode();
+			}
+			return gain;
 		}
 		function connectGain(gain, connectTarget){
 			gain.connect(connectTarget);
@@ -67,16 +74,44 @@ Todos:
 			oscillator.connect(connectTarget);
 		}
 		function setOscillatorType(oscillator, type){
+			if(!window.AudioContext){
+				switch(type){
+					case "sine" : {
+						type = oscillator.SINE;
+						break;
+					}
+					case "square" :{
+						type = oscillator.SQUARE;
+						break;
+					}
+					case "sawtooth" :{
+						type = oscillator.SAWTOOTH;
+						break;
+					}
+					case "triangle" :{
+						type = oscillator.TRIANGLE;
+						break;
+					}
+				}
+			}
 			oscillator.type = type;
 		}
 		function setOscillatorFrequency(oscillator, frequency){
 			oscillator.frequency.value = frequency;
 		}
 		function startOscillator(oscillator){
-			oscillator.start();
+			try{
+				oscillator.start();
+			}catch(e){
+				oscillator.noteOn();
+			}
 		}
 		function stopOscillator(oscillator){
-			oscillator.stop();
+			try{
+				oscillator.stop();
+			}catch(e){
+				oscillator.noteOff();
+			}
 		}
 		function disconnectOscillator(oscillator, target){
 			if(target){
