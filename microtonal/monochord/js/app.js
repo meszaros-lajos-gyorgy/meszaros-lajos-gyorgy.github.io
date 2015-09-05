@@ -36,6 +36,55 @@ Todos:
 	});
 	
 	app.factory('AudioService', [function(){
+		function createContext(){
+			return new (window.AudioContext || window.webkitAudioContext)();
+		}
+		function getDestination(ctx){
+			return ctx.destination;
+		}
+		
+		function createGain(ctx){
+			return ctx.createGain();
+		}
+		function connectGain(gain, connectTarget){
+			gain.connect(connectTarget);
+		}
+		function setGainValue(gain, value){
+			gain.gain.value = value;
+		}
+		function disconnectGain(gain, target){
+			if(target){
+				gain.disconnect(target);
+			}else{
+				gain.disconnect();
+			}
+		}
+		
+		function createOscillator(ctx){
+			return ctx.createOscillator();
+		}
+		function connectOscillator(oscillator, connectTarget){
+			oscillator.connect(connectTarget);
+		}
+		function setOscillatorType(oscillator, type){
+			oscillator.type = type;
+		}
+		function setOscillatorFrequency(oscillator, frequency){
+			oscillator.frequency.value = frequency;
+		}
+		function startOscillator(oscillator){
+			oscillator.start();
+		}
+		function stopOscillator(oscillator){
+			oscillator.stop();
+		}
+		function disconnectOscillator(oscillator, target){
+			if(target){
+				oscillator.disconnect(target);
+			}else{
+				oscillator.disconnect();
+			}
+		}
 		
 		
 		var ctx;
@@ -44,80 +93,82 @@ Todos:
 		var setGains = {};
 		
 		try{
-			ctx = new (window.AudioContext || window.webkitAudioContext)();
+			ctx = createContext();
 		}catch(e){
 			alert('Web Audio API is not supported by this browser.\nTo see, which browsers support the Web Audio API, visit: http://caniuse.com/#feat=audio-api');
 		}
 		
-		var mainGain = ctx.createGain();
-		mainGain.connect(ctx.destination);
-		mainGain.gain.value = 1;
+		var mainGain = createGain(ctx);
+		connectGain(mainGain, getDestination(ctx));
+		setGainValue(mainGain, 1);
 		
 		return {
 			setString : function(stringId, config){
 				if(oscillators[stringId]){
 					if(config.frequency){
-						oscillators[stringId].frequency.value = config.frequency;
+						setOscillatorFrequency(oscillators[stringId], config.frequency);
 					}
 				}
 				if(stringGains[stringId]){
 					if(config.volume){
-						stringGains[stringId].gain.value = config.volume;
+						setGainValue(stringGains[stringId], config.volume);
 					}
 				}
 			},
 			setSet : function(setId, config){
 				if(setGains[setId]){
 					if(config.volume){
-						setGains[setId].gain.value = config.volume;
+						setGainValue(setGains[setId], config.volume);
 					}
 				}
 			},
 			addString : function(stringId, setId, config){
-				var g = ctx.createGain();
-				g.connect(setGains[setId]);
+				var g = createGain(ctx);
+				connectGain(g, setGains[setId]);
 				if(config.volume){
-					g.gain.value = config.volume;
+					setGainValue(g, config.volume);
 				}
-				var o = ctx.createOscillator();
-				o.type = 'sine'; // square|square|sawtooth|triangle|custom
+				var o = createOscillator(ctx);
+				setOscillatorType(o, 'sine'); // square|square|sawtooth|triangle|custom
 				if(config.frequency){
-					o.frequency.value = config.frequency;
+					setOscillatorFrequency(o, config.frequency);
 				}
-				o.connect(g);
-				o.start();
+				connectOscillator(o, g);
+				startOscillator(o);
 				
 				stringGains[stringId] = g;
 				oscillators[stringId] = o;
 			},
 			addSet : function(setId, config){
-				var g = ctx.createGain();
-				g.connect(mainGain);
-				g.gain.value = config.volume;
+				var g = createGain(ctx);
+				connectGain(g, mainGain);
+				setGainValue(g, config.volume);
 				
 				setGains[setId] = g;
 			},
 			removeString : function(stringId){
-				oscillators[stringId].stop();
-				oscillators[stringId].disconnect();
+				stopOscillator(oscillators[stringId]);
+				disconnectOscillator(oscillators[stringId]);
 				delete oscillators[stringId];
-				stringGains[stringId].disconnect();
+				disconnectGain(stringGains[stringId]);
 				delete stringGains[stringId];
 			},
 			removeSet : function(setId){
-				setGains[setId].disconnect();
+				disconnectGain(setGains[setId]);
 				delete setGains[setId];
 			},
 			stopAll : function(){
 				Object.keys(oscillators).forEach(function(key){
 					oscillators[key].stop();
 					oscillators[key].disconnect();
+					stopOscillator(oscillators[key]);
+					disconnectOscillator(oscillators[key]);
 				});
 				Object.keys(stringGains).forEach(function(key){
-					stringGains[key].disconnect();
+					disconnectGain(stringGains[key]);
 				});
 				Object.keys(setGains).forEach(function(key){
-					setGains[key].disconnect();
+					disconnectGain(setGains[key]);
 				});
 				
 				oscillators = {};
