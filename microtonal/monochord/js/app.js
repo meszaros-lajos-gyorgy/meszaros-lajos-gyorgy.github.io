@@ -1,5 +1,6 @@
 /*
 Todos:
+	- supporting the old webkitAudioContext
 	- alternative waveforms (audioContext.createPeriodicWave()
 	- minimal design for the textarea, so that it becomes larger
 	- display Hz for every string
@@ -15,38 +16,6 @@ Todos:
 	
 	// https://en.wikipedia.org/wiki/List_of_pitch_intervals
 	// https://en.wikipedia.org/wiki/Equal_temperament
-	
-	var ctx;
-	var oscillators = {};
-	var stringGains = {};
-	var setGains = {};
-	
-	try{
-		ctx = new (window.AudioContext || window.webkitAudioContext)();
-	}catch(e){
-		alert('Web Audio API is not supported by this browser.\nTo see, which browsers support the Web Audio API, visit: http://caniuse.com/#feat=audio-api');
-	}
-	
-	function stopAll(){
-		Object.keys(oscillators).forEach(function(key){
-			oscillators[key].stop();
-			oscillators[key].disconnect();
-		});
-		Object.keys(stringGains).forEach(function(key){
-			stringGains[key].disconnect();
-		});
-		Object.keys(setGains).forEach(function(key){
-			setGains[key].disconnect();
-		});
-		
-		oscillators = {};
-		stringGains = {};
-		setGains = {};
-	}
-	
-	var mainGain = ctx.createGain();
-	mainGain.connect(ctx.destination);
-	mainGain.gain.value = 1;
 	
 	// ---------------------
 	
@@ -66,10 +35,102 @@ Todos:
 		};
 	});
 	
+	app.factory('AudioService', [function(){
+		
+		
+		var ctx;
+		var oscillators = {};
+		var stringGains = {};
+		var setGains = {};
+		
+		try{
+			ctx = new (window.AudioContext || window.webkitAudioContext)();
+		}catch(e){
+			alert('Web Audio API is not supported by this browser.\nTo see, which browsers support the Web Audio API, visit: http://caniuse.com/#feat=audio-api');
+		}
+		
+		var mainGain = ctx.createGain();
+		mainGain.connect(ctx.destination);
+		mainGain.gain.value = 1;
+		
+		return {
+			setString : function(stringId, config){
+				if(oscillators[stringId]){
+					if(config.frequency){
+						oscillators[stringId].frequency.value = config.frequency;
+					}
+				}
+				if(stringGains[stringId]){
+					if(config.volume){
+						stringGains[stringId].gain.value = config.volume;
+					}
+				}
+			},
+			setSet : function(setId, config){
+				if(setGains[setId]){
+					if(config.volume){
+						setGains[setId].gain.value = config.volume;
+					}
+				}
+			},
+			addString : function(stringId, setId, config){
+				var g = ctx.createGain();
+				g.connect(setGains[setId]);
+				if(config.volume){
+					g.gain.value = config.volume;
+				}
+				var o = ctx.createOscillator();
+				o.type = 'sine'; // square|square|sawtooth|triangle|custom
+				if(config.frequency){
+					o.frequency.value = config.frequency;
+				}
+				o.connect(g);
+				o.start();
+				
+				stringGains[stringId] = g;
+				oscillators[stringId] = o;
+			},
+			addSet : function(setId, config){
+				var g = ctx.createGain();
+				g.connect(mainGain);
+				g.gain.value = config.volume;
+				
+				setGains[setId] = g;
+			},
+			removeString : function(stringId){
+				oscillators[stringId].stop();
+				oscillators[stringId].disconnect();
+				delete oscillators[stringId];
+				stringGains[stringId].disconnect();
+				delete stringGains[stringId];
+			},
+			removeSet : function(setId){
+				setGains[setId].disconnect();
+				delete setGains[setId];
+			},
+			stopAll : function(){
+				Object.keys(oscillators).forEach(function(key){
+					oscillators[key].stop();
+					oscillators[key].disconnect();
+				});
+				Object.keys(stringGains).forEach(function(key){
+					stringGains[key].disconnect();
+				});
+				Object.keys(setGains).forEach(function(key){
+					setGains[key].disconnect();
+				});
+				
+				oscillators = {};
+				stringGains = {};
+				setGains = {};
+			}
+		};
+	}]);
+	
 	var lastStringId = 0;
 	var lastSetId = 0;
 	
-	app.controller('MonochordCtrl', ['$scope', '$http', '$rootScope', '$location', function($scope, $http, $rootScope, $location){
+	app.controller('MonochordCtrl', ['AudioService', '$scope', '$http', '$rootScope', '$location', function(audio, $scope, $http, $rootScope, $location){
 		$scope.baseFrequency = 100;
 		$scope.sets = [];
 		$scope.presets = {};
@@ -204,7 +265,7 @@ Todos:
 			// todo: validate
 			
 			if(raw !== null){
-				stopAll();
+				audio.stopAll();
 				$scope.sets = raw;
 				
 				lastSetId = raw.reduce(function(previousValue, currentValue){
@@ -222,8 +283,6 @@ Todos:
 				}, []).sort(function(a, b){
 					return b - a;
 				})[0] || 0;
-				
-				console.log(lastSetId, lastStringId);
 			}
 		};
 		function _export(){
@@ -311,9 +370,9 @@ Todos:
 		function updateFrequencies(){
 			$scope.sets.forEach(function(set){
 				set.strings.forEach(function(string){
-					if(oscillators[string.id]){
-						oscillators[string.id].frequency.value = calculateFrequency(string.id);
-					}
+					audio.setString(string.id, {
+						frequency : calculateFrequency(string.id)
+					});
 				});
 			});
 		}
@@ -393,51 +452,38 @@ Todos:
 			if(newValue !== oldValue){
 				var diff = diffSetsChange(newValue, oldValue);
 				
-				diff.sets.removed.forEach(function(setId){
-					setGains[setId].disconnect();
-					delete setGains[setId];
-				});
+				diff.sets.removed.forEach(audio.removeSet);
 				diff.sets.added.forEach(function(setId){
 					findSetById(setId, function(set){
-						var g = ctx.createGain();
-						g.connect(mainGain);
-						g.gain.value = set.volume / 100;
-						
-						setGains[setId] = g;
+						audio.addSet(setId, {
+							volume : set.volume / 100
+						});
 					});
 				});
 				diff.sets.changed.forEach(function(setId){
 					findSetById(setId, function(set){
-						setGains[setId].gain.value = set.volume / 100;
+						audio.setSet(setId, {
+							volume : set.volume / 100
+						});
 					});
 				});
 				
-				diff.strings.removed.forEach(function(stringId){
-					oscillators[stringId].stop();
-					oscillators[stringId].disconnect();
-					delete oscillators[stringId];
-					stringGains[stringId].disconnect();
-					delete stringGains[stringId];
-				});
+				diff.strings.removed.forEach(audio.removeString);
+				
 				diff.strings.added.forEach(function(stringId){
 					findStringById(stringId, function(string, index, array, set){
-						var g = ctx.createGain();
-						g.connect(setGains[set.id]);
-						g.gain.value = string.volume / 100;
-						var o = ctx.createOscillator();
-						o.type = 'sine'; // square|square|sawtooth|triangle|custom
-						o.frequency.value = calculateFrequency(stringId);
-						o.connect(g);
-						o.start();
-						
-						stringGains[stringId] = g;
-						oscillators[stringId] = o;
+						audio.addString(stringId, set.id, {
+							volume : string.volume / 100,
+							frequency : calculateFrequency(stringId)
+						});
 					});
 				});
 				diff.strings.changed.forEach(function(stringId){
-					findStringById(stringId, function(string, index, array, set){
-						oscillators[stringId].frequency.value = calculateFrequency(stringId);
-						stringGains[stringId].gain.value = string.volume / 100;
+					findStringById(stringId, function(string){
+						audio.setString(stringId, {
+							frequency : calculateFrequency(stringId),
+							volume : string.volume / 100
+						});
 					});
 				});
 				
@@ -450,7 +496,5 @@ Todos:
 			$scope.presets = data;
 			$scope.activePresetTuning = $scope.presets.tunings[0];
 		});
-		
-		// setTimeout(_import, 0);
 	}]);
 })();
