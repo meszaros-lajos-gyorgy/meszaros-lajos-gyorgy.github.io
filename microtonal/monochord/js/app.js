@@ -8,16 +8,25 @@ Todos:
 	- displaying volume numerically
 	- mainGain volume control
 	- 'assign set to key' feature
-	- import/export to Dave Ryan's notation/format
+	- import/export to Dave Ryan's notation/format (http://arxiv.org/ftp/arxiv/papers/1508/1508.07739.pdf)
+
+Ratios:
+	https://en.wikipedia.org/wiki/List_of_pitch_intervals
+	https://en.wikipedia.org/wiki/Equal_temperament
+
+Custom waveforms:
+	http://chromium.googlecode.com/svn/trunk/samples/audio/wave-tables/
+	https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createPeriodicWave
+	https://github.com/corbanbrook/dsp.js/
+	http://stackoverflow.com/questions/24743732/arbitrary-wave-table-for-a-custom-oscillator
+	http://www.sitepoint.com/using-fourier-transforms-web-audio-api/
+
+Porting webkitAudioContext:
+	https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Porting_webkitAudioContext_code_to_standards_based_AudioContext
 */
 
 (function(){
 	'use strict';
-	
-	// https://en.wikipedia.org/wiki/List_of_pitch_intervals
-	// https://en.wikipedia.org/wiki/Equal_temperament
-	
-	// ---------------------
 	
 	var app = angular.module('Microtonal', []);
 	
