@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>iOS test for webkitAudioContext</title>
+	<style>
+.hidden{
+	display : none;
+}
+	</style>
+	<script>
+function createContext(){
+	return new (window.AudioContext || window.webkitAudioContext)();
+}
+function getDestination(ctx){
+	return ctx.destination;
+}
+
+function createGain(ctx){
+	var gain;
+	try{
+		gain = ctx.createGain();
+	}catch(e){
+		gain = ctx.createGainNode();
+	}
+	return gain;
+}
+function connectGain(gain, connectTarget){
+	gain.connect(connectTarget);
+}
+function setGainValue(gain, value){
+	gain.gain.value = value;
+}
+function disconnectGain(gain, target){
+	if(target){
+		gain.disconnect(target);
+	}else{
+		gain.disconnect();
+	}
+}
+
+function createOscillator(ctx){
+	return ctx.createOscillator();
+}
+function connectOscillator(oscillator, connectTarget){
+	oscillator.connect(connectTarget);
+}
+function setOscillatorType(oscillator, type){
+	if(!window.AudioContext){
+		switch(type){
+			case "sine" : {
+				type = oscillator.SINE;
+				break;
+			}
+			case "square" :{
+				type = oscillator.SQUARE;
+				break;
+			}
+			case "sawtooth" :{
+				type = oscillator.SAWTOOTH;
+				break;
+			}
+			case "triangle" :{
+				type = oscillator.TRIANGLE;
+				break;
+			}
+		}
+	}
+	oscillator.type = type;
+}
+function setOscillatorFrequency(oscillator, frequency){
+	oscillator.frequency.value = frequency;
+}
+function startOscillator(oscillator){
+	if(!window.AudioContext){
+		oscillator.noteOn(0);
+	}else{
+		oscillator.start();
+	}
+}
+function stopOscillator(oscillator){
+	try{
+		oscillator.stop();
+	}catch(e){
+		oscillator.noteOff();
+	}
+}
+function disconnectOscillator(oscillator, target){
+	if(target){
+		oscillator.disconnect(target);
+	}else{
+		oscillator.disconnect();
+	}
+}
+	</script>
+</head>
+<body ng-app="Microtonal">
+	<button>Initialize audio system</button>
+	<button class="hidden">Play tone for 1 second</button>
+	<script>
+var ctx = createContext();
+var osc = createOscillator(ctx);
+var volume = createGain(ctx);
+
+setOscillatorType(osc, 'sine');
+setOscillatorFrequency(osc, 440);
+connectOscillator(osc, volume);
+
+setGainValue(volume, 0);
+connectGain(volume, getDestination(ctx));
+
+var initButton = document.getElementsByTagName('button')[0];
+var playButton = document.getElementsByTagName('button')[1];
+
+initButton.onclick = function(){
+	startOscillator(osc);
+	initButton.className = 'hidden';
+	playButton.className = '';
+};
+
+playButton.onclick = function(){
+	setGainValue(volume, 1);
+	setTimeout(function(){
+		setGainValue(volume, 0);
+	}, 1000);
+};
+	</script>
+</body>
+</html>
