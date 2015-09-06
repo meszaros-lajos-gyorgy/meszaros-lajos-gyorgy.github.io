@@ -103,7 +103,7 @@ Todos:
 			try{
 				oscillator.start();
 			}catch(e){
-				oscillator.noteOn();
+				oscillator.noteOn(0);
 			}
 		}
 		function stopOscillator(oscillator){
@@ -145,14 +145,14 @@ Todos:
 					}
 				}
 				if(stringGains[stringId]){
-					if(config.volume){
+					if(config.hasOwnProperty('volume')){
 						setGainValue(stringGains[stringId], config.volume);
 					}
 				}
 			},
 			setSet : function(setId, config){
 				if(setGains[setId]){
-					if(config.volume){
+					if(config.hasOwnProperty('volume')){
 						setGainValue(setGains[setId], config.volume);
 					}
 				}
@@ -160,9 +160,7 @@ Todos:
 			addString : function(stringId, setId, config){
 				var g = createGain(ctx);
 				connectGain(g, setGains[setId]);
-				if(config.volume){
-					setGainValue(g, config.volume);
-				}
+				setGainValue(g, config.hasOwnProperty('volume') ? config.volume : 1);
 				var o = createOscillator(ctx);
 				setOscillatorType(o, 'sine'); // square|square|sawtooth|triangle|custom
 				if(config.frequency){
@@ -177,7 +175,7 @@ Todos:
 			addSet : function(setId, config){
 				var g = createGain(ctx);
 				connectGain(g, mainGain);
-				setGainValue(g, config.volume);
+				setGainValue(g, config.hasOwnProperty('volume') ? config.volume : 1);
 				
 				setGains[setId] = g;
 			},
@@ -288,7 +286,7 @@ Todos:
 				set.strings.push({
 					id : ++lastStringId,
 					multiplier : multiplier || 1,
-					volume : volume || $scope.defaultVolume
+					volume : typeof volume !== 'undefined' ? volume : $scope.defaultVolume
 				});
 			});
 			return lastStringId;
@@ -559,8 +557,8 @@ Todos:
 				diff.strings.added.forEach(function(stringId){
 					findStringById(stringId, function(string, index, array, set){
 						audio.addString(stringId, set.id, {
-							volume : string.volume / 100,
-							frequency : calculateFrequency(stringId)
+							frequency : calculateFrequency(stringId),
+							volume : string.volume / 100
 						});
 					});
 				});
