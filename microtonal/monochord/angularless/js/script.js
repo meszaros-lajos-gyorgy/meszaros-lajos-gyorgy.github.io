@@ -1,3 +1,59 @@
+(function(){
+	'use strict';
+	
+	// webkitAudioContext.prototype.createGain =
+	
+	var ctx = new webkitAudioContext();
+	
+	var gain = ctx.createGain();
+	
+	alert(webkitAudioContext.prototype.createGain);
+	
+	/*
+	function AudioAPI(){
+		var ctx;
+		
+		this.getDestination = function(){
+			return ctx.destination;
+		}
+		this.createGain = function(){
+			var gain;
+			try{
+				gain = ctx.createGain();
+			}catch(e){
+				gain = ctx.createGainNode();
+			}
+			return gain;
+		}
+		this.connectGain = function(gain, connectTarget){
+			gain.connect(connectTarget);
+		}
+		this.setGainValue = function(gain, value){
+			gain.gain.value = value;
+		}
+		this.disconnectGain = function(gain, target){
+			if(target){
+				gain.disconnect(target);
+			}else{
+				gain.disconnect();
+			}
+		}
+		
+		
+		try{
+			ctx = new (window.AudioContext || window.webkitAudioContext)();
+		}catch(e){
+			alert('Web Audio API is not supported by this browser.\nTo see, which browsers support the Web Audio API, visit: http://caniuse.com/#feat=audio-api');
+		}
+	};
+	
+	var audio = new AudioAPI();
+	*/
+	
+})();
+
+// ===============================
+
 /*
 Todos:
 	- alternative waveforms (audioContext.createPeriodicWave()
@@ -24,6 +80,7 @@ Porting webkitAudioContext:
 	https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Porting_webkitAudioContext_code_to_standards_based_AudioContext
 */
 
+/*
 (function(){
 	'use strict';
 	
@@ -44,36 +101,10 @@ Porting webkitAudioContext:
 	});
 	
 	app.factory('AudioService', [function(){
-		// https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Porting_webkitAudioContext_code_to_standards_based_AudioContext
-		function createContext(){
-			return new (window.AudioContext || window.webkitAudioContext)();
-		}
-		function getDestination(ctx){
-			return ctx.destination;
-		}
 		
-		function createGain(ctx){
-			var gain;
-			try{
-				gain = ctx.createGain();
-			}catch(e){
-				gain = ctx.createGainNode();
-			}
-			return gain;
-		}
-		function connectGain(gain, connectTarget){
-			gain.connect(connectTarget);
-		}
-		function setGainValue(gain, value){
-			gain.gain.value = value;
-		}
-		function disconnectGain(gain, target){
-			if(target){
-				gain.disconnect(target);
-			}else{
-				gain.disconnect();
-			}
-		}
+		
+		
+		
 		
 		function createOscillator(ctx){
 			return ctx.createOscillator();
@@ -590,3 +621,4 @@ Porting webkitAudioContext:
 		});
 	}]);
 })();
+*/
