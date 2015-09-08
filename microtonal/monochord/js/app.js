@@ -6,8 +6,12 @@ Todos:
 	- normalize ids in _export()
 	- displaying volume numerically
 	- mainGain volume control
-	- 'assign set to key' feature
+	- 'assign set to key' feature (sets could be assigned to a keyboard key and sets could be played as a piano)
 	- import/export to Dave Ryan's notation/format (http://arxiv.org/ftp/arxiv/papers/1508/1508.07739.pdf)
+	
+	- method to compare sets, when ratios are getting compared (125/124 should be gained as the diff between 25/21 and 6/5)
+	- method to normalize ratios by removing unnecessary multiplications (6/3 -> 2/1)
+	- display ratio names, when a certain ratio is set (3/2 and 2/3 should trigger the displaying of 'pure fifth')
 
 Ratios:
 	https://en.wikipedia.org/wiki/List_of_pitch_intervals
