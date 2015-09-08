@@ -1,13 +1,37 @@
 (function(){
 	'use strict';
 	
-	// webkitAudioContext.prototype.createGain =
+	// testing webkitAudioContext-patch.js:
+	window.onload = function(){
+		var ctx = new AudioContext();
+		var osc = ctx.createOscillator();
+		var volume = ctx.createGain();
+
+		osc.type = 'sine';
+		osc.frequency.value = 440;
+		osc.connect(volume);
+		
+		volume.gain.value = 0;
+		volume.connect(ctx.destination);
+
+		var initButton = document.getElementsByTagName('button')[0];
+		var playButton = document.getElementsByTagName('button')[1];
+
+		initButton.onclick = function(){
+			osc.start();
+			initButton.className = 'hidden';
+			playButton.className = '';
+		};
+
+		playButton.onclick = function(){
+			volume.gain.value = 1;
+			setTimeout(function(){
+				volume.gain.value = 0;
+			}, 1000);
+		};
+	};
 	
-	var ctx = new webkitAudioContext();
 	
-	var gain = ctx.createGain();
-	
-	alert(webkitAudioContext.prototype.createGain);
 	
 	/*
 	function AudioAPI(){
@@ -53,32 +77,6 @@
 })();
 
 // ===============================
-
-/*
-Todos:
-	- alternative waveforms (audioContext.createPeriodicWave()
-	- minimal design for the textarea, so that it becomes larger
-	- display Hz for every string
-	- normalize ids in _export()
-	- displaying volume numerically
-	- mainGain volume control
-	- 'assign set to key' feature
-	- import/export to Dave Ryan's notation/format (http://arxiv.org/ftp/arxiv/papers/1508/1508.07739.pdf)
-
-Ratios:
-	https://en.wikipedia.org/wiki/List_of_pitch_intervals
-	https://en.wikipedia.org/wiki/Equal_temperament
-
-Custom waveforms:
-	http://chromium.googlecode.com/svn/trunk/samples/audio/wave-tables/
-	https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createPeriodicWave
-	https://github.com/corbanbrook/dsp.js/
-	http://stackoverflow.com/questions/24743732/arbitrary-wave-table-for-a-custom-oscillator
-	http://www.sitepoint.com/using-fourier-transforms-web-audio-api/
-
-Porting webkitAudioContext:
-	https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Porting_webkitAudioContext_code_to_standards_based_AudioContext
-*/
 
 /*
 (function(){

@@ -13,6 +13,9 @@ Todos:
 	- method to normalize ratios by removing unnecessary multiplications (6/3 -> 2/1)
 	- display ratio names, when a certain ratio is set (3/2 and 2/3 should trigger the displaying of 'pure fifth')
 
+Debug:
+	Firefox on Linux [ Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:38.0) Gecko/20100101 Firefox/38.0 ]
+
 Ratios:
 	https://en.wikipedia.org/wiki/List_of_pitch_intervals
 	https://en.wikipedia.org/wiki/Equal_temperament
