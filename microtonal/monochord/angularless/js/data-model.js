@@ -4,13 +4,15 @@
 	var lastStringId = 0;
 	var lastSetId = 0;
 	
-	var $scope = {};
-	$scope.baseFrequency = 100;
-	$scope.sets = [];
-	$scope.presets = {};
-	$scope.defaultVolume = 0;
-	$scope._normalizeStringTargets = {};
-	$scope.rawImportData = '[{"id":3,"normalize":{"type":"off","subject":0,"target":0},"volume":100,"strings":[{"id":6,"multiplier":4,"volume":"25"},{"id":7,"multiplier":5,"volume":"50"},{"id":8,"multiplier":"6","volume":"50"}]},{"id":5,"normalize":{"type":"manual","subject":9,"target":7},"volume":100,"strings":[{"id":9,"multiplier":21,"volume":"0"},{"id":10,"multiplier":25,"volume":"50"}]}]';
+	var $scope = new MicroScope();
+	$scope.registerAll({
+		baseFrequency : 100,
+		sets : [],
+		presets : {},
+		defaultVolume : 0,
+		_normalizeStringTargets : {},
+		rawImportData : '[{"id":3,"normalize":{"type":"off","subject":0,"target":0},"volume":100,"strings":[{"id":6,"multiplier":4,"volume":"25"},{"id":7,"multiplier":5,"volume":"50"},{"id":8,"multiplier":"6","volume":"50"}]},{"id":5,"normalize":{"type":"manual","subject":9,"target":7},"volume":100,"strings":[{"id":9,"multiplier":21,"volume":"0"},{"id":10,"multiplier":25,"volume":"50"}]}]'
+	});
 	
 	// ---------------
 	
@@ -243,17 +245,16 @@
 	
 	// ---------------
 	
-	/*
-	$scope.$watch('baseFrequency', function(newValue, oldValue){
-		if(newValue !== oldValue){
+	$scope.$watch('baseFrequency', function(e){
+		if(e.newValue !== e.oldValue){
 			updateFrequencies();
 		}
 		updateNormalizeStringTargets();
 	});
 	
-	$scope.$watch('sets', function(newValue, oldValue){
-		if(newValue !== oldValue){
-			var diff = diffSetsChange(newValue, oldValue);
+	$scope.$watch('sets', function(e){
+		if(e.newValue !== e.oldValue){
+			var diff = diffSetsChange(e.newValue, e.oldValue);
 			
 			diff.sets.removed.forEach(audio.removeSet);
 			diff.sets.added.forEach(function(setId){
@@ -293,8 +294,7 @@
 			_export();
 			updateNormalizeStringTargets();
 		}
-	}, true);
-	*/
+	});
 	
 	// ---------------
 	
@@ -375,7 +375,12 @@
 			});
 		},
 		
-		_import : _import
+		_import : _import,
+		
+		updatePresets : function(data){
+			$scope.presets = data;
+			$scope.activePresetTuning = $scope.presets.tunings[0];
+		}
 	};
 	
 	window.DataModel = DataModel;

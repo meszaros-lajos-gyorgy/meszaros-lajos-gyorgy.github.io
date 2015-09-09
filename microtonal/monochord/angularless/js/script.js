@@ -1,3 +1,4 @@
+/*
 (function(){
 	'use strict';
 	
@@ -20,24 +21,18 @@
 	}
 	
 	loadPresets(function(data){
-		console.log('Imported: ', data);
-		// $scope.presets = data;
-		// $scope.activePresetTuning = $scope.presets.tunings[0];
+		dataModel.updatePreset(data);
 	});
 })();
-
-/*
-	app.directive('stringToNumber', function() {
-		return {
-			require: 'ngModel',
-			link: function(scope, element, attrs, ngModel) {
-				ngModel.$parsers.push(function(value) {
-					return '' + value;
-				});
-				ngModel.$formatters.push(function(value) {
-					return parseFloat(value, 10);
-				});
-			}
-		};
-	});
 */
+
+var $scope = new MicroScope();
+
+$scope.register('baseFrequency', 100);
+
+$scope.watch('baseFrequency', function(e){
+	console.log('newValue: ', e.newValue, ' | oldValue: ', e.oldValue);
+});
+
+$scope.baseFrequency = 100;
+$scope.baseFrequency = 102;
