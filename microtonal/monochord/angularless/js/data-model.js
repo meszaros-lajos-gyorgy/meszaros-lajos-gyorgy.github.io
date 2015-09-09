@@ -17,16 +17,19 @@
 	// ---------------
 	
 	function findSetById(setId, run){
-		$scope.sets.some(function(set, index, array){
+		var sets = $scope.sets;
+		sets.some(function(set, index, array){
 			if(set.id === setId){
 				run(set, index, array);
 				return true;
 			}
 		});
+		$scope.sets = sets;
 	}
 	
 	function findStringById(stringId, run){
-		$scope.sets.some(function(set){
+		var sets = $scope.sets;
+		sets.some(function(set){
 			return set.strings.some(function(string, index, array){
 				if(string.id === stringId){
 					run(string, index, array, set);
@@ -34,6 +37,7 @@
 				}
 			});
 		});
+		$scope.sets = sets;
 	}
 	function getNormalizeStringTargets(excludedSetId){
 		var list = [{
@@ -42,7 +46,8 @@
 			group : 'Miscellaneous'
 		}];
 		
-		$scope.sets.forEach(function(set, index){
+		var sets = $scope.sets;
+		sets.forEach(function(set, index){
 			if(set.id !== excludedSetId){
 				set.strings.forEach(function(string){
 					list.push({
@@ -53,6 +58,7 @@
 				});
 			}
 		});
+		$scope.sets = sets;
 		
 		return list;
 	}
@@ -69,7 +75,7 @@
 		// todo: validate
 		
 		if(raw !== null){
-			audio.stopAll();
+			AudioModel.stopAll();
 			$scope.sets = raw;
 			
 			lastSetId = raw.reduce(function(previousValue, currentValue){
@@ -91,7 +97,7 @@
 	}
 	
 	function _export(){
-		var raw = angular.copy($scope.sets);
+		var raw = $scope.sets;
 		
 		// todo: normalize ID-s
 		
@@ -163,20 +169,25 @@
 	}
 	
 	function updateNormalizeStringTargets(){
-		$scope._normalizeStringTargets = {};
-		$scope.sets.forEach(function(set){
-			$scope._normalizeStringTargets[set.id] = getNormalizeStringTargets(set.id);
+		var targets = {};
+		var sets = $scope.sets;
+		sets.forEach(function(set){
+			targets[set.id] = getNormalizeStringTargets(set.id);
 		});
+		$scope.sets = sets;
+		$scope._normalizeStringTargets = targets;
 	}
 	
 	function updateFrequencies(){
-		$scope.sets.forEach(function(set){
+		var sets = $scope.sets;
+		sets.forEach(function(set){
 			set.strings.forEach(function(string){
-				audio.setString(string.id, {
+				AudioModel.setString(string.id, {
 					frequency : calculateFrequency(string.id)
 				});
 			});
 		});
+		$scope.sets = sets;
 	}
 	
 	function diffSetsChange(newValue, oldValue){
@@ -256,27 +267,27 @@
 		if(e.newValue !== e.oldValue){
 			var diff = diffSetsChange(e.newValue, e.oldValue);
 			
-			diff.sets.removed.forEach(audio.removeSet);
+			diff.sets.removed.forEach(AudioModel.removeSet);
 			diff.sets.added.forEach(function(setId){
 				findSetById(setId, function(set){
-					audio.addSet(setId, {
+					AudioModel.addSet(setId, {
 						volume : set.volume / 100
 					});
 				});
 			});
 			diff.sets.changed.forEach(function(setId){
 				findSetById(setId, function(set){
-					audio.setSet(setId, {
+					AudioModel.setSet(setId, {
 						volume : set.volume / 100
 					});
 				});
 			});
 			
-			diff.strings.removed.forEach(audio.removeString);
+			diff.strings.removed.forEach(AudioModel.removeString);
 			
 			diff.strings.added.forEach(function(stringId){
 				findStringById(stringId, function(string, index, array, set){
-					audio.addString(stringId, set.id, {
+					AudioModel.addString(stringId, set.id, {
 						frequency : calculateFrequency(stringId),
 						volume : string.volume / 100
 					});
@@ -284,7 +295,7 @@
 			});
 			diff.strings.changed.forEach(function(stringId){
 				findStringById(stringId, function(string){
-					audio.setString(stringId, {
+					AudioModel.setString(stringId, {
 						frequency : calculateFrequency(stringId),
 						volume : string.volume / 100
 					});
@@ -298,90 +309,93 @@
 	
 	// ---------------
 	
-	var DataModel = {
-		addSet : function(){
-			$scope.sets.push({
-				id : ++lastSetId,
-				normalize : {
-					type : 'off',
-					subject : 0,
-					target : 0
-				},
-				volume : 100,
-				strings : []
+	function addSet(){
+		var sets = $scope.sets;
+		sets.push({
+			id : ++lastSetId,
+			normalize : {
+				type : 'off',
+				subject : 0,
+				target : 0
+			},
+			volume : 100,
+			strings : []
+		});
+		$scope.sets = sets;
+		return lastSetId;
+	}
+	function removeSet(setId){
+		findSetById(setId, function(set, index, array){
+			array.splice(index, 1);
+		});
+	}
+	function addString(setId, multiplier, volume){
+		findSetById(setId, function(set){
+			set.strings.push({
+				id : ++lastStringId,
+				multiplier : multiplier || 1,
+				volume : typeof volume !== 'undefined' ? volume : $scope.defaultVolume
 			});
-			return lastSetId;
-		},
-		removeSet : function(setId){
-			findSetById(setId, function(set, index, array){
-				array.splice(index, 1);
+		});
+		return lastStringId;
+	}
+	function removeString(stringId){
+		findStringById(stringId, function(string, index, array){
+			array.splice(index, 1);
+		});
+	}
+	function lowerHarmonics(setId){
+		findSetById(setId, function(set){
+			var ratios = [];
+			set.strings.forEach(function(string){
+				ratios.push(string.multiplier);
 			});
-		},
-		
-		addString : function(setId, multiplier, volume){
-			findSetById(setId, function(set){
-				set.strings.push({
-					id : ++lastStringId,
-					multiplier : multiplier || 1,
-					volume : typeof volume !== 'undefined' ? volume : $scope.defaultVolume
-				});
-			});
-			return lastStringId;
-		},
-		removeString : function(stringId){
-			findStringById(stringId, function(string, index, array){
-				array.splice(index, 1);
-			});
-		},
-		
-		lowerHarmonics : function(setId){
-			findSetById(setId, function(set){
-				var ratios = [];
-				set.strings.forEach(function(string){
-					ratios.push(string.multiplier);
-				});
-				if(ratios.sort(function(a, b){
-					return a - b;
-				})[0] > 1){
-					set.strings.forEach(function(string){
-						string.multiplier--;
-					});
-				}
-			});
-		},
-		
-		raiseHarmonics : function(setId){
-			findSetById(setId, function(set){
-				var ratios = [];
-				set.strings.forEach(function(string){
-					ratios.push(string.multiplier);
-				});
-				if(ratios.sort(function(a, b){
-					return b - a;
-				})[0] < 100){
-					set.strings.forEach(function(string){
-						string.multiplier++;
-					});
-				}
-			});
-		},
-		
-		addPreset : function(ratio, volume){
-			var setId = $scope.addSet();
-			ratio.sort(function(a, b){
+			if(ratios.sort(function(a, b){
 				return a - b;
-			}).forEach(function(multiplier){
-				$scope.addString(setId, multiplier, volume);
+			})[0] > 1){
+				set.strings.forEach(function(string){
+					string.multiplier--;
+				});
+			}
+		});
+	}
+	function raiseHarmonics(setId){
+		findSetById(setId, function(set){
+			var ratios = [];
+			set.strings.forEach(function(string){
+				ratios.push(string.multiplier);
 			});
-		},
-		
-		_import : _import,
-		
-		updatePresets : function(data){
-			$scope.presets = data;
-			$scope.activePresetTuning = $scope.presets.tunings[0];
-		}
-	};
+			if(ratios.sort(function(a, b){
+				return b - a;
+			})[0] < 100){
+				set.strings.forEach(function(string){
+					string.multiplier++;
+				});
+			}
+		});
+	}
+	function addPreset(ratio, volume){
+		var setId = addSet();
+		ratio.sort(function(a, b){
+			return a - b;
+		}).forEach(function(multiplier){
+			addString(setId, multiplier, volume);
+		});
+	}
+	function updatePresets(data){
+		$scope.presets = data;
+		$scope.activePresetTuning = $scope.presets.tunings[0];
+	}
 	
-	window.DataModel = DataModel;
+	window.DataModel = {
+		addSet : addSet,
+		removeSet : removeSet,
+		addString : addString,
+		removeString : removeString,
+		lowerHarmonics : lowerHarmonics,
+		raiseHarmonics : raiseHarmonics,
+		addPreset : addPreset,
+		_import : _import,
+		updatePresets : updatePresets
+	};
 })();

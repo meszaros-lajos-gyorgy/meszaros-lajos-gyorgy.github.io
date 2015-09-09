@@ -15,10 +15,10 @@
 			Object.defineProperty(self, prop, {
 				enumerable : true,
 				get : function(){
-					return values[prop];
+					return JSON.parse(JSON.stringify(values[prop]));
 				},
 				set : function(newValue){
-					if(newValue !== values[prop]){
+					if(JSON.stringify(newValue) !== JSON.stringify(values[prop])){
 						var oldValue = values[prop];
 						values[prop] = newValue;
 						

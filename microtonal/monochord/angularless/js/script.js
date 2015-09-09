@@ -1,4 +1,3 @@
-/*
 (function(){
 	'use strict';
 	
@@ -21,18 +20,8 @@
 	}
 	
 	loadPresets(function(data){
-		dataModel.updatePreset(data);
+		DataModel.updatePreset(data);
 	});
+	
+	// DataModel.addPreset([3,2], 50);
 })();
-*/
-
-var $scope = new MicroScope();
-
-$scope.register('baseFrequency', 100);
-
-$scope.watch('baseFrequency', function(e){
-	console.log('newValue: ', e.newValue, ' | oldValue: ', e.oldValue);
-});
-
-$scope.baseFrequency = 100;
-$scope.baseFrequency = 102;
