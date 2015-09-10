@@ -1,36 +1,3 @@
-/*
-Todos:
-	- alternative waveforms (audioContext.createPeriodicWave()
-	- minimal design for the textarea, so that it becomes larger
-	- display Hz for every string
-	- normalize ids in _export()
-	- displaying volume numerically
-	- mainGain volume control
-	- 'assign set to key' feature (sets could be assigned to a keyboard key and sets could be played as a piano)
-	- import/export to Dave Ryan's notation/format (http://arxiv.org/ftp/arxiv/papers/1508/1508.07739.pdf)
-	
-	- method to compare sets, when ratios are getting compared (125/124 should be gained as the diff between 25/21 and 6/5)
-	- method to normalize ratios by removing unnecessary multiplications (6/3 -> 2/1)
-	- display ratio names, when a certain ratio is set (3/2 and 2/3 should trigger the displaying of 'pure fifth')
-
-Debug:
-	Firefox on Linux [ Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:38.0) Gecko/20100101 Firefox/38.0 ]
-
-Ratios:
-	https://en.wikipedia.org/wiki/List_of_pitch_intervals
-	https://en.wikipedia.org/wiki/Equal_temperament
-
-Custom waveforms:
-	http://chromium.googlecode.com/svn/trunk/samples/audio/wave-tables/
-	https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createPeriodicWave
-	https://github.com/corbanbrook/dsp.js/
-	http://stackoverflow.com/questions/24743732/arbitrary-wave-table-for-a-custom-oscillator
-	http://www.sitepoint.com/using-fourier-transforms-web-audio-api/
-
-Porting webkitAudioContext:
-	https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Porting_webkitAudioContext_code_to_standards_based_AudioContext
-*/
-
 (function(){
 	'use strict';
 	
@@ -51,7 +18,6 @@ Porting webkitAudioContext:
 	});
 	
 	app.factory('AudioService', [function(){
-		// https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Porting_webkitAudioContext_code_to_standards_based_AudioContext
 		function createContext(){
 			return new (window.AudioContext || window.webkitAudioContext)();
 		}
