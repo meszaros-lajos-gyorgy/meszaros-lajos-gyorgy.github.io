@@ -10,8 +10,7 @@
 		sets : [],
 		presets : {},
 		defaultVolume : 0,
-		_normalizeStringTargets : {},
-		rawImportData : '[{"id":3,"normalize":{"type":"off","subject":0,"target":0},"volume":100,"strings":[{"id":6,"multiplier":4,"volume":"25"},{"id":7,"multiplier":5,"volume":"50"},{"id":8,"multiplier":"6","volume":"50"}]},{"id":5,"normalize":{"type":"manual","subject":9,"target":7},"volume":100,"strings":[{"id":9,"multiplier":21,"volume":"0"},{"id":10,"multiplier":25,"volume":"50"}]}]'
+		_normalizeStringTargets : {}
 	});
 	
 	// ---------------
@@ -63,11 +62,11 @@
 		return list;
 	}
 	
-	function _import(){
+	function _import(rawImportData){
 		var raw = null;
 		
 		try{
-			raw = JSON.parse($scope.rawImportData);
+			raw = JSON.parse(rawImportData);
 		}catch(e){
 			alert('Invalid data');
 		}
@@ -75,7 +74,6 @@
 		// todo: validate
 		
 		if(raw !== null){
-			AudioModel.stopAll();
 			$scope.sets = raw;
 			
 			lastSetId = raw.reduce(function(previousValue, currentValue){
@@ -101,7 +99,7 @@
 		
 		// todo: normalize ID-s
 		
-		$scope.rawImportData = JSON.stringify(raw);
+		return JSON.stringify(raw);
 	}
 	function calculateFrequency(stringId, stack){
 		var frequency;
@@ -396,6 +394,7 @@
 		raiseHarmonics : raiseHarmonics,
 		addPreset : addPreset,
 		_import : _import,
+		_export : _export,
 		updatePresets : updatePresets
 	};
 })();
