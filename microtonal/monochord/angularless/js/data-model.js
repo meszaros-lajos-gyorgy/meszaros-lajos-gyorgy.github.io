@@ -62,45 +62,6 @@
 		return list;
 	}
 	
-	function _import(rawImportData){
-		var raw = null;
-		
-		try{
-			raw = JSON.parse(rawImportData);
-		}catch(e){
-			alert('Invalid data');
-		}
-		
-		// todo: validate
-		
-		if(raw !== null){
-			$scope.sets = raw;
-			
-			lastSetId = raw.reduce(function(previousValue, currentValue){
-				previousValue.push(currentValue.id);
-				return previousValue;
-			}, []).sort(function(a, b){
-				return b - a;
-			})[0] || 0;
-			
-			lastStringId = raw.reduce(function(previousValue, currentValue){
-				currentValue.strings.forEach(function(string){
-					previousValue.push(string.id);
-				});
-				return previousValue;
-			}, []).sort(function(a, b){
-				return b - a;
-			})[0] || 0;
-		}
-	}
-	
-	function _export(){
-		var raw = $scope.sets;
-		
-		// todo: normalize ID-s
-		
-		return JSON.stringify(raw);
-	}
 	function calculateFrequency(stringId, stack){
 		var frequency;
 		var baseFrequency;
@@ -384,6 +345,44 @@
 		$scope.presets = data;
 		$scope.activePresetTuning = $scope.presets.tunings[0];
 	}
+	function _import(rawImportData){
+		var raw = null;
+		
+		try{
+			raw = JSON.parse(rawImportData);
+		}catch(e){
+			alert('Invalid data');
+		}
+		
+		// todo: validate
+		
+		if(raw !== null){
+			$scope.sets = raw;
+			
+			lastSetId = raw.reduce(function(previousValue, currentValue){
+				previousValue.push(currentValue.id);
+				return previousValue;
+			}, []).sort(function(a, b){
+				return b - a;
+			})[0] || 0;
+			
+			lastStringId = raw.reduce(function(previousValue, currentValue){
+				currentValue.strings.forEach(function(string){
+					previousValue.push(string.id);
+				});
+				return previousValue;
+			}, []).sort(function(a, b){
+				return b - a;
+			})[0] || 0;
+		}
+	}
+	function _export(){
+		var raw = $scope.sets;
+		
+		// todo: normalize ID-s
+		
+		return JSON.stringify(raw);
+	}
 	
 	window.DataModel = {
 		addSet : addSet,
@@ -393,8 +392,9 @@
 		lowerHarmonics : lowerHarmonics,
 		raiseHarmonics : raiseHarmonics,
 		addPreset : addPreset,
+		updatePresets : updatePresets,
 		_import : _import,
 		_export : _export,
-		updatePresets : updatePresets
+		$scope : $scope
 	};
 })();

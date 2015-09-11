@@ -1,18 +1,15 @@
 (function(){
 	'use strict';
 	
-	var ctx;
 	var supported = true;
 	
 	try{
-		ctx = new AudioContext();
+		var ctx = new AudioContext();
 	}catch(e){
 		supported = false;
 	}
 	
-	var AudioModel = {
-		supported : false
-	};
+	var AudioModel;
 	
 	if(supported){
 		var oscillators = {};
@@ -92,6 +89,10 @@
 				stringGains = {};
 				setGains = {};
 			}
+		};
+	}else{
+		AudioModel = {
+			supported : false
 		};
 	}
 	
