@@ -20,5 +20,50 @@
 	
 	<input type="range" min="0" max="100" data-model="test" autocomplete="off" />
 	<input type="number" min="0" max="100" data-model="test" autocomplete="off" />
+	<textarea data-model="test"></textarea>
+	<h1 data-model="test"></h1>
+	<script>
+var $scope = new MicroScope();
+
+$scope.register('test', 11);
+
+var modelGroups = {};
+var nodes = document.querySelectorAll('[data-model]');
+[].slice.call(nodes).forEach(function(element){
+	var groupName = element.getAttribute('data-model');
+	if(!modelGroups.hasOwnProperty(groupName)){
+		modelGroups[groupName] = [];
+	}
+	modelGroups[groupName].push(element);
+	
+	if(['input', 'textarea', 'select'].indexOf(element.nodeName.toLowerCase()) !== -1){
+		element.value = $scope[groupName];
+		var onchange = function(){
+			$scope[this.getAttribute('data-model')] = this.value;
+		};
+		
+		element.addEventListener('change', onchange);
+		element.addEventListener('input', onchange);
+	}else{
+		element.textContent = $scope[groupName];
+	}
+});
+
+Object.keys(modelGroups).forEach(function(groupName){
+	$scope.$watch(groupName, function(e){
+		modelGroups[groupName].forEach(function(element){
+			if(['input', 'textarea', 'select'].indexOf(element.nodeName.toLowerCase()) !== -1){
+				element.value = e.newValue;
+			}else{
+				element.textContent = e.newValue;
+			}
+		});
+	});
+});
+
+setTimeout(function(){
+	$scope.test = 30;
+}, 1000);
+	</script>
 </body>
 </html>
