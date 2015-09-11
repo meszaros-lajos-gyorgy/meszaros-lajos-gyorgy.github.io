@@ -53,7 +53,7 @@
 					o.frequency.value = config.frequency;
 				}
 				o.connect(g);
-				o.start();
+				o.start(0);
 				
 				stringGains[stringId] = g;
 				oscillators[stringId] = o;
@@ -66,7 +66,7 @@
 				setGains[setId] = g;
 			},
 			removeString : function(stringId){
-				oscillators[stringId].stop();
+				oscillators[stringId].stop(0);
 				oscillators[stringId].disconnect();
 				delete oscillators[stringId];
 				stringGains[stringId].disconnect();
@@ -78,7 +78,7 @@
 			},
 			stopAll : function(){
 				Object.keys(oscillators).forEach(function(key){
-					oscillators[key].stop();
+					oscillators[key].stop(0);
 					oscillators[key].disconnect();
 				});
 				Object.keys(stringGains).forEach(function(key){
