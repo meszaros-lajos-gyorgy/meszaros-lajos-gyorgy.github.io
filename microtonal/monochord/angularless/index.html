@@ -14,12 +14,14 @@
 	<script src="js/micro-scope.js"></script>
 	<script src="js/data-model.js"></script>
 	<script src="js/binder.js"></script>
+	<script src="js/ui.js"></script>
 	<script src="js/script.js"></script>
 </head>
 <body>
-	<!-- <h1>The Monochord</h1> -->
+	<h1>The Monochord</h1>
 	
-	<input type="text" class="dragnumber" data-min="0" data-max="100" value="0" autocomplete="off" data-weight="10" />
+	<input data-model="asdf" type="text" class="dragnumber" data-min="0" data-max="100" value="0" autocomplete="off" data-weight="10" />
+	<h2 data-model="asdf"></h2>
 	<style>
 .dragnumber{
 	border : 0;
@@ -32,41 +34,5 @@
 	border-radius : 10px;
 }
 	</style>
-	<script>
-var input = document.querySelector('input');
-
-var listening = false;
-var startClientY;
-var startValue;
-
-input.addEventListener('focus', function(){
-	this.blur();
-});
-input.addEventListener('mousedown', function(e){
-	listening = true;
-	startClientY = e.clientY;
-	startValue = parseInt(this.value, 10) || 0;
-});
-input.addEventListener('mouseup', function(){
-	listening = false;
-});
-input.addEventListener('mousemove', function(e){
-	if(listening){
-		var weight = parseInt(this.getAttribute('data-weight'), 10);
-		if(weight <= 0){
-			weight = 1;
-		}
-		var value = Math.floor((e.clientY - startClientY) * -1 / weight) + startValue;
-		var min = parseInt(this.getAttribute('data-min'), 10);
-		var max = parseInt(this.getAttribute('data-max'), 10);
-		if(value < min){
-			value = min;
-		}else if(value > max){
-			value = max;
-		}
-		this.value = value;
-	}
-});
-	</script>
 </body>
 </html>
