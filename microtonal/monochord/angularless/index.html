@@ -17,12 +17,56 @@
 	<script src="js/script.js"></script>
 </head>
 <body>
-	<h1>The Monochord</h1>
+	<!-- <h1>The Monochord</h1> -->
 	
-	<input type="range" min="0" max="100" data-model="test" autocomplete="off" />
-	<input type="number" min="0" max="100" data-model="test" autocomplete="off" />
-	<textarea data-model="test"></textarea>
-	<input type="text" />
-	<h1 data-model="test"></h1>
+	<input type="text" class="dragnumber" data-min="0" data-max="100" value="0" autocomplete="off" data-weight="10" />
+	<style>
+.dragnumber{
+	border : 0;
+	width : 50px;
+	height : 50px;
+	background : #aaa;
+	text-align : center;
+	font-size : 20px;
+	cursor : pointer;
+	border-radius : 10px;
+}
+	</style>
+	<script>
+var input = document.querySelector('input');
+
+var listening = false;
+var startClientY;
+var startValue;
+
+input.addEventListener('focus', function(){
+	this.blur();
+});
+input.addEventListener('mousedown', function(e){
+	listening = true;
+	startClientY = e.clientY;
+	startValue = parseInt(this.value, 10) || 0;
+});
+input.addEventListener('mouseup', function(){
+	listening = false;
+});
+input.addEventListener('mousemove', function(e){
+	if(listening){
+		var weight = parseInt(this.getAttribute('data-weight'), 10);
+		if(weight <= 0){
+			weight = 1;
+		}
+		var value = Math.floor((e.clientY - startClientY) * -1 / weight) + startValue;
+		var min = parseInt(this.getAttribute('data-min'), 10);
+		var max = parseInt(this.getAttribute('data-max'), 10);
+		if(value < min){
+			value = min;
+		}else if(value > max){
+			value = max;
+		}
+		this.value = value;
+	}
+});
+	</script>
 </body>
 </html>
