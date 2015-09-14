@@ -13,6 +13,7 @@
 	<script src="js/audio-model.js"></script>
 	<script src="js/micro-scope.js"></script>
 	<script src="js/data-model.js"></script>
+	<script src="js/binder.js"></script>
 	<script src="js/script.js"></script>
 </head>
 <body>
@@ -21,55 +22,7 @@
 	<input type="range" min="0" max="100" data-model="test" autocomplete="off" />
 	<input type="number" min="0" max="100" data-model="test" autocomplete="off" />
 	<textarea data-model="test"></textarea>
+	<input type="text" />
 	<h1 data-model="test"></h1>
-	<script>
-var $scope = new MicroScope();
-
-$scope.register('test', 11);
-
-var modelGroups = {};
-var nodes = document.querySelectorAll('[data-model]');
-[].slice.call(nodes).forEach(function(element){
-	var groupName = element.getAttribute('data-model');
-	if(!modelGroups.hasOwnProperty(groupName)){
-		modelGroups[groupName] = [];
-	}
-	modelGroups[groupName].push(element);
-	
-	if(['input', 'textarea', 'select'].indexOf(element.nodeName.toLowerCase()) !== -1){
-		element.value = $scope[groupName];
-		var onchange = function(){
-			$scope[this.getAttribute('data-model')] = this.value;
-		};
-		
-		element.addEventListener('change', onchange);
-		element.addEventListener('input', onchange);
-	}else{
-		element.textContent = $scope[groupName];
-	}
-});
-
-Object.keys(modelGroups).forEach(function(groupName){
-	$scope.$watch(groupName, function(e){
-		modelGroups[groupName].forEach(function(element){
-			if(['input', 'textarea', 'select'].indexOf(element.nodeName.toLowerCase()) !== -1){
-				element.value = e.newValue;
-			}else{
-				element.textContent = e.newValue;
-			}
-		});
-	});
-});
-
-setTimeout(function(){
-	$scope.test = 30;
-}, 1000);
-
-// Future data-model elements?
-// http://www.unicodegirl.com/from-inline-events-to-addeventlistener.html
-// http://stackoverflow.com/questions/20330945/how-to-addeventlistener-to-future-dom-elements
-// http://www.quirksmode.org/js/events_advanced.html
-// catch change/input events on window, where e.target is [data-model]
-	</script>
 </body>
 </html>
