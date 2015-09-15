@@ -28,4 +28,7 @@
 			document.body.addEventListener('input', onChange, true);
 		}
 	});
+	
+	// todo: when an element in the future recieves the data-model attributes
+	// it should get the initial value according to the current scope value
 })();
