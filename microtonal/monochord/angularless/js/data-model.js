@@ -6,6 +6,7 @@
 	
 	var $scope = new MicroScope();
 	$scope.registerAll({
+		baseVolume : 100,
 		baseFrequency : 100,
 		sets : [],
 		presets : {},
