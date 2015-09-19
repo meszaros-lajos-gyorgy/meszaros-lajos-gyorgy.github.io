@@ -27,6 +27,12 @@
 						e.oldValue = oldValue;
 						
 						update(e);
+						
+						var f = new Event('__changed');
+						f.property = prop;
+						f.newValue = newValue;
+						f.oldValue = oldValue;
+						update(f);
 					}
 				}
 			});

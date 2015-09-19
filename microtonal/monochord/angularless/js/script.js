@@ -25,9 +25,12 @@
 		DataModel.updatePreset(data);
 	});
 	
+	Binder.bindScope(DataModel.$scope);
 	var ui = UI.get(DataModel.$scope);
+	Binder.initValues(ui);
+	
 	document.addEventListener('readystatechange', function(){
-		if(document.readyState === 'interactive'){
+		if(document.readyState === 'complete'){
 			document.body.appendChild(ui);
 		}
 	});

@@ -132,16 +132,18 @@
 					max : 100,
 					autocomplete : 'off',
 					'data-model' : 'defaultVolume'
+				}),
+				createElement('span', {
+					'data-model' : 'defaultVolume'
 				})
 			]),
 			createElement('br'),
 			createElement('br'),
 			
-			
 			// <label>Base frequency: <input type="number" min="1" autocomplete="off" ng-model="baseFrequency" /> Hz</label>
 			// todo: Base volume
 			createElement('br'),
-			createElement('br')
+			createElement('br'),
 		]);
 	}
 	
