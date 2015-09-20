@@ -3,7 +3,6 @@
 	
 	/*
 	<section ng-repeat="set in sets">
-		
 		<table ng-show="set.strings.length > 0" class="hidden">
 			<thead>
 			<tr>
@@ -61,20 +60,6 @@
 	
 	<br />
 	<br />
-	
-	<hr ng-show="presets.tunings" />
-	<div ng-show="presets.tunings">
-		<h3>Presets</h3>
-		
-		<br />
-		<label>Tuning: <select autocomplete="off" ng-model="activePresetTuning" ng-options="tuning.name for tuning in presets.tunings"></select></label><br />
-		<br />
-		<div ng-repeat="tuning in presets.tunings">
-			<div ng-show="tuning == activePresetTuning">
-				<button ng-repeat="ratio in tuning.ratios" ng-click="addPreset(ratio.ratio, defaultVolume)">{{ratio.name + ' (' + ratio.ratio.join(':') + ')'}}</button>
-			</div>
-		</div>
-	</div>
 	*/
 	
 	function createElement(tag, attributes, children, onReady){
@@ -112,8 +97,8 @@
 		return element;
 	}
 	
-	function get($scope){
-		return createElement('div', {'class' : 'monochord-ui'}, [
+	function generateDefaultSettings(){
+		return createElement('section', {'class' : 'defaultSettings'}, [
 			createElement('h1', {'text' : 'The Monochord'}),
 			createElement('label', {}, [
 				'Default volume for strings: ',
@@ -155,19 +140,50 @@
 				createElement('span', {'data-model' : 'baseVolume'}),
 				'/100)'
 			]),
+		]);
+	}
+	
+	function generateImportExport(){
+		return createElement('section', {'class' : 'importExport'}, [
+			createElement('h3', {text : 'Import/Export'}),
+			createElement('textarea', {'data-model' : 'rawImportData'}),
 			createElement('br'),
+			createElement('button', {
+				text : 'import',
+				'class' : 'import'
+			})
+		]);
+	}
+	
+	function generatePresetSelector(){
+		var options = []; // ng-options="tuning.name for tuning in presets.tunings"
+		return createElement('section', {'class' : 'presetSelector'}, [
+			createElement('h3', {'text' : 'Presets'}),
 			createElement('br'),
-			createElement('hr'),
-			
-			createElement('div', {}, [
-				createElement('h3', {text : 'Import/Export'}),
-				createElement('textarea', {'data-model' : 'rawImportData'}),
-				createElement('br'),
-				createElement('button', {
-					text : 'import',
-					'class' : 'import'
-				})
-			])
+			createElement('label', {}, [
+				'Tuning: ',
+				createElement('select', {
+					autocomplete : 'off',
+					'data-model' : 'activePresetTuning'
+				}, options)
+			]),
+			createElement('br'),
+			/*
+			<div ng-repeat="tuning in presets.tunings">
+				<div ng-show="tuning == activePresetTuning">
+					<button ng-repeat="ratio in tuning.ratios" ng-click="addPreset(ratio.ratio, defaultVolume)">{{ratio.name + ' (' + ratio.ratio.join(':') + ')'}}</button>
+				</div>
+			</div>
+			*/
+		]);
+	}
+	
+	function get($scope){
+		return createElement('div', {'class' : 'monochord-ui'}, [
+			generateDefaultSettings(),
+			// todo: sets
+			generatePresetSelector(),
+			generateImportExport()
 		]);
 	}
 	

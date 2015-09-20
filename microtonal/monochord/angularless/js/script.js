@@ -1,7 +1,7 @@
 (function(){
 	'use strict';
 	
-	function loadPresets(callBack){
+	function loadJSON(URL, callBack){
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function(){
 			if(xhr.readyState == 4 && xhr.status == 200){
@@ -10,7 +10,7 @@
 				}catch(e){}
 			}
 		}
-		xhr.open('GET', '../presets.json', true);
+		xhr.open('GET', URL, true);
 		xhr.send();
 	}
 	
@@ -21,13 +21,14 @@
 		return ;
 	}
 	
-	loadPresets(function(data){
-		DataModel.updatePreset(data);
+	loadJSON('../presets.json', function(data){
+		DataModel.updatePresets(data);
 	});
 	
 	Binder.bindScope(DataModel.$scope);
 	var ui = UI.get(DataModel.$scope);
 	
+	// ng-click
 	[].slice.call(ui.querySelectorAll('button.import')).forEach(function(button){
 		button.addEventListener('click', function(){
 			try{
@@ -37,6 +38,18 @@
 			}
 		})
 	});
+	
+	// ng-show
+	DataModel.$scope.$watch('presets', function(e){
+		[].slice.call(ui.querySelectorAll('section.presetSelector')).forEach(function(element){
+			element.classList[e.newValue.tunings ? 'remove' : 'add']('hidden');
+		});
+	});
+	if(!DataModel.$scope.presets.tunings){
+		[].slice.call(ui.querySelectorAll('section.presetSelector')).forEach(function(element){
+			element.classList.add('hidden');
+		});
+	}
 	
 	document.addEventListener('readystatechange', function(){
 		if(document.readyState === 'complete'){
