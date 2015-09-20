@@ -352,7 +352,7 @@
 		try{
 			raw = JSON.parse(rawImportData);
 		}catch(e){
-			alert('Invalid data');
+			throw new Error('Invalid data');
 		}
 		
 		// todo: validate
