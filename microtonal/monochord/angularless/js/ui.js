@@ -75,22 +75,9 @@
 			</div>
 		</div>
 	</div>
-	
-	<br />
-	<br />
-	
-	<hr />
-	
-	<div>
-		<h3>Import/Export</h3>
-		
-		<textarea ng-model="rawImportData"></textarea>
-		<br />
-		<button ng-click="_import()">import</button>
-	</div>
 	*/
 	
-	function createElement(tag, attributes, children){
+	function createElement(tag, attributes, children, onReady){
 		var attributes = attributes || {};
 		var children = children || [];
 		var element = document.createElement(tag);
@@ -118,6 +105,10 @@
 			element.appendChild(child);
 		});
 		
+		if(typeof onReady === 'function'){
+			onReady(element);
+		}
+		
 		return element;
 	}
 	
@@ -133,17 +124,50 @@
 					autocomplete : 'off',
 					'data-model' : 'defaultVolume'
 				}),
-				createElement('span', {
-					'data-model' : 'defaultVolume'
-				})
+				' (',
+				createElement('span', {'data-model' : 'defaultVolume'}),
+				'/100)'
 			]),
 			createElement('br'),
 			createElement('br'),
 			
-			// <label>Base frequency: <input type="number" min="1" autocomplete="off" ng-model="baseFrequency" /> Hz</label>
-			// todo: Base volume
+			createElement('label', {}, [
+				'Base frequency: ',
+				createElement('input', {
+					type : 'number',
+					min : 1,
+					autocomplete : 'off',
+					'data-model' : 'baseFrequency'
+				}),
+				' Hz'
+			]),
+			createElement('br'),
+			createElement('label', {}, [
+				'Base volume: ',
+				createElement('input', {
+					type : 'range',
+					min : 0,
+					max : 100,
+					autocomplete : 'off',
+					'data-model' : 'baseVolume'
+				}),
+				' (',
+				createElement('span', {'data-model' : 'baseVolume'}),
+				'/100)'
+			]),
 			createElement('br'),
 			createElement('br'),
+			createElement('hr'),
+			
+			createElement('div', {}, [
+				createElement('h3', {text : 'Import/Export'}),
+				createElement('textarea', {'data-model' : 'rawImportData'}),
+				createElement('br'),
+				createElement('button', {
+					text : 'import',
+					'class' : 'import'
+				})
+			])
 		]);
 	}
 	
