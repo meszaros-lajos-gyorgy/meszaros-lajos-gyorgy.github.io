@@ -17,34 +17,43 @@
 		};
 	});
 	
-	var lastStringId = 0;
-	var lastSetId = 0;
+	function loadJSON(URL, callBack){
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function(){
+			if(xhr.readyState == 4 && xhr.status == 200){
+				try{
+					callBack(JSON.parse(xhr.responseText));
+				}catch(e){}
+			}
+		}
+		xhr.open('GET', URL, true);
+		xhr.send();
+	}
 	
-	app.controller('MonochordCtrl', ['$scope', '$http', function($scope, $http){
-		/*
-		var _scope = window.DataModel.$scope;
+	app.controller('MonochordCtrl', ['$scope', function($scope){
+		var _scope = DataModel.$scope;
 		_scope.exportKeys().forEach(function(key){
 			$scope[key] = _scope[key];
+			_scope.$watch(key, function(e){
+				if($scope[key] !== e.newValue){
+					$scope[key] = e.newValue;
+					$scope.$apply();
+				}
+			});
+			$scope.$watch(key, function(newValue, oldValue){
+				if(_scope[key] !== newValue){
+					_scope[key] = newValue;
+				}
+			}, true);
+		});
+		Object.keys(DataModel).forEach(function(key){
+			if(key !== '$scope'){
+				$scope[key] = DataModel[key];
+			}
 		});
 		
-		_scope.$watch('__changed', function(e){
-			
+		loadJSON('presets.json', function(data){
+			DataModel.updatePresets(data);
 		});
-		*/
-		
-		/*
-		$scope.baseFrequency = 100;
-		$scope.baseVolume = 100;
-		$scope.sets = [];
-		$scope.presets = {};
-		$scope.defaultVolume = 0;
-		$scope._normalizeStringTargets = {};
-		$scope.rawImportData = '[{"id":3,"normalize":{"type":"off","subject":0,"target":0},"volume":100,"strings":[{"id":6,"multiplier":4,"volume":"25"},{"id":7,"multiplier":5,"volume":"50"},{"id":8,"multiplier":"6","volume":"50"}]},{"id":5,"normalize":{"type":"manual","subject":9,"target":7},"volume":100,"strings":[{"id":9,"multiplier":21,"volume":"0"},{"id":10,"multiplier":25,"volume":"50"}]}]';
-		
-		$http.get('presets.json').success(function(data){
-			$scope.presets = data;
-			$scope.activePresetTuning = $scope.presets.tunings[0];
-		});
-		*/
 	}]);
 })();
