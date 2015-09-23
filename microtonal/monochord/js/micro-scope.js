@@ -37,11 +37,14 @@
 				}
 			});
 			values[prop] = value;
-		}
+		};
 		this.registerAll = function(props){
 			Object.keys(props).forEach(function(prop){
 				self.register(prop, props[prop]);
 			});
+		};
+		this.exportKeys = function(){
+			return Object.keys(values);
 		}
 	};
 	

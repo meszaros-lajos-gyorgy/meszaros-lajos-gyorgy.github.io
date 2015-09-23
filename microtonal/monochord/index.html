@@ -9,6 +9,8 @@
 	<script src="js/lib/angular-1.4.4.min.js"></script>
 	<script src="js/webkit-audio-context-patch.js"></script>
 	<script src="js/audio-model.js"></script>
+	<script src="js/micro-scope.js"></script>
+	<script src="js/data-model.js"></script>
 	<script src="js/app.js"></script>
 </head>
 <body ng-app="Microtonal">
@@ -18,7 +20,7 @@
 			<label>Default volume for strings: <input type="range" min="0" max="100" autocomplete="off" ng-model="defaultVolume" />({{defaultVolume}}/100)</label>
 			<br />
 			<label>Base frequency: <input type="number" min="1" autocomplete="off" ng-model="baseFrequency" /> Hz</label>
-			<label>Base volume: <input type="range" min="1" autocomplete="off" ng-model="baseVolume" />({{baseVolume}}/100)</label>
+			<label>Master volume: <input type="range" min="1" autocomplete="off" ng-model="baseVolume" />({{baseVolume}}/100)</label>
 			<br />
 			<br />
 			<section ng-repeat="set in sets">

@@ -222,6 +222,11 @@
 		}
 		updateNormalizeStringTargets();
 	});
+	$scope.$watch('baseVolume', function(e){
+		if(e.newValue !== e.oldValue){
+			AudioModel.setMainVolume(e.newValue);
+		}
+	})
 	
 	$scope.$watch('sets', function(e){
 		if(e.newValue !== e.oldValue){
