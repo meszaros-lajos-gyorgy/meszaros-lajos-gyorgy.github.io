@@ -18,178 +18,7 @@
 	});
 	
 	app.factory('AudioService', [function(){
-		function createContext(){
-			return new (window.AudioContext || window.webkitAudioContext)();
-		}
-		function getDestination(ctx){
-			return ctx.destination;
-		}
-		
-		function createGain(ctx){
-			var gain;
-			try{
-				gain = ctx.createGain();
-			}catch(e){
-				gain = ctx.createGainNode();
-			}
-			return gain;
-		}
-		function connectGain(gain, connectTarget){
-			gain.connect(connectTarget);
-		}
-		function setGainValue(gain, value){
-			gain.gain.value = value;
-		}
-		function disconnectGain(gain, target){
-			if(target){
-				gain.disconnect(target);
-			}else{
-				gain.disconnect();
-			}
-		}
-		
-		function createOscillator(ctx){
-			return ctx.createOscillator();
-		}
-		function connectOscillator(oscillator, connectTarget){
-			oscillator.connect(connectTarget);
-		}
-		function setOscillatorType(oscillator, type){
-			if(!window.AudioContext){
-				switch(type){
-					case "sine" : {
-						type = oscillator.SINE;
-						break;
-					}
-					case "square" :{
-						type = oscillator.SQUARE;
-						break;
-					}
-					case "sawtooth" :{
-						type = oscillator.SAWTOOTH;
-						break;
-					}
-					case "triangle" :{
-						type = oscillator.TRIANGLE;
-						break;
-					}
-				}
-			}
-			oscillator.type = type;
-		}
-		function setOscillatorFrequency(oscillator, frequency){
-			oscillator.frequency.value = frequency;
-		}
-		function startOscillator(oscillator){
-			try{
-				oscillator.start();
-			}catch(e){
-				oscillator.noteOn(0);
-			}
-		}
-		function stopOscillator(oscillator){
-			try{
-				oscillator.stop();
-			}catch(e){
-				oscillator.noteOff();
-			}
-		}
-		function disconnectOscillator(oscillator, target){
-			if(target){
-				oscillator.disconnect(target);
-			}else{
-				oscillator.disconnect();
-			}
-		}
-		
-		
-		var ctx;
-		var oscillators = {};
-		var stringGains = {};
-		var setGains = {};
-		
-		try{
-			ctx = createContext();
-		}catch(e){
-			alert('Web Audio API is not supported by this browser.\nTo see, which browsers support the Web Audio API, visit: http://caniuse.com/#feat=audio-api');
-		}
-		
-		var mainGain = createGain(ctx);
-		connectGain(mainGain, getDestination(ctx));
-		setGainValue(mainGain, 1);
-		
-		return {
-			setString : function(stringId, config){
-				if(oscillators[stringId]){
-					if(config.frequency){
-						setOscillatorFrequency(oscillators[stringId], config.frequency);
-					}
-				}
-				if(stringGains[stringId]){
-					if(config.hasOwnProperty('volume')){
-						setGainValue(stringGains[stringId], config.volume);
-					}
-				}
-			},
-			setSet : function(setId, config){
-				if(setGains[setId]){
-					if(config.hasOwnProperty('volume')){
-						setGainValue(setGains[setId], config.volume);
-					}
-				}
-			},
-			addString : function(stringId, setId, config){
-				var g = createGain(ctx);
-				connectGain(g, setGains[setId]);
-				setGainValue(g, config.hasOwnProperty('volume') ? config.volume : 1);
-				var o = createOscillator(ctx);
-				setOscillatorType(o, 'sine'); // square|square|sawtooth|triangle|custom
-				if(config.frequency){
-					setOscillatorFrequency(o, config.frequency);
-				}
-				connectOscillator(o, g);
-				startOscillator(o);
-				
-				stringGains[stringId] = g;
-				oscillators[stringId] = o;
-			},
-			addSet : function(setId, config){
-				var g = createGain(ctx);
-				connectGain(g, mainGain);
-				setGainValue(g, config.hasOwnProperty('volume') ? config.volume : 1);
-				
-				setGains[setId] = g;
-			},
-			removeString : function(stringId){
-				stopOscillator(oscillators[stringId]);
-				disconnectOscillator(oscillators[stringId]);
-				delete oscillators[stringId];
-				disconnectGain(stringGains[stringId]);
-				delete stringGains[stringId];
-			},
-			removeSet : function(setId){
-				disconnectGain(setGains[setId]);
-				delete setGains[setId];
-			},
-			stopAll : function(){
-				Object.keys(oscillators).forEach(function(key){
-					oscillators[key].stop();
-					oscillators[key].disconnect();
-					stopOscillator(oscillators[key]);
-					disconnectOscillator(oscillators[key]);
-				});
-				Object.keys(stringGains).forEach(function(key){
-					disconnectGain(stringGains[key]);
-				});
-				Object.keys(setGains).forEach(function(key){
-					disconnectGain(setGains[key]);
-				});
-				
-				oscillators = {};
-				stringGains = {};
-				setGains = {};
-			}
-		};
+		return window.AudioModel;
 	}]);
 	
 	var lastStringId = 0;
@@ -197,6 +26,7 @@
 	
 	app.controller('MonochordCtrl', ['AudioService', '$scope', '$http', '$rootScope', '$location', function(audio, $scope, $http, $rootScope, $location){
 		$scope.baseFrequency = 100;
+		$scope.baseVolume = 100;
 		$scope.sets = [];
 		$scope.presets = {};
 		$scope.defaultVolume = 0;
@@ -512,6 +342,12 @@
 			}
 			updateNormalizeStringTargets();
 		});
+		
+		$scope.$watch('baseVolume', function(newValue, oldValue){
+			if(newValue !== oldValue){
+				audio.setMainVolume(newValue);
+			}
+		})
 		
 		$scope.$watch('sets', function(newValue, oldValue){
 			if(newValue !== oldValue){

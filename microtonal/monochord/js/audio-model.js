@@ -22,6 +22,9 @@
 		
 		AudioModel = {
 			supported : true,
+			setMainVolume : function(volume){
+				mainGain.gain.value = volume / 100;
+			},
 			setString : function(stringId, config){
 				if(oscillators[stringId]){
 					if(config.hasOwnProperty('frequency')){
