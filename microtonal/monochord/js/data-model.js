@@ -1,6 +1,7 @@
 (function(){
 	'use strict';
 	
+	/*
 	var lastStringId = 0;
 	var lastSetId = 0;
 	
@@ -403,4 +404,5 @@
 		_export : _export,
 		$scope : $scope
 	};
+	*/
 })();

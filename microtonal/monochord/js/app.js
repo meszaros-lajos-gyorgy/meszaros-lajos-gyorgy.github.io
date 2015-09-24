@@ -1,8 +1,9 @@
 (function(){
 	'use strict';
 	
-	var app = angular.module('Microtonal', []);
+	var app = angular.module('Microtonal', ['AudioModel']);
 	
+	// how to move this to a separate file?
 	app.directive('stringToNumber', function() {
 		return {
 			require: 'ngModel',
@@ -17,20 +18,11 @@
 		};
 	});
 	
-	function loadJSON(URL, callBack){
-		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function(){
-			if(xhr.readyState == 4 && xhr.status == 200){
-				try{
-					callBack(JSON.parse(xhr.responseText));
-				}catch(e){}
-			}
-		}
-		xhr.open('GET', URL, true);
-		xhr.send();
-	}
-	
-	app.controller('MonochordCtrl', ['$scope', function($scope){
+	app.controller('MonochordCtrl', ['$scope', '$http', 'audio', function($scope, $http, audio){
+		$http.get('presets.json').success(function(data){
+			// DataModel.updatePresets(data);
+		});
+		/*
 		var _scope = DataModel.$scope;
 		_scope.exportKeys().forEach(function(key){
 			$scope[key] = _scope[key];
@@ -55,5 +47,6 @@
 		loadJSON('presets.json', function(data){
 			DataModel.updatePresets(data);
 		});
+		*/
 	}]);
 })();

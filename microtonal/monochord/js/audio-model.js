@@ -99,5 +99,10 @@
 		};
 	}
 	
-	window.AudioModel = AudioModel;
+	angular
+		.module('AudioModel', [])
+		.factory('audio', function(){
+			return AudioModel;
+		})
+	;
 })();
