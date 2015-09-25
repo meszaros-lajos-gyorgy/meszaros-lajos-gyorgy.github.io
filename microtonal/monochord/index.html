@@ -10,7 +10,6 @@
 	
 	<script src="js/webkit-audio-context-patch.js"></script>
 	<script src="js/audio-model.js"></script>
-	<script src="js/data-model.js"></script>
 	<script src="js/app.js"></script>
 </head>
 <body ng-app="Microtonal">
@@ -19,7 +18,7 @@
 		<div class="component monochord">
 			<label>Default volume for strings: <input type="range" min="0" max="100" autocomplete="off" ng-model="defaultVolume" />({{defaultVolume}}/100)</label>
 			<br />
-			<label>Base frequency: <input type="number" min="1" autocomplete="off" ng-model="baseFrequency" /> Hz</label>
+			<label>Fundamental frequency: <input type="number" min="1" autocomplete="off" ng-model="baseFrequency" /> Hz</label>
 			<label>Master volume: <input type="range" min="1" autocomplete="off" ng-model="baseVolume" />({{baseVolume}}/100)</label>
 			<br />
 			<br />
@@ -59,8 +58,7 @@
 							<button ng-click="lowerHarmonics(set.id)">▼ | lower all harmonics</button>
 						</td>
 						<td>
-							<input type="range" class="freq" min="1" max="100" autocomplete="off" ng-model="string.multiplier" />
-							<input type="number" class="freq" min="1" max="100" autocomplete="off" string-to-number ng-model="string.multiplier" />
+							<dragnumber ng-model="string.multiplier" min="1" max="100" weight="10"></dragnumber>
 						</td>
 						<td rowspan="{{set.strings.length}}" ng-show="$first">
 							<button ng-click="raiseHarmonics(set.id)">▲ | raise all harmonics</button>
@@ -73,7 +71,7 @@
 				<br />
 				<button ng-click="addString(set.id)">+ | add a new string</button>
 				<button ng-click="removeSet(set.id)">x | delete this set</button>
-				<button>simplify ratios</button>
+				<!-- <button>simplify ratios</button> -->
 				<!-- <button>assign to key</button> -->
 				<br />
 				<br />
