@@ -28,6 +28,7 @@
 			},
 			template: '<input ng-model="ngModel" type="text" class="dragnumber" data-min="{{min}}" data-max="{{max}}" autocomplete="off" data-weight="{{weight}}" />',
 			controller: ['$scope', '$element', function($scope, $element){
+				// todo: make it editable, when doubleclicked, or something like that
 				var listening = false;
 				var startClientY;
 				var startValue;
@@ -37,22 +38,35 @@
 				input.addEventListener('focus', function(){
 					this.blur();
 				});
-				input.addEventListener('mousedown', function(e){
-					listening = true;
-					startClientY = e.clientY;
-					startValue = parseInt(this.value, 10) || 0;
-				});
 				
-				input.addEventListener('mouseup', function(){
+				var getY = function(e){
+					if(e.clientY){
+						return e.clientY;
+					}else if(e.targetTouches){
+						return e.targetTouches[0].clientY;
+					}
+				};
+				
+				var startHandler = function(e){
+					listening = true;
+					startClientY = getY(e);
+					startValue = parseInt(this.value, 10) || 0;
+					e.stopPropagation();
+					e.preventDefault();
+				};
+				var stopHandler = function(e){
 					listening = false;
-				});
-				input.addEventListener('mousemove', function(e){
+					e.stopPropagation();
+					e.preventDefault();
+				};
+				
+				var moveHandler = function(e){
 					if(listening){
 						var weight = parseInt(this.getAttribute('data-weight'), 10);
 						if(weight <= 0){
 							weight = 1;
 						}
-						var value = Math.floor((e.clientY - startClientY) * -1 / weight) + startValue;
+						var value = Math.floor((getY(e) - startClientY) * -1 / weight) + startValue;
 						if(this.hasAttribute('data-min')){
 							var min = parseInt(this.getAttribute('data-min'), 10);
 							if(value < min){
@@ -69,7 +83,18 @@
 							$scope.ngModel = value;
 						});
 					}
-				});
+					e.stopPropagation();
+					e.preventDefault();
+				};
+				
+				input.addEventListener('mousedown', startHandler);
+				input.addEventListener('touchstart', startHandler);
+				
+				input.addEventListener('mouseup', stopHandler);
+				input.addEventListener('touchend', stopHandler);
+				
+				input.addEventListener('mousemove', moveHandler);
+				input.addEventListener('touchmove', moveHandler);
 			}]
 		};
 	});
