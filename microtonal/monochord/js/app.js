@@ -355,6 +355,16 @@
 				
 				_export();
 				updateNormalizeStringTargets();
+				diff.sets.added.forEach(function(setId){
+					findSetById(setId, function(set){
+						set.canBeSimplified = canBeSimplified(set);
+					});
+				});
+				diff.sets.changed.forEach(function(setId){
+					findSetById(setId, function(set){
+						set.canBeSimplified = canBeSimplified(set);
+					});
+				});
 			}
 		}, true);
 		
@@ -474,23 +484,18 @@
 			return JSON.stringify(raw);
 		}
 		
-		// make simplify button show, when a set can be simplified
-		// also, make the same for lower/raise harmonics
-		function canBeSimplified(setId){
-			findSetById(setId, function(set){
-				if(set.strings.length > 1){
-					var multipliers = [];
-					set.strings.forEach(function(string){
-						multipliers.push(string.multiplier);
-					});
-					var gcd = math.greatestCommonDivisor.apply(null, multipliers);
-					if(gcd > 1){
-						set.strings.forEach(function(string){
-							string.multiplier = string.multiplier / gcd;
-						});
-					}
+		// make the same for lower/raise harmonics
+		function canBeSimplified(set){
+			if(set.strings.length > 1){
+				var multipliers = [];
+				set.strings.forEach(function(string){
+					multipliers.push(string.multiplier);
+				});
+				if(math.greatestCommonDivisor.apply(null, multipliers) > 1){
+					return true;
 				}
-			});
+			}
+			return false;
 		}
 		
 		function simplify(setId){

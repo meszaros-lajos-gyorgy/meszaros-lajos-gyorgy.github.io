@@ -70,7 +70,7 @@
 		});
 		return factors.reduce(function(previousValue, currentValue){
 			return previousValue * currentValue;
-		});
+		}, 1);
 	}
 	
 	angular

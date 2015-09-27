@@ -72,7 +72,7 @@
 				<br />
 				<button ng-click="addString(set.id)">+ | add a new string</button>
 				<button ng-click="removeSet(set.id)">x | delete this set</button>
-				<button ng-click="simplify(set.id)">simplify ratios</button>
+				<button ng-disabled="!set.canBeSimplified" ng-click="simplify(set.id)">simplify ratios</button>
 				<!-- <button>assign to key</button> -->
 				<br />
 				<br />

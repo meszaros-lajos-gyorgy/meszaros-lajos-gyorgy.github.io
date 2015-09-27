@@ -64,17 +64,6 @@ body::before{
 .component.monochord{
 	
 }
-/*
-.component.monochord input[type="range"].freq{
-	width : 80%;
-}
-.component.monochord input[type="number"].freq{
-	width : 10%;
-}
-.component.monochord input[type="range"].volume{
-	width : 90%;
-}
-*/
 .component.monochord table tr td{
 	border-left : 3px double #aaa;
 	border-right : 3px double #aaa;
@@ -114,4 +103,8 @@ body::before{
 .component button:hover{
 	background : #7088c7;
 	color : #fff;
+}
+.component button[disabled]{
+	background : #d4dbee;
+	color : #f1f2f6;
 }
