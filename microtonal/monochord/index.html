@@ -17,10 +17,12 @@
 	<h1>The Monochord</h1>
 	<div ng-controller="MonochordCtrl">
 		<div class="component monochord">
-			<label>Default volume for strings: <input type="range" min="0" max="100" autocomplete="off" ng-model="defaultVolume" />({{defaultVolume}}/100)</label>
-			<br />
 			<label>Fundamental frequency: <input type="number" min="1" autocomplete="off" ng-model="baseFrequency" /> Hz</label>
+			<br />
 			<label>Master volume: <input type="range" min="1" autocomplete="off" ng-model="baseVolume" />({{baseVolume}}/100)</label>
+			<br />
+			<br />
+			<label>Default volume for strings: <input type="range" min="0" max="100" autocomplete="off" ng-model="defaultVolume" />({{defaultVolume}}/100)</label>
 			<br />
 			<br />
 			<section ng-repeat="set in sets">
@@ -34,19 +36,20 @@
 					</tr>
 					<tr>
 						<th>
-							Type: <select autocomplete="off" ng-model="set.normalize.type">
+							<span style="font-weight:normal">Type:</span> <select autocomplete="off" ng-model="set.normalize.type">
 								<option value="off">none</option>
 								<option value="lowest">(auto) lowest harmony</option>
 								<option value="highest">(auto) highest harmony</option>
 								<option value="manual">(manual) user select</option>
-							</select>
-							Target: <select autocomplete="off" ng-model="set.normalize.target" ng-options="value.value as value.label group by value.group for value in _normalizeStringTargets[set.id]"></select>
+							</select><br />
+							<span style="font-weight:normal">Target:</span> <select autocomplete="off" ng-model="set.normalize.target" ng-options="value.value as value.label group by value.group for value in _normalizeStringTargets[set.id]"></select>
 						</th>
 						<th colspan="3">
 						</th>
 						<th>
-							<input type="range" class="master" min="0" max="100" autocomplete="off" ng-model="set.volume" />
+							<input type="range" class="master" min="0" max="100" autocomplete="off" ng-model="set.volume" /><br /><span style="font-weight:normal">({{set.volume}}/100)</span>
 						</th>
+						<th></th>
 						<th></th>
 					</tr>
 					</thead>
@@ -56,15 +59,16 @@
 							<input ng-show="set.normalize.type === 'manual'" type="radio" autocomplete="off" ng-value="string.id" ng-model="set.normalize.subject" />
 						</td>
 						<td rowspan="{{set.strings.length}}" ng-show="$first">
-							<button ng-click="lowerHarmonics(set.id)">▼ | lower all harmonics</button>
+							<button ng-disabled="!set.canLowerHarmonics" ng-click="lowerHarmonics(set.id)">▼ | lower all harmonics</button>
 						</td>
 						<td>
 							<dragnumber ng-model="string.multiplier" min="1" max="100" weight="10"></dragnumber>
 						</td>
 						<td rowspan="{{set.strings.length}}" ng-show="$first">
-							<button ng-click="raiseHarmonics(set.id)">▲ | raise all harmonics</button>
+							<button ng-disabled="!set.canRaiseHarmonics" ng-click="raiseHarmonics(set.id)">▲ | raise all harmonics</button>
 						</td>
-						<td><input type="range" class="volume" min="0" max="100" autocomplete="off" ng-model="string.volume" /></td>
+						<td><input type="range" class="volume" min="0" max="100" autocomplete="off" ng-model="string.volume" />({{string.volume}}/100)</td>
+						<td>{{(baseFrequency * string.multiplier) + 'Hz'}}</td>
 						<td><button ng-click="removeString(string.id)">x | delete this string</button></td>
 					</tr>
 					</tbody>
@@ -105,7 +109,7 @@
 				
 				<textarea ng-model="rawImportData"></textarea>
 				<br />
-				<button ng-click="_import()">import</button>
+				<button ng-click="_import(rawImportData)">import</button>
 			</div>
 		</div>
 	</div>

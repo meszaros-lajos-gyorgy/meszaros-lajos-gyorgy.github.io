@@ -108,3 +108,14 @@ body::before{
 	background : #d4dbee;
 	color : #f1f2f6;
 }
+
+.dragnumber{
+	border : 0;
+	width : 50px;
+	height : 50px;
+	background : #aaa;
+	text-align : center;
+	font-size : 20px;
+	cursor : pointer;
+	border-radius : 10px;
+}

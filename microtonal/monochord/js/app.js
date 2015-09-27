@@ -102,6 +102,8 @@
 	app.controller('MonochordCtrl', ['$scope', '$http', 'audio', 'math', function($scope, $http, AudioModel, math){
 		var lastStringId = 0;
 		var lastSetId = 0;
+		var lowestHarmonic = 1;
+		var highestHarmonic = 100;
 		
 		$scope.baseVolume = 100;
 		$scope.baseFrequency = 100;
@@ -109,6 +111,7 @@
 		$scope.presets = {};
 		$scope.defaultVolume = 0;
 		$scope._normalizeStringTargets = {};
+		$scope.rawImportData = '[{"id":3,"normalize":{"type":"off","subject":0,"target":0},"volume":100,"strings":[{"id":6,"multiplier":4,"volume":"25"},{"id":7,"multiplier":5,"volume":"50"},{"id":8,"multiplier":"6","volume":"50"}]},{"id":5,"normalize":{"type":"manual","subject":9,"target":7},"volume":100,"strings":[{"id":9,"multiplier":21,"volume":"0"},{"id":10,"multiplier":25,"volume":"50"}]}]';
 		
 		// ---------------
 		
@@ -353,16 +356,20 @@
 					});
 				});
 				
-				_export();
+				$scope.rawImportData = _export();
 				updateNormalizeStringTargets();
 				diff.sets.added.forEach(function(setId){
 					findSetById(setId, function(set){
 						set.canBeSimplified = canBeSimplified(set);
+						set.canLowerHarmonics = canLowerHarmonics(set);
+						set.canRaiseHarmonics = canRaiseHarmonics(set);
 					});
 				});
 				diff.sets.changed.forEach(function(setId){
 					findSetById(setId, function(set){
 						set.canBeSimplified = canBeSimplified(set);
+						set.canLowerHarmonics = canLowerHarmonics(set);
+						set.canRaiseHarmonics = canRaiseHarmonics(set);
 					});
 				});
 			}
@@ -403,6 +410,15 @@
 				array.splice(index, 1);
 			});
 		}
+		function canLowerHarmonics(set){
+			var ratios = [];
+			set.strings.forEach(function(string){
+				ratios.push(string.multiplier);
+			});
+			return (ratios.sort(function(a, b){
+				return a - b;
+			})[0] > lowestHarmonic);
+		}
 		function lowerHarmonics(setId){
 			findSetById(setId, function(set){
 				var ratios = [];
@@ -411,12 +427,21 @@
 				});
 				if(ratios.sort(function(a, b){
 					return a - b;
-				})[0] > 1){
+				})[0] > lowestHarmonic){
 					set.strings.forEach(function(string){
 						string.multiplier--;
 					});
 				}
 			});
+		}
+		function canRaiseHarmonics(set){
+			var ratios = [];
+			set.strings.forEach(function(string){
+				ratios.push(string.multiplier);
+			});
+			return (ratios.sort(function(a, b){
+				return b - a;
+			})[0] < highestHarmonic);
 		}
 		function raiseHarmonics(setId){
 			findSetById(setId, function(set){
@@ -426,7 +451,7 @@
 				});
 				if(ratios.sort(function(a, b){
 					return b - a;
-				})[0] < 100){
+				})[0] < highestHarmonic){
 					set.strings.forEach(function(string){
 						string.multiplier++;
 					});
@@ -477,14 +502,13 @@
 			}
 		}
 		function _export(){
-			var raw = $scope.sets;
+			var raw = angular.toJson($scope.sets);
 			
 			// todo: normalize ID-s
 			
-			return JSON.stringify(raw);
+			return raw;
 		}
 		
-		// make the same for lower/raise harmonics
 		function canBeSimplified(set){
 			if(set.strings.length > 1){
 				var multipliers = [];
