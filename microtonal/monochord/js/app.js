@@ -1,7 +1,7 @@
 (function(){
 	'use strict';
 	
-	var app = angular.module('Microtonal', ['AudioModel']);
+	var app = angular.module('Microtonal', ['AudioModel', 'Math']);
 	
 	app.directive('stringToNumber', function() {
 		return {
@@ -52,7 +52,7 @@
 					startClientY = getY(e);
 					startValue = parseInt(this.value, 10) || 0;
 					e.stopPropagation();
-					e.preventDefault();
+					// e.preventDefault();
 				};
 				var stopHandler = function(e){
 					listening = false;
@@ -99,7 +99,7 @@
 		};
 	});
 	
-	app.controller('MonochordCtrl', ['$scope', '$http', 'audio', function($scope, $http, AudioModel){
+	app.controller('MonochordCtrl', ['$scope', '$http', 'audio', 'math', function($scope, $http, AudioModel, math){
 		var lastStringId = 0;
 		var lastSetId = 0;
 		
@@ -474,6 +474,42 @@
 			return JSON.stringify(raw);
 		}
 		
+		// make simplify button show, when a set can be simplified
+		// also, make the same for lower/raise harmonics
+		function canBeSimplified(setId){
+			findSetById(setId, function(set){
+				if(set.strings.length > 1){
+					var multipliers = [];
+					set.strings.forEach(function(string){
+						multipliers.push(string.multiplier);
+					});
+					var gcd = math.greatestCommonDivisor.apply(null, multipliers);
+					if(gcd > 1){
+						set.strings.forEach(function(string){
+							string.multiplier = string.multiplier / gcd;
+						});
+					}
+				}
+			});
+		}
+		
+		function simplify(setId){
+			findSetById(setId, function(set){
+				if(set.strings.length > 1){
+					var multipliers = [];
+					set.strings.forEach(function(string){
+						multipliers.push(string.multiplier);
+					});
+					var gcd = math.greatestCommonDivisor.apply(null, multipliers);
+					if(gcd > 1){
+						set.strings.forEach(function(string){
+							string.multiplier = string.multiplier / gcd;
+						});
+					}
+				}
+			});
+		}
+		
 		$scope.addSet = addSet;
 		$scope.removeSet = removeSet;
 		$scope.addString = addString;
@@ -484,6 +520,7 @@
 		$scope.updatePresets = updatePresets;
 		$scope._import = _import;
 		$scope._export = _export;
+		$scope.simplify = simplify;
 		
 		$http.get('presets.json').success(function(data){
 			updatePresets(data);
