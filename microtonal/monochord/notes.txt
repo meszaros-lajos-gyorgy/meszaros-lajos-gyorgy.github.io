@@ -1,12 +1,9 @@
 Todos:
-	- method to normalize ratios by removing unnecessary multiplications (6/3 -> 2/1)
+	- displaying cents
 	- display ratio names, when a certain ratio is set (3/2 and 2/3 should trigger the displaying of 'pure fifth')
-	- display Hz for every string
-	- mainGain volume control
-	- alternative waveforms (audioContext.createPeriodicWave()
+	- alternative waveforms (audioContext.createPeriodicWave())
 	- minimal design for the textarea, so that it becomes larger
 	- normalize ids in _export()
-	- displaying volume numerically
 	- 'assign set to key' feature (sets could be assigned to a keyboard key and sets could be played as a piano)
 	- import/export to Dave Ryan's notation/format (http://arxiv.org/ftp/arxiv/papers/1508/1508.07739.pdf)
 	- import from .scl file or using an inline editor, general support for the scala format
@@ -26,3 +23,11 @@ Custom waveforms:
 	https://github.com/corbanbrook/dsp.js/
 	http://stackoverflow.com/questions/24743732/arbitrary-wave-table-for-a-custom-oscillator
 	http://www.sitepoint.com/using-fourier-transforms-web-audio-api/
+
+Bohlen-Pierce modes:
+	http://www.huygens-fokker.org/bpsite/modes.html
+
+Calculating cents:
+	http://www.sengpielaudio.com/calculator-centsratio.htm
+	http://kylegann.com/tuning.html
+	
