@@ -118,4 +118,5 @@ body::before{
 	font-size : 20px;
 	cursor : pointer;
 	border-radius : 10px;
+	cursor : ns-resize;
 }
