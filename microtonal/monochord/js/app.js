@@ -135,7 +135,10 @@
 		$scope.baseVolume = 100;
 		$scope.baseFrequency = 100;
 		$scope.sets = [];
-		$scope.presets = {};
+		$scope.presets = {
+			tunings : [],
+			misc : []
+		};
 		$scope.defaultVolume = 0;
 		$scope._normalizeStringTargets = {};
 		$scope.rawImportData = '[{"id":3,"normalize":{"type":"off","subject":0,"target":0},"volume":100,"strings":[{"id":6,"multiplier":4,"volume":"25"},{"id":7,"multiplier":5,"volume":"50"},{"id":8,"multiplier":"6","volume":"50"}]},{"id":5,"normalize":{"type":"manual","subject":9,"target":7},"volume":100,"strings":[{"id":9,"multiplier":21,"volume":"0"},{"id":10,"multiplier":25,"volume":"50"}]}]';
@@ -348,8 +351,8 @@
 			if(newValue !== oldValue){
 				highestHarmonic = newValue;
 				$scope.sets.forEach(function(set){
-					set.canLowerHarmonics = canLowerHarmonics(set);
-					set.canRaiseHarmonics = canRaiseHarmonics(set);
+					set._.canLowerHarmonics = canLowerHarmonics(set);
+					set._.canRaiseHarmonics = canRaiseHarmonics(set);
 				});
 			}
 		});
@@ -395,19 +398,14 @@
 				
 				$scope.rawImportData = _export();
 				updateNormalizeStringTargets();
-				diff.sets.added.forEach(function(setId){
-					findSetById(setId, function(set){
-						set.canBeSimplified = canBeSimplified(set);
-						set.canLowerHarmonics = canLowerHarmonics(set);
-						set.canRaiseHarmonics = canRaiseHarmonics(set);
-					});
-				});
-				diff.sets.changed.forEach(function(setId){
-					findSetById(setId, function(set){
-						set.canBeSimplified = canBeSimplified(set);
-						set.canLowerHarmonics = canLowerHarmonics(set);
-						set.canRaiseHarmonics = canRaiseHarmonics(set);
-					});
+				$scope.sets.forEach(function(set){
+					if(!set._){
+						set._ = {};
+					}
+					set._.canBeSimplified = canBeSimplified(set);
+					set._.canLowerHarmonics = canLowerHarmonics(set);
+					set._.canRaiseHarmonics = canRaiseHarmonics(set);
+					set._.ratioKnownAs = findKnownRatios(set);
 				});
 			}
 		}, true);
@@ -536,23 +534,30 @@
 				}, []).sort(function(a, b){
 					return b - a;
 				})[0] || 0;
+				$scope.sets._ = {};
 			}
 		}
 		function _export(){
 			var raw = angular.toJson($scope.sets);
+			
+			delete raw._;
 			
 			// todo: normalize ID-s
 			
 			return raw;
 		}
 		
+		function getMultipliers(set){
+			var multipliers = [];
+			set.strings.forEach(function(string){
+				multipliers.push(string.multiplier);
+			});
+			return multipliers;
+		}
+		
 		function canBeSimplified(set){
 			if(set.strings.length > 1){
-				var multipliers = [];
-				set.strings.forEach(function(string){
-					multipliers.push(string.multiplier);
-				});
-				if(math.greatestCommonDivisor.apply(null, multipliers) > 1){
+				if(math.greatestCommonDivisor.apply(null, getMultipliers(set)) > 1){
 					return true;
 				}
 			}
@@ -562,11 +567,7 @@
 		function simplify(setId){
 			findSetById(setId, function(set){
 				if(set.strings.length > 1){
-					var multipliers = [];
-					set.strings.forEach(function(string){
-						multipliers.push(string.multiplier);
-					});
-					var gcd = math.greatestCommonDivisor.apply(null, multipliers);
+					var gcd = math.greatestCommonDivisor.apply(null, getMultipliers(set));
 					if(gcd > 1){
 						set.strings.forEach(function(string){
 							string.multiplier = string.multiplier / gcd;
@@ -574,6 +575,15 @@
 					}
 				}
 			});
+		}
+		
+		function findKnownRatios(set){
+			var multipliers = getMultipliers(set);
+			var ratios = [];
+			
+			// todo: $scope.presets
+			
+			return ratios;
 		}
 		
 		$scope.addSet = addSet;
@@ -588,8 +598,8 @@
 		$scope._export = _export;
 		$scope.simplify = simplify;
 		
-		$http.get('presets.json').success(function(data){
-			updatePresets(data);
+		$http.get('presets.json').then(function(reply){
+			updatePresets(reply.data);
 		});
 	}]);
 })();
