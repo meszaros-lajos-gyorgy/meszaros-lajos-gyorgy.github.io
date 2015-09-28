@@ -100,6 +100,11 @@
 	});
 	
 	app.controller('MonochordCtrl', ['$scope', '$http', 'audio', 'math', function($scope, $http, AudioModel, math){
+		if(!AudioModel.supported){
+			alert('Web Audio API is not supported by this browser.\nTo see, which browsers support the Web Audio API, visit: http://caniuse.com/#feat=audio-api');
+			return ;
+		}
+		
 		var lastStringId = 0;
 		var lastSetId = 0;
 		var lowestHarmonic = 1;
