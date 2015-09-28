@@ -1,4 +1,6 @@
 Todos:
+	- allow to input Hz for strings
+	- allow to edit harmonics limit(currently 100)
 	- displaying cents
 	- display ratio names, when a certain ratio is set (3/2 and 2/3 should trigger the displaying of 'pure fifth')
 	- alternative waveforms (audioContext.createPeriodicWave())

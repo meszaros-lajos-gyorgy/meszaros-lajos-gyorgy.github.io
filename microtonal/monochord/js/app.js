@@ -26,17 +26,38 @@
 				max: '=',
 				weight: '='
 			},
-			template: '<input ng-model="ngModel" type="text" class="dragnumber" data-min="{{min}}" data-max="{{max}}" autocomplete="off" data-weight="{{weight}}" />',
+			template:
+				'<input ng-model="ngModel" type="text" class="dragnumber" data-min="{{min}}" data-max="{{max}}" autocomplete="off" data-weight="{{weight}}" />'
+				+ '<input ng-model="ngModel" type="number" class="dragnumber edit hidden" ng-min="min" ng-max="max" autocomplete="off">'
+			,
 			controller: ['$scope', '$element', function($scope, $element){
 				// todo: make it editable, when doubleclicked, or something like that
 				var listening = false;
 				var startClientY;
 				var startValue;
+				var stopClientY;
+				var editing = false;
 				
-				var input = $element[0].querySelector('input');
+				var input = $element[0].querySelector('input:not(.edit)');
+				var edit = $element[0].querySelector('input.edit');
 				
 				input.addEventListener('focus', function(){
-					this.blur();
+					input.blur();
+				});
+				input.addEventListener('click', function(){
+					if(stopClientY === startClientY){
+						input.classList.add('hidden');
+						edit.classList.remove('hidden');
+						edit.focus();
+						editing = true;
+					}
+				});
+				edit.addEventListener('blur', function(){
+					if(editing){
+						edit.classList.add('hidden');
+						input.classList.remove('hidden');
+						editing = false;
+					}
 				});
 				
 				var getY = function(e){
@@ -55,6 +76,7 @@
 					// e.preventDefault();
 				};
 				var stopHandler = function(e){
+					stopClientY = getY(e);
 					listening = false;
 					e.stopPropagation();
 					e.preventDefault();
@@ -117,6 +139,7 @@
 		$scope.defaultVolume = 0;
 		$scope._normalizeStringTargets = {};
 		$scope.rawImportData = '[{"id":3,"normalize":{"type":"off","subject":0,"target":0},"volume":100,"strings":[{"id":6,"multiplier":4,"volume":"25"},{"id":7,"multiplier":5,"volume":"50"},{"id":8,"multiplier":"6","volume":"50"}]},{"id":5,"normalize":{"type":"manual","subject":9,"target":7},"volume":100,"strings":[{"id":9,"multiplier":21,"volume":"0"},{"id":10,"multiplier":25,"volume":"50"}]}]';
+		$scope.highestHarmonic = highestHarmonic;
 		
 		// ---------------
 		
@@ -320,7 +343,12 @@
 			if(newValue !== oldValue){
 				AudioModel.setMainVolume(newValue);
 			}
-		})
+		});
+		$scope.$watch('highestHarmonic', function(newValue, oldValue){
+			if(newValue !== oldValue){
+				highestHarmonic = newValue;
+			}
+		});
 		
 		$scope.$watch('sets', function(newValue, oldValue){
 			if(newValue !== oldValue){

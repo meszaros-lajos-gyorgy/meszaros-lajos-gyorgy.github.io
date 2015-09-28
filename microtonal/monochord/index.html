@@ -17,6 +17,7 @@
 	<h1>The Monochord</h1>
 	<!-- &cent; - cent symbol -->
 	<div ng-controller="MonochordCtrl">
+		<label>Upper harmony limit<input type="number" min="0" ng-model="highestHarmonic" /></label>
 		<div class="component monochord">
 			<label>Fundamental frequency: <input type="number" min="1" autocomplete="off" ng-model="baseFrequency" /> Hz</label>
 			<br />
@@ -63,7 +64,7 @@
 							<button ng-disabled="!set.canLowerHarmonics" ng-click="lowerHarmonics(set.id)">▼ | lower all harmonics</button>
 						</td>
 						<td>
-							<dragnumber ng-model="string.multiplier" min="1" max="100" weight="10"></dragnumber>
+							<dragnumber ng-model="string.multiplier" min="1" max="highestHarmonic" weight="10"></dragnumber>
 						</td>
 						<td rowspan="{{set.strings.length}}" ng-show="$first">
 							<button ng-disabled="!set.canRaiseHarmonics" ng-click="raiseHarmonics(set.id)">▲ | raise all harmonics</button>

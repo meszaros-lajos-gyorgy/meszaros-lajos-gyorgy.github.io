@@ -109,6 +109,15 @@ body::before{
 	color : #f1f2f6;
 }
 
+/* ----------- */
+
+.dragnumber.hidden{
+	display : none;
+}
+.dragnumber.edit{
+	cursor : text;
+}
+
 .dragnumber{
 	border : 0;
 	width : 50px;
