@@ -17,7 +17,7 @@
 	<h1>The Monochord</h1>
 	<!-- &cent; - cent symbol -->
 	<div ng-controller="MonochordCtrl">
-		<label>Upper harmony limit<input type="number" min="0" ng-model="highestHarmonic" /></label>
+		<label>Upper harmony limit<input type="number" min="100" step="100" ng-model="highestHarmonic" /></label>
 		<div class="component monochord">
 			<label>Fundamental frequency: <input type="number" min="1" autocomplete="off" ng-model="baseFrequency" /> Hz</label>
 			<br />

@@ -28,7 +28,7 @@
 			},
 			template:
 				'<input ng-model="ngModel" type="text" class="dragnumber" data-min="{{min}}" data-max="{{max}}" autocomplete="off" data-weight="{{weight}}" />'
-				+ '<input ng-model="ngModel" type="number" class="dragnumber edit hidden" ng-min="min" ng-max="max" autocomplete="off">'
+				+ '<input ng-model="ngModel" type="number" class="dragnumber edit hidden" min="{{min}}" max="{{max}}" autocomplete="off">'
 			,
 			controller: ['$scope', '$element', function($scope, $element){
 				// todo: make it editable, when doubleclicked, or something like that
@@ -347,6 +347,10 @@
 		$scope.$watch('highestHarmonic', function(newValue, oldValue){
 			if(newValue !== oldValue){
 				highestHarmonic = newValue;
+				$scope.sets.forEach(function(set){
+					set.canLowerHarmonics = canLowerHarmonics(set);
+					set.canRaiseHarmonics = canRaiseHarmonics(set);
+				});
 			}
 		});
 		
