@@ -141,7 +141,7 @@
 		};
 		$scope.defaultVolume = 0;
 		$scope._normalizeStringTargets = {};
-		$scope.rawImportData = '[{"id":3,"normalize":{"type":"off","subject":0,"target":0},"volume":100,"strings":[{"id":6,"multiplier":4,"volume":"25"},{"id":7,"multiplier":5,"volume":"50"},{"id":8,"multiplier":"6","volume":"50"}]},{"id":5,"normalize":{"type":"manual","subject":9,"target":7},"volume":100,"strings":[{"id":9,"multiplier":21,"volume":"0"},{"id":10,"multiplier":25,"volume":"50"}]}]';
+		$scope.rawImportData = '[{"id":3,"normalize":{"type":"off","subject":0,"target":0},"volume":100,"strings":[{"id":6,"multiplier":4,"volume":25},{"id":7,"multiplier":5,"volume":50},{"id":8,"multiplier":6,"volume":50}]},{"id":5,"normalize":{"type":"manual","subject":9,"target":7},"volume":100,"strings":[{"id":9,"multiplier":21,"volume":0},{"id":10,"multiplier":25,"volume":50}]}]';
 		$scope.highestHarmonic = highestHarmonic;
 		
 		// ---------------
@@ -267,6 +267,18 @@
 						frequency : calculateFrequency(string.id)
 					});
 				});
+			});
+		}
+		
+		function updateFlags(){
+			$scope.sets.forEach(function(set){
+				if(!set._){
+					set._ = {};
+				}
+				set._.canBeSimplified = canBeSimplified(set);
+				set._.canLowerHarmonics = canLowerHarmonics(set);
+				set._.canRaiseHarmonics = canRaiseHarmonics(set);
+				set._.ratioKnownAs = findKnownRatios(set);
 			});
 		}
 		
@@ -398,15 +410,6 @@
 				
 				$scope.rawImportData = _export();
 				updateNormalizeStringTargets();
-				$scope.sets.forEach(function(set){
-					if(!set._){
-						set._ = {};
-					}
-					set._.canBeSimplified = canBeSimplified(set);
-					set._.canLowerHarmonics = canLowerHarmonics(set);
-					set._.canRaiseHarmonics = canRaiseHarmonics(set);
-					set._.ratioKnownAs = findKnownRatios(set);
-				});
 			}
 		}, true);
 		
@@ -534,15 +537,20 @@
 				}, []).sort(function(a, b){
 					return b - a;
 				})[0] || 0;
-				$scope.sets._ = {};
+				updateFlags();
 			}
 		}
 		function _export(){
-			var raw = angular.toJson($scope.sets);
-			
-			delete raw._;
-			
-			// todo: normalize ID-s
+			var raw = '[]';
+			try{
+				raw = JSON.parse(angular.toJson($scope.sets));
+				raw.forEach(function(set){
+					delete set._;
+				});
+				
+				// todo: normalize ID-s
+				raw = JSON.stringify(raw);
+			}catch(e){}
 			
 			return raw;
 		}

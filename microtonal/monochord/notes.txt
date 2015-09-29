@@ -1,6 +1,6 @@
 Todos:
+	- remove flags(_) from the scope of sets
 	- allow to input Hz for strings
-	- allow to edit harmonics limit(currently 100)
 	- displaying cents
 	- display ratio names, when a certain ratio is set (3/2 and 2/3 should trigger the displaying of 'pure fifth')
 	- alternative waveforms (audioContext.createPeriodicWave())
@@ -13,7 +13,8 @@ Todos:
 	- method to compare sets, when ratios are getting compared (125/124 should be gained as the diff between 25/21 and 6/5)
 
 Debug:
-	Firefox on Linux [ Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:38.0) Gecko/20100101 Firefox/38.0 ]
+	- Firefox on Linux [ Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:38.0) Gecko/20100101 Firefox/38.0 ]
+	- what should be done, when you delete a set, which is referred to by another set? (import default -> delete 4:5:6 set)?
 
 Ratios:
 	https://en.wikipedia.org/wiki/List_of_pitch_intervals
