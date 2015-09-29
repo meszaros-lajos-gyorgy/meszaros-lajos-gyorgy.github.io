@@ -26,37 +26,33 @@
 				max: '=',
 				weight: '='
 			},
-			template:
-				'<input ng-model="ngModel" type="text" class="dragnumber" data-min="{{min}}" data-max="{{max}}" autocomplete="off" data-weight="{{weight}}" />'
-				+ '<input ng-model="ngModel" type="number" class="dragnumber edit hidden" min="{{min}}" max="{{max}}" autocomplete="off">'
-			,
+			template: '<input ng-model="ngModel" type="number" class="dragnumber" min="{{min}}" max="{{max}}" autocomplete="off" data-weight="{{weight}}" />',
 			controller: ['$scope', '$element', function($scope, $element){
-				// todo: make it editable, when doubleclicked, or something like that
 				var listening = false;
 				var startClientY;
 				var startValue;
 				var stopClientY;
-				var editing = false;
 				
-				var input = $element[0].querySelector('input:not(.edit)');
-				var edit = $element[0].querySelector('input.edit');
+				var input = $element[0].querySelector('input');
 				
 				input.addEventListener('focus', function(){
-					input.blur();
+					if(!input.classList.contains('edit')){
+						input.blur();
+					}
 				});
 				input.addEventListener('click', function(){
 					if(stopClientY === startClientY){
-						input.classList.add('hidden');
-						edit.classList.remove('hidden');
-						edit.focus();
-						editing = true;
+						input.classList.add('edit');
+						input.focus();
+					}else{
+						if(!input.classList.contains('edit')){
+							input.blur();
+						}
 					}
 				});
-				edit.addEventListener('blur', function(){
-					if(editing){
-						edit.classList.add('hidden');
-						input.classList.remove('hidden');
-						editing = false;
+				input.addEventListener('blur', function(){
+					if(input.classList.contains('edit')){
+						input.classList.remove('edit');
 					}
 				});
 				
@@ -69,6 +65,9 @@
 				};
 				
 				var startHandler = function(e){
+					if(input.classList.contains('edit')){
+						return ;
+					}
 					listening = true;
 					startClientY = getY(e);
 					startValue = parseInt(this.value, 10) || 0;
@@ -76,6 +75,9 @@
 					// e.preventDefault();
 				};
 				var stopHandler = function(e){
+					if(input.classList.contains('edit')){
+						return ;
+					}
 					stopClientY = getY(e);
 					listening = false;
 					e.stopPropagation();
@@ -83,20 +85,23 @@
 				};
 				
 				var moveHandler = function(e){
+					if(input.classList.contains('edit')){
+						return ;
+					}
 					if(listening){
 						var weight = parseInt(this.getAttribute('data-weight'), 10);
-						if(weight <= 0){
+						if(isNaN(weight) || weight <= 0){
 							weight = 1;
 						}
 						var value = Math.floor((getY(e) - startClientY) * -1 / weight) + startValue;
-						if(this.hasAttribute('data-min')){
-							var min = parseInt(this.getAttribute('data-min'), 10);
+						if(this.hasAttribute('min')){
+							var min = parseInt(this.getAttribute('min'), 10);
 							if(value < min){
 								value = min;
 							}
 						}
-						if(this.hasAttribute('data-max')){
-							var max = parseInt(this.getAttribute('data-max'), 10);
+						if(this.hasAttribute('max')){
+							var max = parseInt(this.getAttribute('max'), 10);
 							if(value > max){
 								value = max;
 							}

@@ -111,14 +111,11 @@ body::before{
 
 /* ----------- */
 
-.dragnumber.hidden{
-	display : none;
-}
 .dragnumber.edit{
 	cursor : text;
 }
-
 .dragnumber{
+    -moz-appearance:textfield;
 	border : 0;
 	width : 50px;
 	height : 50px;
@@ -128,4 +125,9 @@ body::before{
 	cursor : pointer;
 	border-radius : 10px;
 	cursor : ns-resize;
+	display : inline-block;
+}
+.dragnumber::-webkit-outer-spin-button,
+.dragnumber::-webkit-inner-spin-button {
+    -webkit-appearance: none;
 }
