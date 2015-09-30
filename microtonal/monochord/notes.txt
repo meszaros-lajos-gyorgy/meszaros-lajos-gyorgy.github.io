@@ -5,7 +5,6 @@ Todos:
 	- alternative waveforms (audioContext.createPeriodicWave())
 	- minimal design for the textarea, so that it becomes larger
 	- normalize ids in _export()
-	- 'assign set to key' feature (sets could be assigned to a keyboard key and sets could be played as a piano)
 	- import/export to Dave Ryan's notation/format (http://arxiv.org/ftp/arxiv/papers/1508/1508.07739.pdf)
 	- import from .scl file or using an inline editor, general support for the scala format
 	- midi support

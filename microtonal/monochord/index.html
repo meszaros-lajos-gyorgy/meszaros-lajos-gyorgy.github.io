@@ -30,7 +30,7 @@
 			<br />
 			<section ng-repeat="set in sets">
 				<!-- {{ratioKnownAs(set)}} -->
-				<table ng-show="set.strings.length > 0" class="hidden">
+				<table ng-show="set.strings.length > 0">
 					<thead>
 					<tr>
 						<th>Normalize</th>
@@ -82,7 +82,10 @@
 				<button ng-click="addString(set.id)">+ | add a new string</button>
 				<button ng-click="removeSet(set.id)">x | delete this set</button>
 				<button ng-disabled="!canBeSimplified(set)" ng-click="simplify(set.id)">simplify ratios</button>
-				<!-- <button>assign to key</button> -->
+				
+				<button ng-disabled="!set._.selectedKey" ng-show="!isSetAssignedToKey(set.id)" ng-click="assignSetToKey(set.id, set._.selectedKey)">assign to key:</button>
+				<select ng-class="isSetAssignedToKey(set.id) ? 'hidden' : ''" ng-model="set._.selectedKey" ng-options="key as data.label disable when data.setId > 0 for (key, data) in keyAssignments"></select>
+				<button ng-show="isSetAssignedToKey(set.id)" ng-click="unassignSetFromKeys(set.id)">unassign from key <b>{{keyAssignments[getAssignedKeyOfSet(set.id)].label}}</b></button>
 				<br />
 				<br />
 			</section>

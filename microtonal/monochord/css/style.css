@@ -131,3 +131,7 @@ body::before{
 .dragnumber::-webkit-inner-spin-button {
     -webkit-appearance: none;
 }
+
+.hidden{
+	display : none;
+}

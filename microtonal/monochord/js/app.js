@@ -362,7 +362,14 @@
 			if(newValue !== oldValue){
 				var diff = diffSetsChange(newValue, oldValue);
 				
-				diff.sets.removed.forEach(AudioModel.removeSet);
+				diff.sets.removed.forEach(function(setId){
+					Object.keys($scope.keyAssignments).some(function(key){
+						if($scope.keyAssignments[key].setId === setId){
+							$scope.keyAssignments[key].setId = 0;
+						}
+					});
+					AudioModel.removeSet(setId);
+				});
 				diff.sets.added.forEach(function(setId){
 					findSetById(setId, function(set){
 						AudioModel.addSet(setId, {
@@ -580,6 +587,100 @@
 		
 		$http.get('presets.json').then(function(reply){
 			updatePresets(reply.data);
+		});
+		
+		// ------------------
+		
+		$scope.keyAssignments = {
+			65 : {label:'A',active:false,setId:0,oldVolume:null},
+			66 : {label:'B',active:false,setId:0,oldVolume:null},
+			67 : {label:'C',active:false,setId:0,oldVolume:null},
+			68 : {label:'D',active:false,setId:0,oldVolume:null},
+			69 : {label:'E',active:false,setId:0,oldVolume:null},
+			70 : {label:'F',active:false,setId:0,oldVolume:null},
+			71 : {label:'G',active:false,setId:0,oldVolume:null},
+			72 : {label:'H',active:false,setId:0,oldVolume:null},
+			73 : {label:'I',active:false,setId:0,oldVolume:null},
+			75 : {label:'J',active:false,setId:0,oldVolume:null},
+			76 : {label:'K',active:false,setId:0,oldVolume:null},
+			77 : {label:'L',active:false,setId:0,oldVolume:null},
+			78 : {label:'M',active:false,setId:0,oldVolume:null},
+			79 : {label:'N',active:false,setId:0,oldVolume:null},
+			80 : {label:'O',active:false,setId:0,oldVolume:null},
+			81 : {label:'P',active:false,setId:0,oldVolume:null},
+			82 : {label:'Q',active:false,setId:0,oldVolume:null},
+			83 : {label:'R',active:false,setId:0,oldVolume:null},
+			84 : {label:'S',active:false,setId:0,oldVolume:null},
+			85 : {label:'T',active:false,setId:0,oldVolume:null},
+			86 : {label:'U',active:false,setId:0,oldVolume:null},
+			87 : {label:'V',active:false,setId:0,oldVolume:null},
+			88 : {label:'W',active:false,setId:0,oldVolume:null},
+			89 : {label:'X',active:false,setId:0,oldVolume:null},
+			90 : {label:'Y',active:false,setId:0,oldVolume:null},
+			91 : {label:'Z',active:false,setId:0,oldVolume:null}
+		};
+		
+		function assignSetToKey(setId, keyCode){
+			if(isSetAssignedToKey(setId) !== false){
+				return ;
+			}
+			$scope.keyAssignments[keyCode].setId = setId;
+			findSetById(setId, function(set){
+				$scope.keyAssignments[keyCode].oldVolume = set.volume;
+				set.volume = 0;
+			});
+		}
+		function unassignSetFromKeys(setId){
+			Object.keys($scope.keyAssignments).some(function(key){
+				if($scope.keyAssignments[key].setId === setId){
+					findSetById(setId, function(set){
+						set.volume = $scope.keyAssignments[key].oldVolume;
+					});
+					$scope.keyAssignments[key].setId = 0;
+					return true;
+				}
+			});
+		}
+		function isSetAssignedToKey(setId){
+			return Object.keys($scope.keyAssignments).some(function(key){
+				return ($scope.keyAssignments[key].setId === setId);
+			});
+		}
+		function getAssignedKeyOfSet(setId){
+			var ret = 0;
+			Object.keys($scope.keyAssignments).some(function(key){
+				if($scope.keyAssignments[key].setId === setId){
+					ret = key;
+					return true;
+				}
+			});
+			return ret;
+		}
+		
+		$scope.assignSetToKey = assignSetToKey;
+		$scope.unassignSetFromKeys = unassignSetFromKeys;
+		$scope.isSetAssignedToKey = isSetAssignedToKey;
+		$scope.getAssignedKeyOfSet = getAssignedKeyOfSet;
+		
+		$scope.$watch('keyAssignments', function(newValue, oldValue){
+			Object.keys($scope.keyAssignments).forEach(function(key){
+				findSetById($scope.keyAssignments[key].setId, function(set){
+					set.volume = ($scope.keyAssignments[key].active ? $scope.keyAssignments[key].oldVolume : 0);
+				});
+			});
+		}, true);
+		
+		document.body.addEventListener('keydown', function(e){
+			if($scope.keyAssignments.hasOwnProperty(e.keyCode)){
+				$scope.keyAssignments[e.keyCode].active = true;
+				$scope.$apply();
+			}
+		});
+		document.body.addEventListener('keyup', function(e){
+			if($scope.keyAssignments.hasOwnProperty(e.keyCode)){
+				$scope.keyAssignments[e.keyCode].active = false;
+				$scope.$apply();
+			}
 		});
 	}]);
 })();
