@@ -1,5 +1,4 @@
 Todos:
-	- remove flags(_) from the scope of sets
 	- allow to input Hz for strings
 	- displaying cents
 	- display ratio names, when a certain ratio is set (3/2 and 2/3 should trigger the displaying of 'pure fifth')
