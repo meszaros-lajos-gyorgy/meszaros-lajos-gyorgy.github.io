@@ -275,18 +275,6 @@
 			});
 		}
 		
-		function updateFlags(){
-			$scope.sets.forEach(function(set){
-				if(!set._){
-					set._ = {};
-				}
-				set._.canBeSimplified = canBeSimplified(set);
-				set._.canLowerHarmonics = canLowerHarmonics(set);
-				set._.canRaiseHarmonics = canRaiseHarmonics(set);
-				set._.ratioKnownAs = findKnownRatios(set);
-			});
-		}
-		
 		function diffSetsChange(newValue, oldValue){
 			var sets = {
 				added : [],
@@ -367,10 +355,6 @@
 		$scope.$watch('highestHarmonic', function(newValue, oldValue){
 			if(newValue !== oldValue){
 				highestHarmonic = newValue;
-				$scope.sets.forEach(function(set){
-					set._.canLowerHarmonics = canLowerHarmonics(set);
-					set._.canRaiseHarmonics = canRaiseHarmonics(set);
-				});
 			}
 		});
 		
@@ -454,23 +438,13 @@
 			});
 		}
 		function canLowerHarmonics(set){
-			var ratios = [];
-			set.strings.forEach(function(string){
-				ratios.push(string.multiplier);
-			});
-			return (ratios.sort(function(a, b){
+			return (getMultipliers(set).sort(function(a, b){
 				return a - b;
 			})[0] > lowestHarmonic);
 		}
 		function lowerHarmonics(setId){
 			findSetById(setId, function(set){
-				var ratios = [];
-				set.strings.forEach(function(string){
-					ratios.push(string.multiplier);
-				});
-				if(ratios.sort(function(a, b){
-					return a - b;
-				})[0] > lowestHarmonic){
+				if(canLowerHarmonics(set)){
 					set.strings.forEach(function(string){
 						string.multiplier--;
 					});
@@ -478,23 +452,13 @@
 			});
 		}
 		function canRaiseHarmonics(set){
-			var ratios = [];
-			set.strings.forEach(function(string){
-				ratios.push(string.multiplier);
-			});
-			return (ratios.sort(function(a, b){
+			return (getMultipliers(set).sort(function(a, b){
 				return b - a;
 			})[0] < highestHarmonic);
 		}
 		function raiseHarmonics(setId){
 			findSetById(setId, function(set){
-				var ratios = [];
-				set.strings.forEach(function(string){
-					ratios.push(string.multiplier);
-				});
-				if(ratios.sort(function(a, b){
-					return b - a;
-				})[0] < highestHarmonic){
+				if(canRaiseHarmonics(set)){
 					set.strings.forEach(function(string){
 						string.multiplier++;
 					});
@@ -542,18 +506,15 @@
 				}, []).sort(function(a, b){
 					return b - a;
 				})[0] || 0;
-				updateFlags();
 			}
 		}
 		function _export(){
 			var raw = '[]';
 			try{
 				raw = JSON.parse(angular.toJson($scope.sets));
-				raw.forEach(function(set){
-					delete set._;
-				});
 				
 				// todo: normalize ID-s
+				
 				raw = JSON.stringify(raw);
 			}catch(e){}
 			
@@ -610,6 +571,12 @@
 		$scope._import = _import;
 		$scope._export = _export;
 		$scope.simplify = simplify;
+		$scope.calculateFrequency = calculateFrequency;
+		
+		$scope.canBeSimplified = canBeSimplified;
+		$scope.canLowerHarmonics = canLowerHarmonics;
+		$scope.canRaiseHarmonics = canRaiseHarmonics;
+		$scope.ratioKnownAs = findKnownRatios;
 		
 		$http.get('presets.json').then(function(reply){
 			updatePresets(reply.data);

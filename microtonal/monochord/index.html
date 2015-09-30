@@ -29,7 +29,7 @@
 			<br />
 			<br />
 			<section ng-repeat="set in sets">
-				<!-- {{set._.ratioKnownAs}} -->
+				<!-- {{ratioKnownAs(set)}} -->
 				<table ng-show="set.strings.length > 0" class="hidden">
 					<thead>
 					<tr>
@@ -64,16 +64,16 @@
 							<input ng-show="set.normalize.type === 'manual'" type="radio" autocomplete="off" ng-value="string.id" ng-model="set.normalize.subject" />
 						</td>
 						<td rowspan="{{set.strings.length}}" ng-show="$first">
-							<button ng-disabled="!set._.canLowerHarmonics" ng-click="lowerHarmonics(set.id)">▼ | lower all harmonics</button>
+							<button ng-disabled="!canLowerHarmonics(set)" ng-click="lowerHarmonics(set.id)">▼ | lower all harmonics</button>
 						</td>
 						<td>
 							<dragnumber ng-model="string.multiplier" min="1" max="highestHarmonic" weight="10"></dragnumber>
 						</td>
 						<td rowspan="{{set.strings.length}}" ng-show="$first">
-							<button ng-disabled="!set._.canRaiseHarmonics" ng-click="raiseHarmonics(set.id)">▲ | raise all harmonics</button>
+							<button ng-disabled="!canRaiseHarmonics(set)" ng-click="raiseHarmonics(set.id)">▲ | raise all harmonics</button>
 						</td>
 						<td><input type="range" class="volume" min="0" max="100" autocomplete="off" ng-model="string.volume" />({{string.volume}}/100)</td>
-						<td>{{(baseFrequency * string.multiplier) + 'Hz'}}</td>
+						<td>{{calculateFrequency(string.id) | number:2}} Hz</td>
 						<td><button ng-click="removeString(string.id)">x | delete this string</button></td>
 					</tr>
 					</tbody>
@@ -81,7 +81,7 @@
 				<br />
 				<button ng-click="addString(set.id)">+ | add a new string</button>
 				<button ng-click="removeSet(set.id)">x | delete this set</button>
-				<button ng-disabled="!set._.canBeSimplified" ng-click="simplify(set.id)">simplify ratios</button>
+				<button ng-disabled="!canBeSimplified(set)" ng-click="simplify(set.id)">simplify ratios</button>
 				<!-- <button>assign to key</button> -->
 				<br />
 				<br />
