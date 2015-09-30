@@ -520,6 +520,8 @@
 			try{
 				raw = JSON.parse(angular.toJson($scope.sets));
 				
+				// todo: remove temporary properties, where key is '_', it can be nested!
+				
 				// todo: normalize ID-s
 				
 				raw = JSON.stringify(raw);
