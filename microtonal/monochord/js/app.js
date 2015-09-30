@@ -601,23 +601,23 @@
 			71 : {label:'G',active:false,setId:0,oldVolume:null},
 			72 : {label:'H',active:false,setId:0,oldVolume:null},
 			73 : {label:'I',active:false,setId:0,oldVolume:null},
-			75 : {label:'J',active:false,setId:0,oldVolume:null},
-			76 : {label:'K',active:false,setId:0,oldVolume:null},
-			77 : {label:'L',active:false,setId:0,oldVolume:null},
-			78 : {label:'M',active:false,setId:0,oldVolume:null},
-			79 : {label:'N',active:false,setId:0,oldVolume:null},
-			80 : {label:'O',active:false,setId:0,oldVolume:null},
-			81 : {label:'P',active:false,setId:0,oldVolume:null},
-			82 : {label:'Q',active:false,setId:0,oldVolume:null},
-			83 : {label:'R',active:false,setId:0,oldVolume:null},
-			84 : {label:'S',active:false,setId:0,oldVolume:null},
-			85 : {label:'T',active:false,setId:0,oldVolume:null},
-			86 : {label:'U',active:false,setId:0,oldVolume:null},
-			87 : {label:'V',active:false,setId:0,oldVolume:null},
-			88 : {label:'W',active:false,setId:0,oldVolume:null},
-			89 : {label:'X',active:false,setId:0,oldVolume:null},
-			90 : {label:'Y',active:false,setId:0,oldVolume:null},
-			91 : {label:'Z',active:false,setId:0,oldVolume:null}
+			74 : {label:'J',active:false,setId:0,oldVolume:null},
+			75 : {label:'K',active:false,setId:0,oldVolume:null},
+			76 : {label:'L',active:false,setId:0,oldVolume:null},
+			77 : {label:'M',active:false,setId:0,oldVolume:null},
+			78 : {label:'N',active:false,setId:0,oldVolume:null},
+			79 : {label:'O',active:false,setId:0,oldVolume:null},
+			80 : {label:'P',active:false,setId:0,oldVolume:null},
+			81 : {label:'Q',active:false,setId:0,oldVolume:null},
+			82 : {label:'R',active:false,setId:0,oldVolume:null},
+			83 : {label:'S',active:false,setId:0,oldVolume:null},
+			84 : {label:'T',active:false,setId:0,oldVolume:null},
+			85 : {label:'U',active:false,setId:0,oldVolume:null},
+			86 : {label:'V',active:false,setId:0,oldVolume:null},
+			87 : {label:'W',active:false,setId:0,oldVolume:null},
+			88 : {label:'X',active:false,setId:0,oldVolume:null},
+			89 : {label:'Y',active:false,setId:0,oldVolume:null},
+			90 : {label:'Z',active:false,setId:0,oldVolume:null}
 		};
 		
 		function assignSetToKey(setId, keyCode){
@@ -671,13 +671,13 @@
 		}, true);
 		
 		document.body.addEventListener('keydown', function(e){
-			if($scope.keyAssignments.hasOwnProperty(e.keyCode)){
+			if($scope.keyAssignments.hasOwnProperty(e.keyCode) && !$scope.keyAssignments[e.keyCode].active){
 				$scope.keyAssignments[e.keyCode].active = true;
 				$scope.$apply();
 			}
 		});
 		document.body.addEventListener('keyup', function(e){
-			if($scope.keyAssignments.hasOwnProperty(e.keyCode)){
+			if($scope.keyAssignments.hasOwnProperty(e.keyCode) && $scope.keyAssignments[e.keyCode].active){
 				$scope.keyAssignments[e.keyCode].active = false;
 				$scope.$apply();
 			}
