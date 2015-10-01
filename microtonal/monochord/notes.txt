@@ -12,7 +12,6 @@ Todos:
 	- method to compare sets, when ratios are getting compared (125/124 should be gained as the diff between 25/21 and 6/5)
 
 Debug:
-	- Firefox on Linux [ Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:38.0) Gecko/20100101 Firefox/38.0 ]
 	- what should be done, when you delete a set, which is referred to by another set? (import default -> delete 4:5:6 set)?
 
 Ratios:

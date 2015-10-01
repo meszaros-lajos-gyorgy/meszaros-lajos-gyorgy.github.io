@@ -496,7 +496,8 @@
 			// todo: validate
 			
 			if(raw !== null){
-				$scope.sets = raw;
+				$scope.sets = raw.sets;
+				$scope.keyAssignments = raw.keys;
 				
 				lastSetId = raw.reduce(function(previousValue, currentValue){
 					previousValue.push(currentValue.id);
@@ -516,18 +517,25 @@
 			}
 		}
 		function _export(){
-			var raw = '[]';
+			var raw = {
+				sets : [],
+				keys : {}
+			};
 			try{
-				raw = JSON.parse(angular.toJson($scope.sets));
+				raw.sets = JSON.parse(angular.toJson($scope.sets));
+				raw.sets.forEach(function(set){
+					delete set._;
+				});
 				
-				// todo: remove temporary properties, where key is '_', it can be nested!
+				// todo: only export, what's needed
+				raw.keys = JSON.parse(angular.toJson($scope.keyAssignments));
+				
+				// todo: export general properties, like master volume or upper harmony limit
 				
 				// todo: normalize ID-s
-				
-				raw = JSON.stringify(raw);
 			}catch(e){}
 			
-			return raw;
+			return JSON.stringify(raw);
 		}
 		
 		function getMultipliers(set){
@@ -673,13 +681,13 @@
 		}, true);
 		
 		document.body.addEventListener('keydown', function(e){
-			if($scope.keyAssignments.hasOwnProperty(e.keyCode) && !$scope.keyAssignments[e.keyCode].active){
+			if(e.target === document.body && $scope.keyAssignments.hasOwnProperty(e.keyCode) && !$scope.keyAssignments[e.keyCode].active){
 				$scope.keyAssignments[e.keyCode].active = true;
 				$scope.$apply();
 			}
 		});
 		document.body.addEventListener('keyup', function(e){
-			if($scope.keyAssignments.hasOwnProperty(e.keyCode) && $scope.keyAssignments[e.keyCode].active){
+			if(e.target === document.body && $scope.keyAssignments.hasOwnProperty(e.keyCode) && $scope.keyAssignments[e.keyCode].active){
 				$scope.keyAssignments[e.keyCode].active = false;
 				$scope.$apply();
 			}
