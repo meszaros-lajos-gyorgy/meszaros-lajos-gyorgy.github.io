@@ -72,7 +72,6 @@
 					startClientY = getY(e);
 					startValue = parseInt(this.value, 10) || 0;
 					e.stopPropagation();
-					// e.preventDefault();
 				};
 				var stopHandler = function(e){
 					if(input.classList.contains('edit')){
@@ -135,7 +134,7 @@
 		var lastStringId = 0;
 		var lastSetId = 0;
 		var lowestHarmonic = 1;
-		var highestHarmonic = 100;
+		var highestHarmonic = 5000;
 		
 		$scope.baseVolume = 100;
 		$scope.baseFrequency = 100;
@@ -144,10 +143,7 @@
 			tunings : [],
 			misc : []
 		};
-		$scope.defaultVolume = 0;
 		$scope._normalizeStringTargets = {};
-		$scope.rawImportData = '[{"id":3,"normalize":{"type":"off","subject":0,"target":0},"volume":100,"strings":[{"id":6,"multiplier":4,"volume":25},{"id":7,"multiplier":5,"volume":50},{"id":8,"multiplier":6,"volume":50}]},{"id":5,"normalize":{"type":"manual","subject":9,"target":7},"volume":100,"strings":[{"id":9,"multiplier":21,"volume":0},{"id":10,"multiplier":25,"volume":50}]}]';
-		$scope.highestHarmonic = highestHarmonic;
 		
 		// ---------------
 		
@@ -194,67 +190,102 @@
 		
 		function calculateFrequency(stringId, stack){
 			var frequency;
-			var baseFrequency;
 			
 			findStringById(stringId, function(string, index, array, set){
-				if(set.normalize.target > 0){
-					stack = stack || [];
-					if(stack.indexOf(stringId) !== -1){
-						alert('Infinite normalization target loop! There are no sets, that normalize to the default baseFrequency!');
-						return 0;
-					}else{
-						stack.push(stringId);
-						baseFrequency = calculateFrequency(set.normalize.target, stack);
-					}
-				}else{
-					baseFrequency = $scope.baseFrequency
-				}
-				
-				if(set.normalize.type === 'off'){
-					frequency = baseFrequency * string.multiplier;
-				}else{
-					var normalizedBaseFreq;
-					
-					switch(set.normalize.type){
-						case 'lowest' : {
-							var ratios = [];
-							set.strings.forEach(function(string){
-								ratios.push(string.multiplier);
-							});
-							ratios = ratios.sort(function(a, b){
-								return a - b;
-							});
-							normalizedBaseFreq = baseFrequency / ratios[0];
-							break;
-						}
-						case 'highest' : {
-							var ratios = [];
-							set.strings.forEach(function(string){
-								ratios.push(string.multiplier);
-							});
-							ratios = ratios.sort(function(a, b){
-								return b - a;
-							});
-							normalizedBaseFreq = baseFrequency / ratios[0];
-							break;
-						}
-						case 'manual' : {
-							if(set.normalize.subject > 0){
-								findStringById(set.normalize.subject, function(string){
-									normalizedBaseFreq = baseFrequency / string.multiplier;
-								})
-							}else{
-								normalizedBaseFreq = baseFrequency;
-							}
-							break;
-						}
-					}
-					
-					frequency = normalizedBaseFreq * string.multiplier;
-				}
+				frequency = getBaseFrequency(set, stack) * string.multiplier;
 			});
 			
 			return frequency;
+		}
+		
+		function getBaseFrequency(set, stack){
+			var baseFrequency;
+			
+			if(set.normalize.target > 0){
+				stack = stack || [];
+				if(stack.indexOf(stringId) !== -1){
+					alert('Infinite normalization target loop! There are no sets, that normalize to the default baseFrequency!');
+					return 0;
+				}else{
+					stack.push(stringId);
+					baseFrequency = calculateFrequency(set.normalize.target, stack);
+				}
+			}else{
+				baseFrequency = $scope.baseFrequency
+			}
+			
+			if(set.normalize.type !== 'off'){
+				var normalizedBaseFreq;
+				
+				switch(set.normalize.type){
+					case 'lowest' : {
+						var ratios = [];
+						set.strings.forEach(function(string){
+							ratios.push(string.multiplier);
+						});
+						ratios = ratios.sort(function(a, b){
+							return a - b;
+						});
+						normalizedBaseFreq = baseFrequency / ratios[0];
+						break;
+					}
+					case 'highest' : {
+						var ratios = [];
+						set.strings.forEach(function(string){
+							ratios.push(string.multiplier);
+						});
+						ratios = ratios.sort(function(a, b){
+							return b - a;
+						});
+						normalizedBaseFreq = baseFrequency / ratios[0];
+						break;
+					}
+					case 'manual' : {
+						if(set.normalize.subject > 0){
+							findStringById(set.normalize.subject, function(string){
+								normalizedBaseFreq = baseFrequency / string.multiplier;
+							})
+						}else{
+							normalizedBaseFreq = baseFrequency;
+						}
+						break;
+					}
+				}
+				
+				baseFrequency = normalizedBaseFreq;
+			}
+			
+			return baseFrequency;
+		}
+		
+		function calculateCent(stringId){
+			var cents;
+			
+			findStringById(stringId, function(string, index, array, set){
+				var baseFrequency = getBaseFrequency(set);
+				cents = math.calculateCents(baseFrequency, baseFrequency * string.multiplier);
+			});
+			
+			return cents;
+		}
+		
+		function calculateFrequencies(set){
+			var arr = [];
+			
+			set.strings.forEach(function(string){
+				arr.push(calculateFrequency(string.id));
+			});
+			
+			return arr;
+		}
+		function calculateCents(set){
+			var arr = [];
+			
+			set.strings.forEach(function(string){
+				arr.push(calculateCent(string.id));
+			});
+			
+			return arr;
 		}
 		
 		function updateNormalizeStringTargets(){
@@ -352,11 +383,6 @@
 				AudioModel.setMainVolume(newValue);
 			}
 		});
-		$scope.$watch('highestHarmonic', function(newValue, oldValue){
-			if(newValue !== oldValue){
-				highestHarmonic = newValue;
-			}
-		});
 		
 		$scope.$watch('sets', function(newValue, oldValue){
 			if(newValue !== oldValue){
@@ -373,14 +399,14 @@
 				diff.sets.added.forEach(function(setId){
 					findSetById(setId, function(set){
 						AudioModel.addSet(setId, {
-							volume : set.volume / 100
+							volume : (set.muted ? 0 : set.volume / 100)
 						});
 					});
 				});
 				diff.sets.changed.forEach(function(setId){
 					findSetById(setId, function(set){
 						AudioModel.setSet(setId, {
-							volume : set.volume / 100
+							volume : (set.muted ? 0 : set.volume / 100)
 						});
 					});
 				});
@@ -391,7 +417,7 @@
 					findStringById(stringId, function(string, index, array, set){
 						AudioModel.addString(stringId, set.id, {
 							frequency : calculateFrequency(stringId),
-							volume : string.volume / 100
+							volume : (string.muted ? 0 : string.volume / 100)
 						});
 					});
 				});
@@ -399,19 +425,18 @@
 					findStringById(stringId, function(string){
 						AudioModel.setString(stringId, {
 							frequency : calculateFrequency(stringId),
-							volume : string.volume / 100
+							volume : (string.muted ? 0 : string.volume / 100)
 						});
 					});
 				});
 				
-				$scope.rawImportData = _export();
 				updateNormalizeStringTargets();
 			}
 		}, true);
 		
 		// ---------------
 		
-		function addSet(){
+		function addSet(volume, muted){
 			$scope.sets.push({
 				id : ++lastSetId,
 				normalize : {
@@ -419,9 +444,11 @@
 					subject : 0,
 					target : 0
 				},
-				volume : 100,
-				strings : []
+				strings : [],
+				volume : typeof volume !== 'undefined' ? volume : 100,
+				muted : typeof muted !== 'undefined' ? muted : false
 			});
+			addString(lastSetId, 1);
 			return lastSetId;
 		}
 		function removeSet(setId){
@@ -429,19 +456,24 @@
 				array.splice(index, 1);
 			});
 		}
-		function addString(setId, multiplier, volume){
+		function addString(setId, multiplier, volume, muted){
 			findSetById(setId, function(set){
 				set.strings.push({
 					id : ++lastStringId,
 					multiplier : multiplier || 1,
-					volume : typeof volume !== 'undefined' ? volume : $scope.defaultVolume
+					volume : typeof volume !== 'undefined' ? volume : 100,
+					muted : typeof muted !== 'undefined' ? muted : false
 				});
 			});
 			return lastStringId;
 		}
 		function removeString(stringId){
-			findStringById(stringId, function(string, index, array){
-				array.splice(index, 1);
+			findStringById(stringId, function(string, index, array, set){
+				if(set.strings.length === 1){
+					removeSet(set.id);
+				}else{
+					array.splice(index, 1);
+				}
 			});
 		}
 		function canLowerHarmonics(set){
@@ -472,70 +504,17 @@
 				}
 			});
 		}
-		function addPreset(ratio, volume){
+		function addPreset(ratio){
 			var setId = addSet();
 			ratio.sort(function(a, b){
 				return a - b;
 			}).forEach(function(multiplier){
-				addString(setId, multiplier, volume);
+				addString(setId, multiplier);
 			});
 		}
 		function updatePresets(data){
 			$scope.presets = data;
 			$scope.activePresetTuning = $scope.presets.tunings[0];
-		}
-		function _import(rawImportData){
-			var raw = null;
-			
-			try{
-				raw = JSON.parse(rawImportData);
-			}catch(e){
-				throw new Error('Invalid data');
-			}
-			
-			// todo: validate
-			
-			if(raw !== null){
-				$scope.sets = raw.sets;
-				$scope.keyAssignments = raw.keys;
-				
-				lastSetId = raw.reduce(function(previousValue, currentValue){
-					previousValue.push(currentValue.id);
-					return previousValue;
-				}, []).sort(function(a, b){
-					return b - a;
-				})[0] || 0;
-				
-				lastStringId = raw.reduce(function(previousValue, currentValue){
-					currentValue.strings.forEach(function(string){
-						previousValue.push(string.id);
-					});
-					return previousValue;
-				}, []).sort(function(a, b){
-					return b - a;
-				})[0] || 0;
-			}
-		}
-		function _export(){
-			var raw = {
-				sets : [],
-				keys : {}
-			};
-			try{
-				raw.sets = JSON.parse(angular.toJson($scope.sets));
-				raw.sets.forEach(function(set){
-					delete set._;
-				});
-				
-				// todo: only export, what's needed
-				raw.keys = JSON.parse(angular.toJson($scope.keyAssignments));
-				
-				// todo: export general properties, like master volume or upper harmony limit
-				
-				// todo: normalize ID-s
-			}catch(e){}
-			
-			return JSON.stringify(raw);
 		}
 		
 		function getMultipliers(set){
@@ -585,10 +564,11 @@
 		$scope.raiseHarmonics = raiseHarmonics;
 		$scope.addPreset = addPreset;
 		$scope.updatePresets = updatePresets;
-		$scope._import = _import;
-		$scope._export = _export;
 		$scope.simplify = simplify;
 		$scope.calculateFrequency = calculateFrequency;
+		$scope.calculateFrequencies = calculateFrequencies;
+		$scope.calculateCent = calculateCent;
+		$scope.calculateCents = calculateCents;
 		
 		$scope.canBeSimplified = canBeSimplified;
 		$scope.canLowerHarmonics = canLowerHarmonics;
@@ -602,32 +582,32 @@
 		// ------------------
 		
 		$scope.keyAssignments = {
-			65 : {label:'A',active:false,setId:0,oldVolume:null},
-			66 : {label:'B',active:false,setId:0,oldVolume:null},
-			67 : {label:'C',active:false,setId:0,oldVolume:null},
-			68 : {label:'D',active:false,setId:0,oldVolume:null},
-			69 : {label:'E',active:false,setId:0,oldVolume:null},
-			70 : {label:'F',active:false,setId:0,oldVolume:null},
-			71 : {label:'G',active:false,setId:0,oldVolume:null},
-			72 : {label:'H',active:false,setId:0,oldVolume:null},
-			73 : {label:'I',active:false,setId:0,oldVolume:null},
-			74 : {label:'J',active:false,setId:0,oldVolume:null},
-			75 : {label:'K',active:false,setId:0,oldVolume:null},
-			76 : {label:'L',active:false,setId:0,oldVolume:null},
-			77 : {label:'M',active:false,setId:0,oldVolume:null},
-			78 : {label:'N',active:false,setId:0,oldVolume:null},
-			79 : {label:'O',active:false,setId:0,oldVolume:null},
-			80 : {label:'P',active:false,setId:0,oldVolume:null},
-			81 : {label:'Q',active:false,setId:0,oldVolume:null},
-			82 : {label:'R',active:false,setId:0,oldVolume:null},
-			83 : {label:'S',active:false,setId:0,oldVolume:null},
-			84 : {label:'T',active:false,setId:0,oldVolume:null},
-			85 : {label:'U',active:false,setId:0,oldVolume:null},
-			86 : {label:'V',active:false,setId:0,oldVolume:null},
-			87 : {label:'W',active:false,setId:0,oldVolume:null},
-			88 : {label:'X',active:false,setId:0,oldVolume:null},
-			89 : {label:'Y',active:false,setId:0,oldVolume:null},
-			90 : {label:'Z',active:false,setId:0,oldVolume:null}
+			65 : {label:'A',active:false,setId:0},
+			66 : {label:'B',active:false,setId:0},
+			67 : {label:'C',active:false,setId:0},
+			68 : {label:'D',active:false,setId:0},
+			69 : {label:'E',active:false,setId:0},
+			70 : {label:'F',active:false,setId:0},
+			71 : {label:'G',active:false,setId:0},
+			72 : {label:'H',active:false,setId:0},
+			73 : {label:'I',active:false,setId:0},
+			74 : {label:'J',active:false,setId:0},
+			75 : {label:'K',active:false,setId:0},
+			76 : {label:'L',active:false,setId:0},
+			77 : {label:'M',active:false,setId:0},
+			78 : {label:'N',active:false,setId:0},
+			79 : {label:'O',active:false,setId:0},
+			80 : {label:'P',active:false,setId:0},
+			81 : {label:'Q',active:false,setId:0},
+			82 : {label:'R',active:false,setId:0},
+			83 : {label:'S',active:false,setId:0},
+			84 : {label:'T',active:false,setId:0},
+			85 : {label:'U',active:false,setId:0},
+			86 : {label:'V',active:false,setId:0},
+			87 : {label:'W',active:false,setId:0},
+			88 : {label:'X',active:false,setId:0},
+			89 : {label:'Y',active:false,setId:0},
+			90 : {label:'Z',active:false,setId:0}
 		};
 		
 		function assignSetToKey(setId, keyCode){
@@ -636,15 +616,14 @@
 			}
 			$scope.keyAssignments[keyCode].setId = setId;
 			findSetById(setId, function(set){
-				$scope.keyAssignments[keyCode].oldVolume = set.volume;
-				set.volume = 0;
+				set.muted = true;
 			});
 		}
 		function unassignSetFromKeys(setId){
 			Object.keys($scope.keyAssignments).some(function(key){
 				if($scope.keyAssignments[key].setId === setId){
 					findSetById(setId, function(set){
-						set.volume = $scope.keyAssignments[key].oldVolume;
+						set.muted = false;
 					});
 					$scope.keyAssignments[key].setId = 0;
 					return true;
@@ -675,7 +654,7 @@
 		$scope.$watch('keyAssignments', function(newValue, oldValue){
 			Object.keys($scope.keyAssignments).forEach(function(key){
 				findSetById($scope.keyAssignments[key].setId, function(set){
-					set.volume = ($scope.keyAssignments[key].active ? $scope.keyAssignments[key].oldVolume : 0);
+					set.muted = !$scope.keyAssignments[key].active;
 				});
 			});
 		}, true);

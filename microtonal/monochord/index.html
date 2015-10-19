@@ -15,18 +15,11 @@
 </head>
 <body ng-app="Microtonal">
 	<h1>The Monochord</h1>
-	<!-- &cent; - cent symbol -->
 	<div ng-controller="MonochordCtrl">
 		<div class="component monochord">
-			<label>Fundamental frequency: <input type="number" min="1" autocomplete="off" ng-model="baseFrequency" /> Hz</label>
+			<label>Fundamental frequency: <dragnumber min="1" ng-model="baseFrequency" width="5"></dragnumber> Hz</label>
 			<br />
 			<label>Master volume: <input type="range" min="0" autocomplete="off" ng-model="baseVolume" />({{baseVolume}}/100)</label>
-			<br />
-			<br />
-			<label>Default volume for strings: <input type="range" min="0" max="100" autocomplete="off" ng-model="defaultVolume" />({{defaultVolume}}/100)</label>
-			<br />
-			<label>Upper harmony limit<input type="number" min="100" step="100" ng-model="highestHarmonic" /></label>
-			<br />
 			<br />
 			<section ng-repeat="set in sets">
 				<!-- {{ratioKnownAs(set)}} -->
@@ -35,8 +28,7 @@
 					<tr>
 						<th>Normalize</th>
 						<th colspan="3">Harmonic of the base frequency</th>
-						<th>Volume</th>
-						<th></th>
+						<th colspan="3">Volume <em style="font-weight:normal">{{set.muted ? '(muted)' : ''}}</em></th>
 						<th></th>
 					</tr>
 					<tr>
@@ -51,7 +43,7 @@
 						</th>
 						<th colspan="3">
 						</th>
-						<th>
+						<th colspan="3">
 							<input type="range" class="master" min="0" max="100" autocomplete="off" ng-model="set.volume" /><br /><span style="font-weight:normal">({{set.volume}}/100)</span>
 						</th>
 						<th></th>
@@ -64,16 +56,39 @@
 							<input ng-show="set.normalize.type === 'manual'" type="radio" autocomplete="off" ng-value="string.id" ng-model="set.normalize.subject" />
 						</td>
 						<td rowspan="{{set.strings.length}}" ng-show="$first">
-							<button ng-disabled="!canLowerHarmonics(set)" ng-click="lowerHarmonics(set.id)">▼ | lower all harmonics</button>
+							<button ng-disabled="!canLowerHarmonics(set)" ng-click="lowerHarmonics(set.id)">▼ | lower all</button>
 						</td>
 						<td>
 							<dragnumber ng-model="string.multiplier" min="1" max="highestHarmonic" weight="10"></dragnumber>
 						</td>
 						<td rowspan="{{set.strings.length}}" ng-show="$first">
-							<button ng-disabled="!canRaiseHarmonics(set)" ng-click="raiseHarmonics(set.id)">▲ | raise all harmonics</button>
+							<button ng-disabled="!canRaiseHarmonics(set)" ng-click="raiseHarmonics(set.id)">▲ | raise all</button>
 						</td>
-						<td><input type="range" class="volume" min="0" max="100" autocomplete="off" ng-model="string.volume" />({{string.volume}}/100)</td>
-						<td>{{calculateFrequency(string.id) | number:2}} Hz</td>
+						<td>
+							<button ng-show="!string.muted" ng-click="string.muted = true">MUTE</button>
+							<button ng-show="string.muted" ng-click="string.muted = false">UNMUTE</button>
+						</td>
+						
+						<td rowspan="{{set.strings.length}}" ng-show="$first" style="text-align:right;padding:0 10px;">
+							<span ng-show="!set._.displayingCents">
+								<span ng-repeat="freq in calculateFrequencies(set) track by $index" style="display:block;line-height:55px;height:55px">
+									{{freq | number:2}} Hz
+								</span>
+							</span>
+							<span ng-show="set._.displayingCents">
+								{{cents = calculateCents(set);''}}
+								<span ng-repeat="cent in cents track by $index" style="display:block;line-height:55px;height:55px">
+									{{prev = ($index > 0 ? cents[$index - 1] : 0);''}}
+									{{diff = cent - prev;''}}
+									<span ng-show="!$first">({{(diff >= 0 ? '+' : '')}}{{diff | number:2}} &cent;)</span>{{cent | number:2}} &cent;
+								</span>
+							</span>
+						</td>
+						<td rowspan="{{set.strings.length}}" ng-show="$first">
+							<button ng-show="!set._.displayingCents" ng-click="set._.displayingCents = true">&cent;</button>
+							<button ng-show="set._.displayingCents" ng-click="set._.displayingCents = false">Hz</button>
+						</td>
+						
 						<td><button ng-click="removeString(string.id)">x | delete this string</button></td>
 					</tr>
 					</tbody>
@@ -106,18 +121,6 @@
 						<button ng-repeat="ratio in tuning.ratios" ng-click="addPreset(ratio.ratio, defaultVolume)">{{ratio.name + ' (' + ratio.ratio.join(':') + ')'}}</button>
 					</div>
 				</div>
-			</div>
-			
-			<br />
-			<br />
-			<hr />
-			
-			<div>
-				<h3>Import/Export</h3>
-				
-				<textarea ng-model="rawImportData"></textarea>
-				<br />
-				<button ng-click="_import(rawImportData)">import</button>
 			</div>
 		</div>
 	</div>

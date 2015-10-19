@@ -73,6 +73,10 @@
 		}, 1);
 	}
 	
+	function calculateCents(f1, f2){
+		return 1200 * Math.log(f2 / f1) / Math.log(2);
+	}
+	
 	angular
 		.module('Math', [])
 		.factory('math', function(){
@@ -80,7 +84,8 @@
 				isPrime : isPrime,
 				leastFactor : leastFactor,
 				getPrimeFactors : getPrimeFactors,
-				greatestCommonDivisor : greatestCommonDivisor
+				greatestCommonDivisor : greatestCommonDivisor,
+				calculateCents : calculateCents
 			};
 		})
 	;
