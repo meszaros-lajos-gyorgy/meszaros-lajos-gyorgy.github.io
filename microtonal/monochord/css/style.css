@@ -108,6 +108,9 @@ body::before{
 	background : #d4dbee;
 	color : #f1f2f6;
 }
+.component button.off{
+	background-color : #999;
+}
 
 /* ----------- */
 

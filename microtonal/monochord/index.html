@@ -23,6 +23,7 @@
 			<br />
 			<label>Master volume: <input type="range" min="0" autocomplete="off" ng-model="baseVolume" />({{baseVolume}}/100)</label>
 			<br />
+			<label>Autostack: <button ng-show="autoStack" ng-click="autoStack=false">enabled</button><button class="off" ng-show="!autoStack" ng-click="autoStack=true">disabled</button></label>
 			<br />
 			<br />
 			<section ng-repeat="set in sets">
@@ -70,7 +71,7 @@
 						</td>
 						<td>
 							<button ng-show="!string.muted" ng-click="string.muted = true">mute</button>
-							<button ng-show="string.muted" ng-click="string.muted = false">unmute</button>
+							<button ng-show="string.muted" class="off" ng-click="string.muted = false">unmute</button>
 						</td>
 						
 						<td rowspan="{{set.strings.length}}" ng-show="$first" style="text-align:right;padding:0 10px;">
