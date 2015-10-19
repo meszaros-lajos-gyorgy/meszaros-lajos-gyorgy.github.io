@@ -1,18 +1,21 @@
 Todos:
-	- complete tuning as preset(eg. 14 EDO)
-	- allow to input Hz for strings
-	- displaying cents
+	- clone set
+	- allow to input cents for strings
 	- display ratio names, when a certain ratio is set (3/2 and 2/3 should trigger the displaying of 'pure fifth')
 	- alternative waveforms (audioContext.createPeriodicWave())
-	- minimal design for the textarea, so that it becomes larger
-	- normalize ids in _export()
 	- import/export to Dave Ryan's notation/format (http://arxiv.org/ftp/arxiv/papers/1508/1508.07739.pdf)
 	- import from .scl file or using an inline editor, general support for the scala format
 	- midi support
 	- method to compare sets, when ratios are getting compared (125/124 should be gained as the diff between 25/21 and 6/5)
 
 Debug:
+	- firefox click sound bug when setting gain
+	- chrome drag problem with dragbutton
 	- what should be done, when you delete a set, which is referred to by another set? (import default -> delete 4:5:6 set)?
+
+Turning off volume more gently?:
+	- https://developer.mozilla.org/en-US/docs/Web/API/AudioParam/exponentialRampToValueAtTime
+	- https://developer.mozilla.org/en-US/docs/Web/API/AudioParam/linearRampToValueAtTime
 
 Ratios:
 	https://en.wikipedia.org/wiki/List_of_pitch_intervals
@@ -31,4 +34,3 @@ Bohlen-Pierce modes:
 Calculating cents:
 	http://www.sengpielaudio.com/calculator-centsratio.htm
 	http://kylegann.com/tuning.html
-	

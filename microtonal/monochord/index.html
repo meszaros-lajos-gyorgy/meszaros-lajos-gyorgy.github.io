@@ -2,7 +2,9 @@
 <html>
 <head>
 	<meta charset="utf-8" />
-	<title>Monochord | Microtonal Ear Training</title>
+	<title>Monochord</title>
+	
+	<meta name="viewport" content="width=device-width, user-scalable=no" />
 	
 	<link rel="stylesheet" href="css/style.css" />
 	
@@ -65,8 +67,8 @@
 							<button ng-disabled="!canRaiseHarmonics(set)" ng-click="raiseHarmonics(set.id)">▲ | raise all</button>
 						</td>
 						<td>
-							<button ng-show="!string.muted" ng-click="string.muted = true">MUTE</button>
-							<button ng-show="string.muted" ng-click="string.muted = false">UNMUTE</button>
+							<button ng-show="!string.muted" ng-click="string.muted = true">mute</button>
+							<button ng-show="string.muted" ng-click="string.muted = false">unmute</button>
 						</td>
 						
 						<td rowspan="{{set.strings.length}}" ng-show="$first" style="text-align:right;padding:0 10px;">
@@ -89,7 +91,7 @@
 							<button ng-show="set._.displayingCents" ng-click="set._.displayingCents = false">Hz</button>
 						</td>
 						
-						<td><button ng-click="removeString(string.id)">x | delete this string</button></td>
+						<td><button ng-click="removeString(string.id)">x | delete</button></td>
 					</tr>
 					</tbody>
 				</table>
