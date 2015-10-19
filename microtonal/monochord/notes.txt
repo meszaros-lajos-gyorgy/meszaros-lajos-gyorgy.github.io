@@ -1,7 +1,6 @@
 Todos:
 	- clone set
 	- allow to input cents for strings
-	- display ratio names, when a certain ratio is set (3/2 and 2/3 should trigger the displaying of 'pure fifth')
 	- alternative waveforms (audioContext.createPeriodicWave())
 	- import/export to Dave Ryan's notation/format (http://arxiv.org/ftp/arxiv/papers/1508/1508.07739.pdf)
 	- import from .scl file or using an inline editor, general support for the scala format

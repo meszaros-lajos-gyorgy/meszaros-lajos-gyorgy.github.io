@@ -513,6 +513,13 @@
 			});
 		}
 		function updatePresets(data){
+			data.tunings.forEach(function(tuning){
+				tuning.ratios.forEach(function(ratio){
+					ratio.ratio.sort(function(a, b){
+						return b - a;
+					});
+				});
+			});
 			$scope.presets = data;
 			$scope.activePresetTuning = $scope.presets.tunings[0];
 		}
@@ -548,12 +555,28 @@
 		}
 		
 		function findKnownRatios(set){
-			var multipliers = getMultipliers(set);
+			var multipliers = [];
+			set.strings.forEach(function(string){
+				if(!string.muted){
+					multipliers.push(string.multiplier);
+				}
+			});
+			multipliers.sort(function(a, b){
+				return b - a;
+			});
+			multipliers = angular.toJson(multipliers);
+			
 			var ratios = [];
 			
-			// todo: $scope.presets
+			$scope.presets.tunings.forEach(function(tuning){
+				tuning.ratios.forEach(function(ratio){
+					if(angular.toJson(ratio.ratio) === multipliers){
+						ratios.push(tuning.name + '>' + ratio.name);
+					}
+				});
+			});
 			
-			return ratios;
+			return ratios.join(', ');
 		}
 		
 		$scope.addSet = addSet;
