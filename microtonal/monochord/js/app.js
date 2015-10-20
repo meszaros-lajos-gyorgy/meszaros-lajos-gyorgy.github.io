@@ -3,20 +3,6 @@
 	
 	var app = angular.module('Microtonal', ['AudioModel', 'Math', 'DragnumberDirective']);
 	
-	app.directive('stringToNumber', function(){
-		return {
-			require: 'ngModel',
-			link: function(scope, element, attrs, ngModel) {
-				ngModel.$parsers.push(function(value) {
-					return '' + value;
-				});
-				ngModel.$formatters.push(function(value) {
-					return parseFloat(value, 10);
-				});
-			}
-		};
-	});
-	
 	app.controller('MonochordCtrl', ['$scope', '$http', 'audio', 'math', function($scope, $http, AudioModel, math){
 		if(!AudioModel.supported){
 			alert('Web Audio API is not supported by this browser.\nTo see, which browsers support the Web Audio API, visit: http://caniuse.com/#feat=audio-api');
