@@ -110,10 +110,10 @@
 							</span>
 							<span ng-show="set._.displayingCents">
 								{{cents = calculateCents(set);''}}
-								<span ng-repeat="cent in cents track by $index" style="display:block;line-height:55px;height:55px">
+								<span ng-repeat="cent in cents track by $index" style="display:block;line-height:55px;height:55px" ng-show="!$first">
 									{{prev = ($index > 0 ? cents[$index - 1] : 0);''}}
 									{{diff = cent - prev;''}}
-									<span ng-show="!$first">({{(diff >= 0 ? '+' : '')}}{{diff | number:2}} &cent;)</span>{{cent | number:2}} &cent;
+									{{(diff >= 0 ? '+' : '')}}{{diff | number:2}} &cent;
 								</span>
 							</span>
 						</td>
