@@ -368,9 +368,11 @@
 			return lastSetId;
 		}
 		function removeSet(setId){
+			/*
 			if($scope.autoStack){
 				// todo
 			}
+			*/
 			findSetById(setId, function(set, index, array){
 				array.splice(index, 1);
 			});
@@ -383,6 +385,7 @@
 					volume : typeof volume !== 'undefined' ? volume : 100,
 					muted : typeof muted !== 'undefined' ? muted : false
 				});
+				/*
 				if($scope.autoStack){
 					findStringByHarmonic(set, getLowestHarmonic(set), function(string){
 						string.muted = true;
@@ -402,6 +405,7 @@
 						});
 					});
 				}
+				*/
 			});
 			return lastStringId;
 		}
@@ -411,9 +415,11 @@
 					removeSet(set.id);
 				}else{
 					array.splice(index, 1);
+					/*
 					if($scope.autoStack){
 						// todo
 					}
+					*/
 				}
 			});
 		}
@@ -426,11 +432,25 @@
 		function canLowerHarmonics(set){
 			return getLowestHarmonic(set) > lowestHarmonic;
 		}
+		function canHalveHarmonics(set){
+			return !set.strings.some(function(string){
+				return (string.multiplier % 2 !== 0 || string.multiplier / 2 < lowestHarmonic);
+			});
+		}
 		function lowerHarmonics(setId){
 			findSetById(setId, function(set){
 				if(canLowerHarmonics(set)){
 					set.strings.forEach(function(string){
 						string.multiplier--;
+					});
+				}
+			});
+		}
+		function halveHarmonics(setId){
+			findSetById(setId, function(set){
+				if(canHalveHarmonics(set)){
+					set.strings.forEach(function(string){
+						string.multiplier /= 2;
 					});
 				}
 			});
@@ -443,11 +463,23 @@
 		function canRaiseHarmonics(set){
 			return getHighestHarmonic(set) < highestHarmonic;
 		}
+		function canDoubleHarmonics(set){
+			return (getHighestHarmonic(set) * 2 < highestHarmonic);
+		}
 		function raiseHarmonics(setId){
 			findSetById(setId, function(set){
 				if(canRaiseHarmonics(set)){
 					set.strings.forEach(function(string){
 						string.multiplier++;
+					});
+				}
+			});
+		}
+		function doubleHarmonics(setId){
+			findSetById(setId, function(set){
+				if(canDoubleHarmonics(set)){
+					set.strings.forEach(function(string){
+						string.multiplier *= 2;
 					});
 				}
 			});
@@ -534,6 +566,8 @@
 		$scope.removeString = removeString;
 		$scope.lowerHarmonics = lowerHarmonics;
 		$scope.raiseHarmonics = raiseHarmonics;
+		$scope.halveHarmonics = halveHarmonics;
+		$scope.doubleHarmonics = doubleHarmonics;
 		$scope.addPreset = addPreset;
 		$scope.updatePresets = updatePresets;
 		$scope.simplify = simplify;
@@ -545,6 +579,8 @@
 		$scope.canBeSimplified = canBeSimplified;
 		$scope.canLowerHarmonics = canLowerHarmonics;
 		$scope.canRaiseHarmonics = canRaiseHarmonics;
+		$scope.canHalveHarmonics = canHalveHarmonics;
+		$scope.canDoubleHarmonics = canDoubleHarmonics;
 		$scope.ratioKnownAs = findKnownRatios;
 		
 		$http.get('presets.json').then(function(reply){

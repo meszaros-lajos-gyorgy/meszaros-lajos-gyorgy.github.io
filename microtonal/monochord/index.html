@@ -24,7 +24,7 @@
 			<br />
 			<label>Master volume: <input type="range" min="0" autocomplete="off" ng-model="baseVolume" />({{baseVolume}}/100)</label>
 			<br />
-			<label>Autostack: <button ng-show="autoStack" ng-click="autoStack=false">enabled</button><button class="off" ng-show="!autoStack" ng-click="autoStack=true">disabled</button></label>
+			<!-- <label>Autostack: <button ng-show="autoStack" ng-click="autoStack=false">enabled</button><button class="off" ng-show="!autoStack" ng-click="autoStack=true">disabled</button></label> -->
 			<br />
 			<br />
 			<section ng-repeat="set in sets">
@@ -62,6 +62,7 @@
 							<input ng-show="set.normalize.type === 'manual'" type="radio" autocomplete="off" ng-value="string.id" ng-model="set.normalize.subject" />
 						</td>
 						<td rowspan="{{set.strings.length}}" ng-show="$first">
+							<button ng-disabled="!canHalveHarmonics(set)" ng-click="halveHarmonics(set.id)">↓ | halve all</button>
 							<button ng-disabled="!canLowerHarmonics(set)" ng-click="lowerHarmonics(set.id)">▼ | lower all</button>
 						</td>
 						<td>
@@ -69,6 +70,7 @@
 						</td>
 						<td rowspan="{{set.strings.length}}" ng-show="$first">
 							<button ng-disabled="!canRaiseHarmonics(set)" ng-click="raiseHarmonics(set.id)">▲ | raise all</button>
+							<button ng-disabled="!canDoubleHarmonics(set)" ng-click="doubleHarmonics(set.id)">↑ | double all</button>
 						</td>
 						<td>
 							<button ng-show="!string.muted" ng-click="string.muted = true">mute</button>
