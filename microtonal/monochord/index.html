@@ -25,10 +25,35 @@
 			<label>Master volume: <input type="range" min="0" autocomplete="off" ng-model="baseVolume" />({{baseVolume}}/100)</label>
 			<br />
 			<!-- <label>Autostack: <button ng-show="autoStack" ng-click="autoStack=false">enabled</button><button class="off" ng-show="!autoStack" ng-click="autoStack=true">disabled</button></label> -->
-			<br />
-			<br />
+			
+			<hr />
+			
+			<div ng-show="presets.tunings">
+				<h3>Presets</h3>
+				
+				<label>Tuning: <select autocomplete="off" ng-model="activePresetTuning" ng-options="tuning.name for tuning in presets.tunings"></select></label><br />
+				<br />
+				<div ng-repeat="tuning in presets.tunings">
+					<div ng-show="tuning == activePresetTuning">
+						<button ng-repeat="ratio in tuning.ratios" ng-click="addPreset(ratio.ratio, defaultVolume)">{{ratio.name + ' (' + ratio.ratio.join(':') + ')'}}</button>
+					</div>
+				</div>
+			</div>
+			<hr ng-show="presets.tunings" />
+			<button ng-click="addSet()">+ | add a new set</button>
+			
 			<section ng-repeat="set in sets">
-				<div>Ratio known as: <i>{{ratioKnownAs(set)}}</i></div>
+				<br />
+				<div style="text-align:right">
+					<span style="float:left;">Ratio known as: <i>{{ratioKnownAs(set)}}</i></span>
+					<button ng-click="addString(set.id)">+ | add string</button>
+					<button ng-click="removeSet(set.id)">x | delete this set</button>
+					<button ng-disabled="!canBeSimplified(set)" ng-click="simplify(set.id)">simplify ratios</button>
+					
+					<button ng-disabled="!set._.selectedKey" ng-show="!isSetAssignedToKey(set.id)" ng-click="assignSetToKey(set.id, set._.selectedKey)">assign to key:</button>
+					<select ng-class="isSetAssignedToKey(set.id) ? 'hidden' : ''" ng-model="set._.selectedKey" ng-options="key as data.label disable when data.setId > 0 for (key, data) in keyAssignments"></select>
+					<button ng-show="isSetAssignedToKey(set.id)" ng-click="unassignSetFromKeys(set.id)">unassign from key <b>{{keyAssignments[getAssignedKeyOfSet(set.id)].label}}</b></button>
+				</div>
 				<table ng-show="set.strings.length > 0">
 					<thead>
 					<tr>
@@ -101,35 +126,7 @@
 					</tr>
 					</tbody>
 				</table>
-				<br />
-				<button ng-click="addString(set.id)">+ | add a new string</button>
-				<button ng-click="removeSet(set.id)">x | delete this set</button>
-				<button ng-disabled="!canBeSimplified(set)" ng-click="simplify(set.id)">simplify ratios</button>
-				
-				<button ng-disabled="!set._.selectedKey" ng-show="!isSetAssignedToKey(set.id)" ng-click="assignSetToKey(set.id, set._.selectedKey)">assign to key:</button>
-				<select ng-class="isSetAssignedToKey(set.id) ? 'hidden' : ''" ng-model="set._.selectedKey" ng-options="key as data.label disable when data.setId > 0 for (key, data) in keyAssignments"></select>
-				<button ng-show="isSetAssignedToKey(set.id)" ng-click="unassignSetFromKeys(set.id)">unassign from key <b>{{keyAssignments[getAssignedKeyOfSet(set.id)].label}}</b></button>
-				<br />
-				<br />
 			</section>
-			<button ng-click="addSet()">+ | add a new set</button>
-			
-			<br />
-			<br />
-			
-			<hr ng-show="presets.tunings" />
-			<div ng-show="presets.tunings">
-				<h3>Presets</h3>
-				
-				<br />
-				<label>Tuning: <select autocomplete="off" ng-model="activePresetTuning" ng-options="tuning.name for tuning in presets.tunings"></select></label><br />
-				<br />
-				<div ng-repeat="tuning in presets.tunings">
-					<div ng-show="tuning == activePresetTuning">
-						<button ng-repeat="ratio in tuning.ratios" ng-click="addPreset(ratio.ratio, defaultVolume)">{{ratio.name + ' (' + ratio.ratio.join(':') + ')'}}</button>
-					</div>
-				</div>
-			</div>
 		</div>
 	</div>
 </body>
