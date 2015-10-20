@@ -157,6 +157,29 @@
 			});
 		}
 		
+		function findPreviousSet(setId, run){
+			var prevSet = null;
+			$scope.sets.some(function(set){
+				if(set.id === setId && prevSet !== null){
+					run(prevSet);
+					return true;
+				}else{
+					prevSet = set;
+				}
+			});
+		}
+		function findNextSet(setId, run){
+			var prevSet = null;
+			$scope.sets.some(function(set){
+				if(prevSet !== null && prevSet.id === setId){
+					run(set);
+					return true;
+				}else{
+					prevSet = set;
+				}
+			});
+		}
+		
 		function findStringById(stringId, run){
 			$scope.sets.some(function(set){
 				return set.strings.some(function(string, index, array){
@@ -167,6 +190,16 @@
 				});
 			});
 		}
+		
+		function findStringByHarmonic(set, harmonic, run){
+			set.strings.some(function(string, index, array){
+				if(string.multiplier === harmonic){
+					run(string, index, array, set);
+					return true;
+				}
+			});
+		}
+		
 		function getNormalizeStringTargets(excludedSetId){
 			var list = [{
 				label : 'Base frequency (' + $scope.baseFrequency + ' Hz)',
@@ -371,18 +404,6 @@
 			};
 		}
 		
-		function getPreviousSetId(setId){
-			var prevSetId = 0;
-			$scope.sets.some(function(set){
-				if(set.id === setId){
-					return true;
-				}else{
-					prevSetId = set.id;
-				}
-			});
-			return prevSetId;
-		}
-		
 		// ---------------
 		
 		$scope.$watch('baseFrequency', function(newValue, oldValue){
@@ -449,6 +470,8 @@
 		
 		// ---------------
 		
+		
+		
 		function addSet(volume, muted, dontAddString){
 			$scope.sets.push({
 				id : ++lastSetId,
@@ -483,27 +506,21 @@
 					muted : typeof muted !== 'undefined' ? muted : false
 				});
 				if($scope.autoStack){
-					var lowest = getMultipliers(set).sort(function(a, b){
-						return a - b;
-					})[0];
-					set.strings.some(function(string){
-						if(string.multiplier === lowest){
-							string.muted = true;
-							return true;
-						}
+					findStringByHarmonic(set, getLowestHarmonic(set), function(string){
+						string.muted = true;
 					});
 					
 					set.normalize.type = 'lowest';
 					
-					findSetById(getPreviousSetId(setId), function(_set){
-						var highest = getMultipliers(_set).sort(function(a, b){
-							return b - a;
-						})[0];
-						_set.strings.some(function(string){
-							if(string.multiplier === highest){
-								set.normalize.target = string.id;
-								return true;
-							}
+					findPreviousSet(setId, function(_set){
+						findStringByHarmonic(_set, getHighestHarmonic(_set), function(string){
+							set.normalize.target = string.id;
+						});
+					})
+					
+					findNextSet(setId, function(_set){
+						findStringByHarmonic(set, getHighestHarmonic(set), function(string){
+							_set.normalize.target = string.id;
 						});
 					});
 				}
@@ -511,21 +528,25 @@
 			return lastStringId;
 		}
 		function removeString(stringId){
-			if($scope.autoStack){
-				// todo
-			}
 			findStringById(stringId, function(string, index, array, set){
 				if(set.strings.length === 1){
 					removeSet(set.id);
 				}else{
 					array.splice(index, 1);
+					if($scope.autoStack){
+						// todo
+					}
 				}
 			});
 		}
-		function canLowerHarmonics(set){
-			return (getMultipliers(set).sort(function(a, b){
+		
+		function getLowestHarmonic(set){
+			return getMultipliers(set).sort(function(a, b){
 				return a - b;
-			})[0] > lowestHarmonic);
+			})[0];
+		}
+		function canLowerHarmonics(set){
+			return getLowestHarmonic(set) > lowestHarmonic;
 		}
 		function lowerHarmonics(setId){
 			findSetById(setId, function(set){
@@ -536,10 +557,13 @@
 				}
 			});
 		}
-		function canRaiseHarmonics(set){
-			return (getMultipliers(set).sort(function(a, b){
+		function getHighestHarmonic(set){
+			return getMultipliers(set).sort(function(a, b){
 				return b - a;
-			})[0] < highestHarmonic);
+			})[0];
+		}
+		function canRaiseHarmonics(set){
+			return getHighestHarmonic(set) < highestHarmonic;
 		}
 		function raiseHarmonics(setId){
 			findSetById(setId, function(set){
@@ -552,6 +576,7 @@
 		}
 		function addPreset(ratio){
 			var setId = addSet(undefined, undefined, true);
+			var ratio = ratio.slice(0);
 			ratio.sort(function(a, b){
 				return a - b;
 			}).forEach(function(multiplier){
