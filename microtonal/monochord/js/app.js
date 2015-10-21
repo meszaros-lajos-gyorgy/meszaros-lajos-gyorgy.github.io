@@ -22,7 +22,8 @@
 			misc : []
 		};
 		$scope._normalizeStringTargets = {};
-		$scope.autoStack = false;
+		$scope.stringToEdit = {};
+		// $scope.autoStack = false;
 		
 		// ---------------
 		
@@ -484,6 +485,19 @@
 				}
 			});
 		}
+		function canLowerString(string){
+			return string.multiplier > lowestHarmonic;
+		}
+		function lowerString(string){
+			string.multiplier--;
+		}
+		function canRaiseString(string){
+			return string.multiplier < highestHarmonic;
+		}
+		function raiseString(string){
+			string.multiplier++;
+		}
+		
 		function addPreset(ratio){
 			var setId = addSet(undefined, undefined, true);
 			var ratio = ratio.slice(0);
@@ -560,6 +574,10 @@
 			return ratios.join(', ');
 		}
 		
+		function setStringToEdit(string){
+			$scope.stringToEdit = string;
+		}
+		
 		$scope.addSet = addSet;
 		$scope.removeSet = removeSet;
 		$scope.addString = addString;
@@ -582,6 +600,11 @@
 		$scope.canHalveHarmonics = canHalveHarmonics;
 		$scope.canDoubleHarmonics = canDoubleHarmonics;
 		$scope.ratioKnownAs = findKnownRatios;
+		$scope.setStringToEdit = setStringToEdit;
+		$scope.canLowerString = canLowerString;
+		$scope.lowerString = lowerString;
+		$scope.canRaiseString = canRaiseString;
+		$scope.raiseString = raiseString;
 		
 		$http.get('presets.json').then(function(reply){
 			updatePresets(reply.data);

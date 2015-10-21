@@ -1,4 +1,5 @@
 Todos:
+	- on mobile, the app should go fullscreen
 	- clone set
 	- allow to input cents for strings
 	- alternative waveforms (audioContext.createPeriodicWave())
