@@ -1,7 +1,7 @@
 (function(){
 	'use strict';
 	
-	var app = angular.module('Microtonal', ['AudioModel', 'Math', 'DragnumberDirective']);
+	var app = angular.module('Microtonal', ['AudioModel', 'Math', 'DragnumberDirective', 'HoldclickDirective']);
 	
 	app.controller('MonochordCtrl', ['$scope', '$http', 'audio', 'math', function($scope, $http, AudioModel, math){
 		if(!AudioModel.supported){
