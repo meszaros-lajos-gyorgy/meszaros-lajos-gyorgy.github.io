@@ -14,11 +14,13 @@
 				var startHandler = function(e){
 					over = true;
 					
-					$element.triggerHandler('click');
+					if(!$element[0].disabled){
+						$element.triggerHandler('click');
+					}
 					
 					firstPeriod = setTimeout(function(){
 						secondPeriod = setInterval(function(){
-							if(over){
+							if(over && !$element[0].disabled){
 								$element.triggerHandler('click');
 							}
 						}, 50);
