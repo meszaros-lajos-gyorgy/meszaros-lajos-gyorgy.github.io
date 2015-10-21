@@ -17,11 +17,11 @@
 					$element.triggerHandler('click');
 					
 					firstPeriod = setTimeout(function(){
-						if(over){
-							secondPeriod = setInterval(function(){
+						secondPeriod = setInterval(function(){
+							if(over){
 								$element.triggerHandler('click');
-							}, 50);
-						}
+							}
+						}, 50);
 					}, 700);
 					
 					e.stopPropagation();
@@ -36,9 +36,6 @@
 						clearInterval(secondPeriod);
 						secondPeriod = null;
 					}
-					
-					e.stopPropagation();
-					e.preventDefault();
 				};
 				
 				var moveHandler = function(e){
@@ -52,8 +49,8 @@
 				$element[0].addEventListener('mousedown', startHandler);
 				$element[0].addEventListener('touchstart', startHandler);
 				
-				$element[0].addEventListener('mouseup', stopHandler);
-				$element[0].addEventListener('touchend', stopHandler);
+				window.addEventListener('mouseup', stopHandler);
+				window.addEventListener('touchend', stopHandler);
 				
 				$element[0].addEventListener('click', clickHandler);
 				
