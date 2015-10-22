@@ -72,7 +72,7 @@
 				<ul class="strings">
 					<li><button hold-click ng-disabled="!canHalveHarmonics(set)" ng-click="halveHarmonics(set.id)">↓ | halve all</button></li>
 					<li><button hold-click ng-disabled="!canLowerHarmonics(set)" ng-click="lowerHarmonics(set.id)">▼ | lower all</button></li>
-					<li ng-repeat="string in set.strings"><button ng-click="setStringToEdit(string)" ng-class="(stringToEdit.id === string.id ? ' active' : '') + (string.muted ? '' : ' muted')">{{string.multiplier}}</button></li>
+					<li ng-repeat="string in set.strings"><button ng-click="setStringToEdit(string)" ng-class="(stringToEdit.id === string.id ? ' active' : '') + (string.muted ? ' muted' : '')">{{string.multiplier}}</button></li>
 					<li><button ng-click="addString(set.id)">+ | add string</button></li>
 					<li><button hold-click ng-disabled="!canRaiseHarmonics(set)" ng-click="raiseHarmonics(set.id)">▲ | raise all</button></li>
 					<li><button hold-click ng-disabled="!canDoubleHarmonics(set)" ng-click="doubleHarmonics(set.id)">↑ | double all</button></li>
