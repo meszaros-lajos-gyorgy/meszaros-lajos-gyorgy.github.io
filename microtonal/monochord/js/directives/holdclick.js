@@ -58,6 +58,9 @@
 				
 				window.addEventListener('mousemove', moveHandler);
 				window.addEventListener('touchmove', moveHandler);
+				
+				// simulate mouseover/mouseout with calculating window.clientX/clientY
+				// and comparing that to $element[0].clientTop/clientLeft/clientWidth/clientHeight
 			}]
 		}
 	})
