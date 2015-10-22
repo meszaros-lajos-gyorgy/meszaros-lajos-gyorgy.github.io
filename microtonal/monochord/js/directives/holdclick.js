@@ -7,13 +7,11 @@
 		return {
 			restrict: 'A',
 			controller: ['$element', function($element){
-				var over = false;
 				var firstPeriod = null;
 				var secondPeriod = null;
+				var over;
 				
 				var startHandler = function(e){
-					over = true;
-					
 					if(!$element[0].disabled){
 						$element.triggerHandler('click');
 					}
@@ -40,27 +38,29 @@
 					}
 				};
 				
-				var moveHandler = function(e){
-					over = e.target === $element[0];
-				};
-				var clickHandler = function(e){
+				$element[0].addEventListener('click', function(e){
 					e.stopImmediatePropagation();
 					e.preventDefault();
-				};
+				});
 				
-				$element[0].addEventListener('mousedown', startHandler);
-				$element[0].addEventListener('touchstart', startHandler);
-				
-				window.addEventListener('mouseup', stopHandler);
-				window.addEventListener('touchend', stopHandler);
-				
-				$element[0].addEventListener('click', clickHandler);
-				
-				window.addEventListener('mousemove', moveHandler);
-				window.addEventListener('touchmove', moveHandler);
-				
-				// simulate mouseover/mouseout with calculating window.clientX/clientY
-				// and comparing that to $element[0].clientTop/clientLeft/clientWidth/clientHeight
+				if(window.TouchEvent){
+					over = true;
+					$element[0].addEventListener('touchstart', startHandler);
+					window.addEventListener('touchend', stopHandler);
+				}else{
+					over = false;
+					$element[0].addEventListener('mousedown', function(e){
+						over = true;
+						startHandler(e);
+					});
+					window.addEventListener('mouseup', stopHandler);
+					$element[0].addEventListener('mouseover', function(){
+						over = true;
+					});
+					$element[0].addEventListener('mouseout', function(){
+						over = false;
+					});
+				}
 			}]
 		}
 	})
