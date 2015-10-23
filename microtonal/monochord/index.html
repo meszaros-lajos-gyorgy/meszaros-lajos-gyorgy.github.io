@@ -63,8 +63,8 @@
 			
 			<section ng-repeat="set in sets">
 				<!--
-				Volume <em style="font-weight:normal">{{set.muted ? '(muted)' : ''}}</em>
-				<input type="range" class="master" min="0" max="100" autocomplete="off" ng-model="set.volume" /><br /><span style="font-weight:normal">({{set.volume}}/100)</span>
+				<label>Volume <em style="font-weight:normal">{{set.muted ? '(muted)' : ''}}</em>
+				<input type="range" class="master" min="0" max="100" autocomplete="off" ng-model="set.volume" /><br /><span style="font-weight:normal">({{set.volume}}/100)</span></label>
 				-->
 				
 				<!-- <span style="float:left;">Ratio known as: <i>{{ratioKnownAs(set)}}</i></span> -->
@@ -118,6 +118,17 @@
 				<button ng-show="set._.displayingCents" ng-click="set._.displayingCents = false">Hz</button>
 				-->
 			</section>
+		</div>
+		<div class="dialog">
+			<div class="assign-to-key">
+				
+			</div>
+			<div class="normalize">
+			
+			</div>
+		</div>
+		<div class="keyboard">
+			<!-- table layout for the keys -->
 		</div>
 	</div>
 </body>
