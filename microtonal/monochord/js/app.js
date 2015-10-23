@@ -1,6 +1,22 @@
 (function(){
 	'use strict';
 	
+	// -------------
+	
+	window.addEventListener('touchstart', function(e){
+		if(e.target.tagName === 'HTML' || e.target.tagName === 'BODY'){
+			e.preventDefault();
+		}
+	});
+	
+	/*
+	window.addEventListener('scroll', function(){
+		window.scrollTo(0,0);
+	});
+	*/
+	
+	// -------------
+	
 	var app = angular.module('Microtonal', ['AudioModel', 'Math', 'DragnumberDirective', 'HoldclickDirective']);
 	
 	app.controller('MonochordCtrl', ['$scope', '$http', 'audio', 'math', function($scope, $http, AudioModel, math){
