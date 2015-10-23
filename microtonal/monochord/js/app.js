@@ -9,12 +9,6 @@
 		}
 	});
 	
-	/*
-	window.addEventListener('scroll', function(){
-		window.scrollTo(0,0);
-	});
-	*/
-	
 	// -------------
 	
 	var app = angular.module('Microtonal', ['AudioModel', 'Math', 'DragnumberDirective', 'HoldclickDirective']);
@@ -318,11 +312,13 @@
 				var diff = diffSetsChange(newValue, oldValue);
 				
 				diff.sets.removed.forEach(function(setId){
+					/*
 					Object.keys($scope.keyAssignments).some(function(key){
 						if($scope.keyAssignments[key].setId === setId){
 							$scope.keyAssignments[key].setId = 0;
 						}
 					});
+					*/
 					AudioModel.removeSet(setId);
 				});
 				diff.sets.added.forEach(function(setId){
@@ -628,6 +624,7 @@
 		
 		// ------------------
 		
+		/*
 		$scope.keyAssignments = {
 			65 : {label:'A',active:false,setId:0},
 			66 : {label:'B',active:false,setId:0},
@@ -718,5 +715,6 @@
 				$scope.$apply();
 			}
 		});
+		*/
 	}]);
 })();

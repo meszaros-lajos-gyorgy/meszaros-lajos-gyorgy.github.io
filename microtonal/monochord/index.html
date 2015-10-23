@@ -43,6 +43,8 @@
 				<label>Fundamental frequency: <dragnumber min="1" ng-model="baseFrequency" width="5"></dragnumber> Hz</label>
 				<label>Master volume: <input type="range" min="0" autocomplete="off" ng-model="baseVolume" />({{baseVolume}}/100)</label>
 				<!-- <label>Autostack: <button ng-show="autoStack" ng-click="autoStack=false">enabled</button><button class="off" ng-show="!autoStack" ng-click="autoStack=true">disabled</button></label> -->
+				
+				<!-- show keyboard -->
 			</section>
 			
 			<section ng-show="presets.tunings" class="presets">
@@ -84,9 +86,11 @@
 				-->
 				
 				<!--
+				/*
 				<button ng-disabled="!set._.selectedKey" ng-show="!isSetAssignedToKey(set.id)" ng-click="assignSetToKey(set.id, set._.selectedKey)">assign to key:</button>
 				<select ng-class="isSetAssignedToKey(set.id) ? 'hidden' : ''" ng-model="set._.selectedKey" ng-options="key as data.label disable when data.setId > 0 for (key, data) in keyAssignments"></select>
 				<button ng-show="isSetAssignedToKey(set.id)" ng-click="unassignSetFromKeys(set.id)">unassign from key <b>{{keyAssignments[getAssignedKeyOfSet(set.id)].label}}</b></button>
+				*/
 				-->
 				
 				<!--
@@ -120,15 +124,16 @@
 			</section>
 		</div>
 		<div class="dialog">
-			<div class="assign-to-key">
-				
-			</div>
 			<div class="normalize">
 			
 			</div>
 		</div>
 		<div class="keyboard">
+			<!-- double tap on key = toggle key hold -->
 			<!-- table layout for the keys -->
+			<ul>
+				<li></li>
+			</ul>
 		</div>
 	</div>
 </body>
