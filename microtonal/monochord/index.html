@@ -35,7 +35,7 @@
 				
 				<!-- <input ng-show="set.normalize.type === 'manual'" type="radio" autocomplete="off" ng-value="stringToEdit.id" ng-model="set.normalize.subject" /> -->
 				
-				<button ng-click="removeString(stringToEdit.id);stringToEdit={}">x | delete</button>
+				<button ng-click="removeString(stringToEdit.id);stringToEdit={}" class="icon red delete" title="delete string">delete string</button>
 			</div>
 		</div>
 		<div class="main">
@@ -48,7 +48,7 @@
 			</section>
 			
 			<section ng-show="presets.tunings" class="presets">
-				<h3>Presets</h3>
+				<h2>Presets</h2>
 				
 				<label>Tuning: <select autocomplete="off" ng-model="activePresetTuning" ng-options="tuning.name for tuning in presets.tunings"></select></label><br />
 				<br />
@@ -61,67 +61,69 @@
 				</div>
 			</section>
 			
-			<button ng-click="addSet()">+ | add a new set</button>
+			<button ng-click="addSet()" class="icon add" title="add a new set">add a new set</button>
 			
-			<section ng-repeat="set in sets">
-				<!--
-				<label>Volume <em style="font-weight:normal">{{set.muted ? '(muted)' : ''}}</em>
-				<input type="range" class="master" min="0" max="100" autocomplete="off" ng-model="set.volume" /><br /><span style="font-weight:normal">({{set.volume}}/100)</span></label>
-				-->
-				
-				<!-- <span style="float:left;">Ratio known as: <i>{{ratioKnownAs(set)}}</i></span> -->
-				
-				<ul class="strings">
-					<li><button hold-click ng-disabled="!canHalveHarmonics(set)" ng-click="halveHarmonics(set.id)">↓ | halve all</button></li>
-					<li><button hold-click ng-disabled="!canLowerHarmonics(set)" ng-click="lowerHarmonics(set.id)">▼ | lower all</button></li>
-					<li ng-repeat="string in set.strings"><button ng-click="setStringToEdit(string)" ng-class="(stringToEdit.id === string.id ? ' active' : '') + (string.muted ? ' muted' : '')">{{string.multiplier}}</button></li>
-					<li><button ng-click="addString(set.id)">+ | add string</button></li>
-					<li><button hold-click ng-disabled="!canRaiseHarmonics(set)" ng-click="raiseHarmonics(set.id)">▲ | raise all</button></li>
-					<li><button hold-click ng-disabled="!canDoubleHarmonics(set)" ng-click="doubleHarmonics(set.id)">↑ | double all</button></li>
-				</ul>
-				
-				<!--
-				<button ng-click="removeSet(set.id)">x | delete this set</button>
-				<button ng-disabled="!canBeSimplified(set)" ng-click="simplify(set.id)">simplify ratios</button>
-				-->
-				
-				<!--
-				/*
-				<button ng-disabled="!set._.selectedKey" ng-show="!isSetAssignedToKey(set.id)" ng-click="assignSetToKey(set.id, set._.selectedKey)">assign to key:</button>
-				<select ng-class="isSetAssignedToKey(set.id) ? 'hidden' : ''" ng-model="set._.selectedKey" ng-options="key as data.label disable when data.setId > 0 for (key, data) in keyAssignments"></select>
-				<button ng-show="isSetAssignedToKey(set.id)" ng-click="unassignSetFromKeys(set.id)">unassign from key <b>{{keyAssignments[getAssignedKeyOfSet(set.id)].label}}</b></button>
-				*/
-				-->
-				
-				<!--
-				<span style="font-weight:normal">Type:</span> <select autocomplete="off" ng-model="set.normalize.type">
-					<option value="off">none</option>
-					<option value="lowest">(auto) lowest harmony</option>
-					<option value="highest">(auto) highest harmony</option>
-					<option value="manual">(manual) user select</option>
-				</select><br />
-				<span style="font-weight:normal">Target:</span> <select autocomplete="off" ng-model="set.normalize.target" ng-options="value.value as value.label group by value.group for value in _normalizeStringTargets[set.id]"></select>
-				-->
-				
-				<!--
-				<span ng-show="!set._.displayingCents">
-					<span ng-repeat="freq in calculateFrequencies(set) track by $index" style="display:block;line-height:55px;height:55px">
-						{{freq | number:2}} Hz
+			<ul class="sets">
+				<li ng-repeat="set in sets">
+					<!--
+					<label>Volume <em style="font-weight:normal">{{set.muted ? '(muted)' : ''}}</em>
+					<input type="range" class="master" min="0" max="100" autocomplete="off" ng-model="set.volume" /><br /><span style="font-weight:normal">({{set.volume}}/100)</span></label>
+					-->
+					
+					<!-- <span style="float:left;">Ratio known as: <i>{{ratioKnownAs(set)}}</i></span> -->
+					
+					<ul class="strings">
+						<li><button hold-click ng-disabled="!canHalveHarmonics(set)" ng-click="halveHarmonics(set.id)" class="icon halve" title="halve all">halve all</button></li>
+						<li><button hold-click ng-disabled="!canLowerHarmonics(set)" ng-click="lowerHarmonics(set.id)" class="icon decrease" title="lower all">lower all</button></li>
+						<li ng-repeat="string in set.strings"><button ng-click="setStringToEdit(string)" ng-class="(stringToEdit.id === string.id ? ' active' : '') + (string.muted ? ' muted' : '')">{{string.multiplier}}</button></li>
+						<li><button ng-click="addString(set.id)" class="icon add" title="add string">add string</button></li>
+						<li><button hold-click ng-disabled="!canRaiseHarmonics(set)" ng-click="raiseHarmonics(set.id)" class="icon increase" title="raise all">raise all</button></li>
+						<li><button hold-click ng-disabled="!canDoubleHarmonics(set)" ng-click="doubleHarmonics(set.id)" class="icon double" title="double all">double all</button></li>
+					</ul>
+					
+					<!--
+					<button ng-click="removeSet(set.id)">x | delete this set</button>
+					<button ng-disabled="!canBeSimplified(set)" ng-click="simplify(set.id)">simplify ratios</button>
+					-->
+					
+					<!--
+					/*
+					<button ng-disabled="!set._.selectedKey" ng-show="!isSetAssignedToKey(set.id)" ng-click="assignSetToKey(set.id, set._.selectedKey)">assign to key:</button>
+					<select ng-class="isSetAssignedToKey(set.id) ? 'hidden' : ''" ng-model="set._.selectedKey" ng-options="key as data.label disable when data.setId > 0 for (key, data) in keyAssignments"></select>
+					<button ng-show="isSetAssignedToKey(set.id)" ng-click="unassignSetFromKeys(set.id)">unassign from key <b>{{keyAssignments[getAssignedKeyOfSet(set.id)].label}}</b></button>
+					*/
+					-->
+					
+					<!--
+					Type: <select autocomplete="off" ng-model="set.normalize.type">
+						<option value="off">none</option>
+						<option value="lowest">(auto) lowest harmony</option>
+						<option value="highest">(auto) highest harmony</option>
+						<option value="manual">(manual) user select</option>
+					</select><br />
+					Target: <select autocomplete="off" ng-model="set.normalize.target" ng-options="value.value as value.label group by value.group for value in _normalizeStringTargets[set.id]"></select>
+					-->
+					
+					<!--
+					<span ng-show="!set._.displayingCents">
+						<span ng-repeat="freq in calculateFrequencies(set) track by $index">{{freq | number:2}} Hz</span>
 					</span>
-				</span>
-				<span ng-show="set._.displayingCents">
-					{{cents = calculateCents(set);''}}
-					<span ng-repeat="cent in cents track by $index" style="display:block;line-height:55px;height:55px" ng-show="!$first">
-						{{prev = ($index > 0 ? cents[$index - 1] : 0);''}}
-						{{diff = cent - prev;''}}
-						{{(diff >= 0 ? '+' : '')}}{{diff | number:2}} &cent;
+					<span ng-show="set._.displayingCents">
+						{{cents = calculateCents(set);''}}
+						<span ng-repeat="cent in cents track by $index" ng-show="!$first">
+							{{prev = ($index > 0 ? cents[$index - 1] : 0);''}}
+							{{diff = cent - prev;''}}
+							{{(diff >= 0 ? '+' : '')}}{{diff | number:2}} &cent;
+						</span>
 					</span>
-				</span>
-				
-				<button ng-show="!set._.displayingCents" ng-click="set._.displayingCents = true">&cent;</button>
-				<button ng-show="set._.displayingCents" ng-click="set._.displayingCents = false">Hz</button>
-				-->
-			</section>
+					
+					<button ng-show="!set._.displayingCents" ng-click="set._.displayingCents = true">&cent;</button>
+					<button ng-show="set._.displayingCents" ng-click="set._.displayingCents = false">Hz</button>
+					-->
+					
+					<button class="icon tuning-fork" title="open piano">open piano</button>
+				</li>
+			</ul>
 		</div>
 		<div class="dialog">
 			<div class="normalize">
@@ -129,6 +131,7 @@
 			</div>
 		</div>
 		<div class="keyboard">
+			<h2>Keyboard</h2>
 			<!-- double tap on key = toggle key hold -->
 			<!-- table layout for the keys -->
 			<ul>

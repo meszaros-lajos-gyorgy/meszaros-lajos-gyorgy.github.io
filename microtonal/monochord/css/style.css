@@ -156,17 +156,32 @@ button.off{
 	}
 }
 
-.base-controls{
-	
-}
-
-/**//**/
-.presets{
-	display : none;
-}
-/**//**/
-
 .edit .multiplier{
 	text-align : center;
 	padding : 10px 0;
+}
+
+.base-controls{
+	
+}
+.presets{
+	display : none;
+}
+
+.sets{
+	margin : 0;
+	padding : 0;
+	list-style : none;
+}
+.sets>li{
+	margin : 0;
+	padding : 0;
+}
+
+.dialog{
+	display : none;
+}
+
+.keyboard{
+	display : none;
 }
