@@ -1,4 +1,4 @@
-/* source of icons: https://www.iconfinder.com/iconsets/free-mobile-icon-kit */
+// source of icons: https://www.iconfinder.com/iconsets/free-mobile-icon-kit
 
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
 	display: none!important;
@@ -82,77 +82,81 @@ button.off{
 
 .wrapper{
 	height : 100%;
-}
-.wrapper>header{
-	background : #e3e3e3;
-	text-align : center;
-}
-.wrapper>header h1{
-	margin : 0;
-	padding : 0;
-	font-size : 20px;
-	color : #666;
-	text-shadow :
-		0 1px 0 #fff,
-		0 -1px 0 #333
-	;
-	font-variant : small-caps;
-}
-.wrapper>.edit{
-	background : #e3e3e3;
-}
-.wrapper>.main{
-	background : #fff;
+	&>header{
+		background : #e3e3e3;
+		text-align : center;
+		h1{
+			margin : 0;
+			padding : 0;
+			font-size : 20px;
+			color : #666;
+			text-shadow :
+				0 1px 0 #fff,
+				0 -1px 0 #333
+			;
+			font-variant : small-caps;
+		}
+	}
+	&>.edit{
+		background : #e3e3e3;
+	}
+	&>.main{
+		background : #fff;
+	}
 }
 
 @media (orientation: landscape){
-	.wrapper>header{
-		position : fixed;
-		width : 30vw;
-		height : 10vh;
-		top : 0;
-		right : 0;
-		box-shadow : 0 -1px 0 0 rgba(255, 255, 255, .7) inset;
-	}
-	.wrapper>header h1{
-		line-height : 10vh;
-	}
-	.wrapper>.edit{
-		position : fixed;
-		width : 30vw;
-		height : 90vh;
-		bottom : 0;
-		right : 0;
-	}
-	.wrapper>.main{
-		min-height : 100%;
-		box-sizing : border-box;
-		padding : 0 30vw 0 0;
+	.wrapper{
+		&>header{
+			position : fixed;
+			width : 30vw;
+			height : 10vh;
+			top : 0;
+			right : 0;
+			box-shadow : 0 -1px 0 0 rgba(255, 255, 255, .7) inset;
+			h1{
+				line-height : 10vh;
+			}
+		}
+		&>.edit{
+			position : fixed;
+			width : 30vw;
+			height : 90vh;
+			bottom : 0;
+			right : 0;
+		}
+		&>.main{
+			min-height : 100%;
+			box-sizing : border-box;
+			padding : 0 30vw 0 0;
+		}
 	}
 }
 
 @media (orientation: portrait){
-	.wrapper>header{
-		height : 7vh;
-		position : fixed;
-		top : 0;
-		left : 0;
-		width : 100%;
-	}
-	.wrapper>header h1{
-		line-height : 7vh;
-	}
-	.wrapper>.edit{
-		height : 30vh;
-		position : fixed;
-		bottom : 0;
-		left : 0;
-		width : 100%;
-	}
-	.wrapper>.main{
-		min-height : 100%;
-		box-sizing : border-box;
-		padding : 7vh 0 30vh 0;
+	.wrapper{
+		&>header{
+			height : 7vh;
+			position : fixed;
+			top : 0;
+			left : 0;
+			width : 100%;
+			h1{
+				line-height : 7vh;
+			}
+		}
+		&>.edit{
+			height : 30vh;
+			position : fixed;
+			bottom : 0;
+			left : 0;
+			width : 100%;
+		}
+		&>.main{
+			min-height : 100%;
+			box-sizing : border-box;
+			padding : 7vh 0 30vh 0;
+		}
 	}
 }
 
@@ -168,14 +172,15 @@ button.off{
 	display : none;
 }
 
-.sets{
+.sets,
+.sets .strings{
 	margin : 0;
 	padding : 0;
 	list-style : none;
-}
-.sets>li{
-	margin : 0;
-	padding : 0;
+	&>li{
+		margin : 0;
+		padding : 0;
+	}
 }
 
 .dialog{
@@ -184,4 +189,22 @@ button.off{
 
 .keyboard{
 	display : none;
+}
+
+button{
+	&.icon{
+		&.delete{}
+		&.add{}
+		&.halve{}
+		&.decrease{}
+		&.increase{}
+		&.double{}
+		&.piano{}
+		&.tuning-fork{}
+	}
+	&.red{}
+	&.active{}
+	&.muted{}
+	&.unmuted{}
+	&[disabled]{}
 }

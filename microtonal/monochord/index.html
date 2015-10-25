@@ -6,8 +6,9 @@
 	
 	<meta name="viewport" content="width=device-width, user-scalable=no" />
 	
-	<link rel="stylesheet" href="css/style.css" />
+	<link rel="stylesheet/less" href="css/style.less" />
 	
+	<script src="js/lib/less-2.5.3.min.js"></script>
 	<script src="js/lib/angular-1.4.4.min.js"></script>
 	
 	<script src="js/webkit-audio-context-patch.js"></script>
@@ -62,6 +63,7 @@
 			</section>
 			
 			<button ng-click="addSet()" class="icon add" title="add a new set">add a new set</button>
+			<button class="icon piano" title="open piano">open piano</button>
 			
 			<ul class="sets">
 				<li ng-repeat="set in sets">
@@ -75,7 +77,7 @@
 					<ul class="strings">
 						<li><button hold-click ng-disabled="!canHalveHarmonics(set)" ng-click="halveHarmonics(set.id)" class="icon halve" title="halve all">halve all</button></li>
 						<li><button hold-click ng-disabled="!canLowerHarmonics(set)" ng-click="lowerHarmonics(set.id)" class="icon decrease" title="lower all">lower all</button></li>
-						<li ng-repeat="string in set.strings"><button ng-click="setStringToEdit(string)" ng-class="(stringToEdit.id === string.id ? ' active' : '') + (string.muted ? ' muted' : '')">{{string.multiplier}}</button></li>
+						<li ng-repeat="string in set.strings"><button ng-click="setStringToEdit(string)" ng-class="(stringToEdit.id === string.id ? ' active' : '') + (string.muted ? ' muted' : 'unmuted')">{{string.multiplier}}</button></li>
 						<li><button ng-click="addString(set.id)" class="icon add" title="add string">add string</button></li>
 						<li><button hold-click ng-disabled="!canRaiseHarmonics(set)" ng-click="raiseHarmonics(set.id)" class="icon increase" title="raise all">raise all</button></li>
 						<li><button hold-click ng-disabled="!canDoubleHarmonics(set)" ng-click="doubleHarmonics(set.id)" class="icon double" title="double all">double all</button></li>
@@ -121,7 +123,7 @@
 					<button ng-show="set._.displayingCents" ng-click="set._.displayingCents = false">Hz</button>
 					-->
 					
-					<button class="icon tuning-fork" title="open piano">open piano</button>
+					<button class="icon tuning-fork" title="normalize">normalize</button>
 				</li>
 			</ul>
 		</div>
