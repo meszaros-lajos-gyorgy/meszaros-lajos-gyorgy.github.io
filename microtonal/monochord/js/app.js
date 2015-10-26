@@ -716,5 +716,10 @@
 			}
 		});
 		*/
+		
+		// === debug for sitebuild ===
+		
+		$scope.baseVolume = 0;
+		addSet();
 	}]);
 })();
