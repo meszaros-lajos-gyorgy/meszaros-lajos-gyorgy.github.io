@@ -719,7 +719,10 @@
 		
 		// === debug for sitebuild ===
 		
-		$scope.baseVolume = 0;
-		addSet();
+		setTimeout(function(){
+			$scope.baseVolume = 0;
+			$scope.addSet();
+			$scope.$apply();
+		}, 0);
 	}]);
 })();
