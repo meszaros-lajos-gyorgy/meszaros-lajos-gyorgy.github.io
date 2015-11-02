@@ -1,3 +1,9 @@
+@c1 : #064157;
+@c2 : #476976;
+@c3 : #439fc2;
+@c4 : #72c2e0;
+@c5 : #90cae0;
+
 @font : Tahoma, Geneva, sans-serif;
 
 // svg icons to font: http://fontello.com/
@@ -61,6 +67,9 @@ button.off{
 }
 */
 
+
+
+/*
 .dragnumber{
 	padding : 0;
 	-moz-appearance:textfield;
@@ -85,29 +94,37 @@ button.off{
 .dragnumber.edit{
 	cursor : text;
 }
+*/
 
 .wrapper{
 	height : 100%;
 	&>header{
-		background : #e3e3e3;
+		background : @c3;
 		text-align : center;
 		h1{
 			margin : 0;
 			padding : 0;
-			font-size : 20px;
+			font-size : 24px;
+			font-variant : small-caps;
+			/*
 			color : #666;
 			text-shadow :
 				0 1px 0 #fff,
 				0 -1px 0 #333
 			;
-			font-variant : small-caps;
+			*/
+			color : @c2;
+			text-shadow :
+				0 -1px 0 @c1,
+				0 1px 1px @c4
+			;
 		}
 	}
 	&>.edit{
-		background : #e3e3e3;
+		background : @c3;
 	}
 	&>.main{
-		background : #fff;
+		background : @c5;
 	}
 }
 
