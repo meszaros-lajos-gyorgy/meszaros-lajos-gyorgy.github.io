@@ -202,10 +202,11 @@ button.off{
 	&>li{
 		font-size : 0;
 		padding-top : 8px;
+		vertical-align : top;
+		margin-top : 20px;
 	}
 	.strings{
 		display : inline-block;
-		vertical-align : top;
 		&>li{
 			display : inline-block;
 			&::before{
@@ -215,8 +216,13 @@ button.off{
 				display : inline-block;
 				height : 48px;
 			}
-			&:first-child::before{
-				display : none;
+			&:first-child{
+				&::before{
+					display : none;
+				}
+				.hertz{
+					left : 0;
+				}
 			}
 			button{
 				margin-left : 0;
@@ -224,6 +230,29 @@ button.off{
 			&:last-child{
 				border-right : 3px double @c1;
 				padding-right : 4px;
+			}
+			position : relative;
+			.hertz{
+				font-size : 11px;
+				display : block;
+				position : absolute;
+				top : -14px;
+				left : 10px;
+				white-space : nowrap;
+				width : 48px;
+				text-align : center;
+				overflow : hidden;
+			}
+			.cent{
+				font-size : 10px;
+				display : block;
+				position : absolute;
+				bottom : -14px;
+				left : -24px;
+				white-space : nowrap;
+				width : 58px;
+				text-align : center;
+				overflow : hidden;
 			}
 		}
 	}

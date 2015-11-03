@@ -74,8 +74,15 @@
 					
 					<!-- <span style="float:left;">Ratio known as: <i>{{ratioKnownAs(set)}}</i></span> -->
 					
+					{{freqs = calculateFrequencies(set);cents = calculateCents(set);''}}
 					<ul class="strings">
-						<li ng-repeat="string in set.strings"><button ng-click="setStringToEdit(string)" ng-class="[(stringToEdit.id === string.id ? 'active' : ''), (string.muted ? ' muted' : 'unmuted')]">{{string.multiplier}}</button></li>
+						<li ng-repeat="string in set.strings">
+							<span class="hertz">{{freqs[$index]|number:0}} Hz</span>
+							<button ng-click="setStringToEdit(string)" ng-class="[(stringToEdit.id === string.id ? 'active' : ''), (string.muted ? ' muted' : 'unmuted')]">{{string.multiplier}}</button>
+							<span class="cent" ng-show="$index > 0">
+								{{cents[$index] - cents[$index - 1] >= 0 ? '+' : ''}}{{cents[$index] - cents[$index - 1] | number:2}} &cent;
+							</span>
+						</li>
 					</ul>
 					<button ng-click="addString(set.id)" class="icon add" title="add string">add string</button>
 					<button hold-click ng-disabled="!canHalveHarmonics(set)" ng-click="halveHarmonics(set.id)" class="icon halve" title="halve all">halve all</button>
@@ -99,23 +106,6 @@
 						<option value="manual">(manual) user select</option>
 					</select><br />
 					Target: <select autocomplete="off" ng-model="set.retune.target" ng-options="value.value as value.label group by value.group for value in _retuneStringTargets[set.id]"></select>
-					-->
-					
-					<!--
-					<span ng-show="!set._.displayingCents">
-						<span ng-repeat="freq in calculateFrequencies(set) track by $index">{{freq | number:2}} Hz</span>
-					</span>
-					<span ng-show="set._.displayingCents">
-						{{cents = calculateCents(set);''}}
-						<span ng-repeat="cent in cents track by $index" ng-show="!$first">
-							{{prev = ($index > 0 ? cents[$index - 1] : 0);''}}
-							{{diff = cent - prev;''}}
-							{{(diff >= 0 ? '+' : '')}}{{diff | number:2}} &cent;
-						</span>
-					</span>
-					
-					<button ng-show="!set._.displayingCents" ng-click="set._.displayingCents = true">&cent;</button>
-					<button ng-show="set._.displayingCents" ng-click="set._.displayingCents = false">Hz</button>
 					-->
 					
 					<button ng-disabled="!canBeNormalied(set)" ng-click="normalize(set.id)" class="icon normalize" title="normalize ratios">normalize ratios</button>

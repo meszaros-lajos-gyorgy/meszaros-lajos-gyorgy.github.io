@@ -43,11 +43,13 @@
 				});
 				
 				var getY = function(e){
+					var y = undefined;
 					if(e.clientY){
-						return e.clientY;
+						y = e.clientY;
 					}else if(e.targetTouches){
-						return e.targetTouches[0].clientY;
+						y = e.targetTouches[0].clientY;
 					}
+					return (y === undefined ? 0 : y);
 				};
 				
 				var startHandler = function(e){
