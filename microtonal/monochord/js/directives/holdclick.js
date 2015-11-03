@@ -25,7 +25,7 @@
 					}, 700);
 					
 					e.stopPropagation();
-					e.preventDefault();
+					// e.preventDefault();
 				};
 				var stopHandler = function(e){
 					if(firstPeriod !== null){

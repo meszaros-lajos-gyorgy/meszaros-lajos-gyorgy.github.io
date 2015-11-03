@@ -104,15 +104,8 @@ button.off{
 		h1{
 			margin : 0;
 			padding : 0;
-			font-size : 24px;
+			font-size : 5vh;
 			font-variant : small-caps;
-			/*
-			color : #666;
-			text-shadow :
-				0 1px 0 #fff,
-				0 -1px 0 #333
-			;
-			*/
 			color : @c2;
 			text-shadow :
 				0 -1px 0 @c1,
@@ -136,7 +129,7 @@ button.off{
 			height : 10vh;
 			top : 0;
 			right : 0;
-			box-shadow : 0 -1px 0 0 rgba(255, 255, 255, .7) inset;
+			box-shadow : 0 -3px 0 0 @c5 inset;
 			h1{
 				line-height : 10vh;
 			}
@@ -220,14 +213,26 @@ button{
 	width : 48px;
 	height : 48px;
 	line-height : 48px;
-	background : #6080d7 no-repeat center center;
+	background : @c2 no-repeat center center;
 	cursor : pointer;
-	border-radius : 7px;
-	color : #e7ebf6;
+	border-radius : 5px;
+	color : @c1;
+	text-shadow :
+		0 -1px 0 #000,
+		0 1px 1px @c3
+	;
+	box-shadow : 0 -2px 0 0 @c1 inset;
 	font-size : 20px;
 	font-family : inherit;
 	outline : none;
 	vertical-align : top;
+	position : relative;
+	
+	&:active{
+		box-shadow : none;
+		margin-top : 2px;
+		height : 46px;
+	}
 	
 	&.icon{
 		font-size : 0;
@@ -239,10 +244,36 @@ button{
 		&.double{}
 		&.piano{}
 		&.tuning-fork{}
+		&.mute{}
+		&.unmute{}
 	}
 	&.red{}
 	&.active{}
-	&.muted{}
-	&.unmuted{}
+	&.muted{
+		&::after{
+			content : '';
+			display : block;
+			width : 8px;
+			height : 8px;
+			border-radius : 4px;
+			background : @c1;
+			position : absolute;
+			top : 5px;
+			right : 5px;
+		}
+	}
+	&.unmuted{
+		&::after{
+			content : '';
+			display : block;
+			width : 8px;
+			height : 8px;
+			border-radius : 4px;
+			background : red; // todo: find a better red
+			position : absolute;
+			top : 5px;
+			right : 5px;
+		}
+	}
 	&[disabled]{}
 }
