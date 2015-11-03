@@ -108,7 +108,7 @@
 					Target: <select autocomplete="off" ng-model="set.retune.target" ng-options="value.value as value.label group by value.group for value in _retuneStringTargets[set.id]"></select>
 					-->
 					
-					<button ng-disabled="!canBeNormalied(set)" ng-click="normalize(set.id)" class="icon normalize" title="normalize ratios">normalize ratios</button>
+					<button ng-disabled="!canBeNormalized(set)" ng-click="normalize(set.id)" class="icon normalize" title="normalize ratios">normalize ratios</button>
 					<button class="icon tuning-fork" title="retune this set">retune this set</button>
 					<button ng-click="removeSet(set.id)" class="icon red delete" title="delete this set">delete this set</button>
 				</li>

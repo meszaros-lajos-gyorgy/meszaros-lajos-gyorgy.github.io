@@ -361,8 +361,6 @@
 		
 		// ---------------
 		
-		
-		
 		function addSet(volume, muted, dontAddString){
 			$scope.sets.push({
 				id : ++lastSetId,
@@ -389,6 +387,7 @@
 			findSetById(setId, function(set, index, array){
 				array.splice(index, 1);
 			});
+			$scope.stringToEdit = {};
 		}
 		function addString(setId, multiplier, volume, muted){
 			findSetById(setId, function(set){
@@ -433,6 +432,9 @@
 						// todo
 					}
 					*/
+					if($scope.stringToEdit.id === stringId){
+						$scope.stringToEdit = {};
+					}
 				}
 			});
 		}
@@ -620,6 +622,13 @@
 		
 		$http.get('presets.json').then(function(reply){
 			updatePresets(reply.data);
+		});
+		
+		document.querySelector('.wrapper>.main').addEventListener('click', function(e){
+			if(e.target === this){
+				$scope.stringToEdit = {};
+				$scope.$apply();
+			}
 		});
 		
 		// ------------------
