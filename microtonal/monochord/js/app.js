@@ -31,7 +31,7 @@
 			tunings : [],
 			misc : []
 		};
-		$scope._normalizeStringTargets = {};
+		$scope._retuneStringTargets = {};
 		$scope.stringToEdit = {};
 		// $scope.autoStack = false;
 		
@@ -89,7 +89,7 @@
 			});
 		}
 		
-		function getNormalizeStringTargets(excludedSetId){
+		function getRetuneStringTargets(excludedSetId){
 			var list = [{
 				label : 'Base frequency (' + $scope.baseFrequency + ' Hz)',
 				value : 0,
@@ -124,23 +124,23 @@
 		function getBaseFrequency(stringId, set, stack){
 			var baseFrequency;
 			
-			if(set.normalize.target > 0){
+			if(set.retune.target > 0){
 				stack = stack || [];
 				if(stack.indexOf(stringId) !== -1){
-					alert('Infinite normalization target loop! There are no sets, that normalize to the default baseFrequency!');
+					alert('Infinite normalization target loop! There are no sets, that retune to the default baseFrequency!');
 					return 0;
 				}else{
 					stack.push(stringId);
-					baseFrequency = calculateFrequency(set.normalize.target, stack);
+					baseFrequency = calculateFrequency(set.retune.target, stack);
 				}
 			}else{
 				baseFrequency = $scope.baseFrequency
 			}
 			
-			if(set.normalize.type !== 'off'){
-				var normalizedBaseFreq;
+			if(set.retune.type !== 'off'){
+				var retunedBaseFreq;
 				
-				switch(set.normalize.type){
+				switch(set.retune.type){
 					case 'lowest' : {
 						var ratios = [];
 						set.strings.forEach(function(string){
@@ -149,7 +149,7 @@
 						ratios = ratios.sort(function(a, b){
 							return a - b;
 						});
-						normalizedBaseFreq = baseFrequency / ratios[0];
+						retunedBaseFreq = baseFrequency / ratios[0];
 						break;
 					}
 					case 'highest' : {
@@ -160,22 +160,22 @@
 						ratios = ratios.sort(function(a, b){
 							return b - a;
 						});
-						normalizedBaseFreq = baseFrequency / ratios[0];
+						retunedBaseFreq = baseFrequency / ratios[0];
 						break;
 					}
 					case 'manual' : {
-						if(set.normalize.subject > 0){
-							findStringById(set.normalize.subject, function(string){
-								normalizedBaseFreq = baseFrequency / string.multiplier;
+						if(set.retune.subject > 0){
+							findStringById(set.retune.subject, function(string){
+								retunedBaseFreq = baseFrequency / string.multiplier;
 							})
 						}else{
-							normalizedBaseFreq = baseFrequency;
+							retunedBaseFreq = baseFrequency;
 						}
 						break;
 					}
 				}
 				
-				baseFrequency = normalizedBaseFreq;
+				baseFrequency = retunedBaseFreq;
 			}
 			
 			return baseFrequency;
@@ -211,12 +211,12 @@
 			return arr;
 		}
 		
-		function updateNormalizeStringTargets(){
+		function updateRetuneStringTargets(){
 			var targets = {};
 			$scope.sets.forEach(function(set){
-				targets[set.id] = getNormalizeStringTargets(set.id);
+				targets[set.id] = getRetuneStringTargets(set.id);
 			});
-			$scope._normalizeStringTargets = targets;
+			$scope._retuneStringTargets = targets;
 		}
 		
 		function updateFrequencies(){
@@ -299,7 +299,7 @@
 			if(newValue !== oldValue){
 				updateFrequencies();
 			}
-			updateNormalizeStringTargets();
+			updateRetuneStringTargets();
 		});
 		$scope.$watch('baseVolume', function(newValue, oldValue){
 			if(newValue !== oldValue){
@@ -355,7 +355,7 @@
 					});
 				});
 				
-				updateNormalizeStringTargets();
+				updateRetuneStringTargets();
 			}
 		}, true);
 		
@@ -366,7 +366,7 @@
 		function addSet(volume, muted, dontAddString){
 			$scope.sets.push({
 				id : ++lastSetId,
-				normalize : {
+				retune : {
 					type : 'off',
 					subject : 0,
 					target : 0
@@ -404,17 +404,17 @@
 						string.muted = true;
 					});
 					
-					set.normalize.type = 'lowest';
+					set.retune.type = 'lowest';
 					
 					findPreviousSet(setId, function(_set){
 						findStringByHarmonic(_set, getHighestHarmonic(_set), function(string){
-							set.normalize.target = string.id;
+							set.retune.target = string.id;
 						});
 					})
 					
 					findNextSet(setId, function(_set){
 						findStringByHarmonic(set, getHighestHarmonic(set), function(string){
-							_set.normalize.target = string.id;
+							_set.retune.target = string.id;
 						});
 					});
 				}
@@ -539,7 +539,7 @@
 			return multipliers;
 		}
 		
-		function canBeSimplified(set){
+		function canBeNormalized(set){
 			if(set.strings.length > 1){
 				if(math.greatestCommonDivisor.apply(null, getMultipliers(set)) > 1){
 					return true;
@@ -548,7 +548,7 @@
 			return false;
 		}
 		
-		function simplify(setId){
+		function normalize(setId){
 			findSetById(setId, function(set){
 				if(set.strings.length > 1){
 					var gcd = math.greatestCommonDivisor.apply(null, getMultipliers(set));
@@ -600,13 +600,13 @@
 		$scope.doubleHarmonics = doubleHarmonics;
 		$scope.addPreset = addPreset;
 		$scope.updatePresets = updatePresets;
-		$scope.simplify = simplify;
+		$scope.normalize = normalize;
 		$scope.calculateFrequency = calculateFrequency;
 		$scope.calculateFrequencies = calculateFrequencies;
 		$scope.calculateCent = calculateCent;
 		$scope.calculateCents = calculateCents;
 		
-		$scope.canBeSimplified = canBeSimplified;
+		$scope.canBeNormalized = canBeNormalized;
 		$scope.canLowerHarmonics = canLowerHarmonics;
 		$scope.canRaiseHarmonics = canRaiseHarmonics;
 		$scope.canHalveHarmonics = canHalveHarmonics;
@@ -721,7 +721,11 @@
 		
 		setTimeout(function(){
 			$scope.baseVolume = 0;
-			$scope.addSet();
+			$scope.addSet(undefined, undefined, true);
+			$scope.addString(1, 6);
+			$scope.addString(1, 7);
+			$scope.addSet(undefined, undefined, true);
+			$scope.addString(2, 1, undefined, true);
 			$scope.$apply();
 		}, 0);
 	}]);

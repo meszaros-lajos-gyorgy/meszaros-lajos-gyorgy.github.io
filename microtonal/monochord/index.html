@@ -31,10 +31,10 @@
 					<button hold-click ng-disabled="!canRaiseString(stringToEdit)" ng-click="raiseString(stringToEdit)">+</button>
 				</div>
 				
-				<button ng-show="!stringToEdit.muted" ng-click="stringToEdit.muted = true">mute</button>
-				<button ng-show="stringToEdit.muted" class="off" ng-click="stringToEdit.muted = false">unmute</button>
+				<button ng-show="!stringToEdit.muted" ng-click="stringToEdit.muted = true" class="icon speaker-on">mute</button>
+				<button ng-show="stringToEdit.muted" ng-click="stringToEdit.muted = false" class="icon speaker-off">unmute</button>
 				
-				<!-- <input ng-show="set.normalize.type === 'manual'" type="radio" autocomplete="off" ng-value="stringToEdit.id" ng-model="set.normalize.subject" /> -->
+				<!-- <input ng-show="set.retune.type === 'manual'" type="radio" autocomplete="off" ng-value="stringToEdit.id" ng-model="set.retune.subject" /> -->
 				
 				<button ng-click="removeString(stringToEdit.id);stringToEdit={}" class="icon red delete" title="delete string">delete string</button>
 			</div>
@@ -75,18 +75,13 @@
 					<!-- <span style="float:left;">Ratio known as: <i>{{ratioKnownAs(set)}}</i></span> -->
 					
 					<ul class="strings">
-						<li><button hold-click ng-disabled="!canHalveHarmonics(set)" ng-click="halveHarmonics(set.id)" class="icon halve" title="halve all">halve all</button></li>
-						<li><button hold-click ng-disabled="!canLowerHarmonics(set)" ng-click="lowerHarmonics(set.id)" class="icon decrease" title="lower all">lower all</button></li>
 						<li ng-repeat="string in set.strings"><button ng-click="setStringToEdit(string)" ng-class="[(stringToEdit.id === string.id ? 'active' : ''), (string.muted ? ' muted' : 'unmuted')]">{{string.multiplier}}</button></li>
-						<li><button ng-click="addString(set.id)" class="icon add" title="add string">add string</button></li>
-						<li><button hold-click ng-disabled="!canRaiseHarmonics(set)" ng-click="raiseHarmonics(set.id)" class="icon increase" title="raise all">raise all</button></li>
-						<li><button hold-click ng-disabled="!canDoubleHarmonics(set)" ng-click="doubleHarmonics(set.id)" class="icon double" title="double all">double all</button></li>
 					</ul>
-					
-					<!--
-					<button ng-click="removeSet(set.id)">x | delete this set</button>
-					<button ng-disabled="!canBeSimplified(set)" ng-click="simplify(set.id)">simplify ratios</button>
-					-->
+					<button ng-click="addString(set.id)" class="icon add" title="add string">add string</button>
+					<button hold-click ng-disabled="!canHalveHarmonics(set)" ng-click="halveHarmonics(set.id)" class="icon halve" title="halve all">halve all</button>
+					<button hold-click ng-disabled="!canLowerHarmonics(set)" ng-click="lowerHarmonics(set.id)" class="icon decrease" title="lower all">lower all</button>
+					<button hold-click ng-disabled="!canRaiseHarmonics(set)" ng-click="raiseHarmonics(set.id)" class="icon increase" title="raise all">raise all</button>
+					<button hold-click ng-disabled="!canDoubleHarmonics(set)" ng-click="doubleHarmonics(set.id)" class="icon double" title="double all">double all</button>
 					
 					<!--
 					/*
@@ -97,13 +92,13 @@
 					-->
 					
 					<!--
-					Type: <select autocomplete="off" ng-model="set.normalize.type">
+					Type: <select autocomplete="off" ng-model="set.retune.type">
 						<option value="off">none</option>
 						<option value="lowest">(auto) lowest harmony</option>
 						<option value="highest">(auto) highest harmony</option>
 						<option value="manual">(manual) user select</option>
 					</select><br />
-					Target: <select autocomplete="off" ng-model="set.normalize.target" ng-options="value.value as value.label group by value.group for value in _normalizeStringTargets[set.id]"></select>
+					Target: <select autocomplete="off" ng-model="set.retune.target" ng-options="value.value as value.label group by value.group for value in _retuneStringTargets[set.id]"></select>
 					-->
 					
 					<!--
@@ -123,13 +118,15 @@
 					<button ng-show="set._.displayingCents" ng-click="set._.displayingCents = false">Hz</button>
 					-->
 					
-					<button class="icon tuning-fork" title="normalize">normalize</button>
+					<button ng-disabled="!canBeNormalied(set)" ng-click="normalize(set.id)" class="icon normalize" title="normalize ratios">normalize ratios</button>
+					<button class="icon tuning-fork" title="retune this set">retune this set</button>
+					<button ng-click="removeSet(set.id)" class="icon red delete" title="delete this set">delete this set</button>
 				</li>
 			</ul>
 		</div>
 		<div class="dialog">
-			<div class="normalize">
-			
+			<div class="retune">
+				
 			</div>
 		</div>
 		<div class="keyboard">
