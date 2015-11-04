@@ -11,6 +11,17 @@ fix svg files: https://jakearchibald.github.io/svgomg/ (check all features, exce
 
 @font : Tahoma, Geneva, sans-serif;
 
+@font-face {
+	font-family: 'monochord';
+	src: url('./font/monochord.eot?91905665');
+	src: url('./font/monochord.eot?91905665#iefix') format('embedded-opentype'),
+		url('./font/monochord.woff?91905665') format('woff'),
+		url('./font/monochord.ttf?91905665') format('truetype'),
+		url('./font/monochord.svg?91905665#monochord') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
 	display: none!important;
 }
@@ -260,17 +271,29 @@ button{
 	&.icon{
 		font-size : 0;
 		
-		&.delete{}
-		&.add{}
-		&.halve{}
-		&.decrease{}
-		&.increase{}
-		&.double{}
-		&.piano{}
-		&.tuning-fork{}
-		&.normalize{}
-		&.speaker-on{}
-		&.speaker-off{}
+		&::before{
+			font-family: 'monochord';
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+			
+			display : block;
+			width : 48px;
+			height : 46px;
+			line-height : 46px;
+			font-size : 24px;
+		}
+		
+		&.add::before{ content: '\e801'; }
+		&.delete::before{ content: '\e800'; }
+		&.increase::before{}
+		&.decrease::before{}
+		&.double::before{}
+		&.halve::before{}
+		&.piano::before{ content: '\e803'; }
+		&.tuning-fork::before{ content: '\e802'; }
+		&.normalize::before{}
+		&.speaker-on::before{}
+		&.speaker-off::before{}
 	}
 	
 	&.muted,
