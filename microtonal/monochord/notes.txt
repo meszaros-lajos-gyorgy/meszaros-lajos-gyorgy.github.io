@@ -11,7 +11,7 @@ Todos:
 Debug:
 	- firefox click sound bug when setting gain
 	- chrome drag problem with dragbutton
-	- what should be done, when you delete a set, which is referred to by another set? (import default -> delete 4:5:6 set)?
+	- what should be done, when you delete a set, which is referred to by another set?
 
 Turning off volume more gently?:
 	- https://developer.mozilla.org/en-US/docs/Web/API/AudioParam/exponentialRampToValueAtTime
@@ -34,3 +34,7 @@ Bohlen-Pierce modes:
 Calculating cents:
 	http://www.sengpielaudio.com/calculator-centsratio.htm
 	http://kylegann.com/tuning.html
+	
+Making icon fonts:
+	svg icons to font: http://fontello.com/
+	fix svg files: https://jakearchibald.github.io/svgomg/ (check all features and crank up quality to max)

@@ -1,8 +1,3 @@
-/*
-svg icons to font: http://fontello.com/
-fix svg files: https://jakearchibald.github.io/svgomg/ (check all features, excep 'round/rewrite numbers')
-*/
-
 @c1 : hsv(196, 93%, 34%); @c1-red : hsv(325, 93%, 34%); @c1-yellow : hsv(67, 93%, 34%); @c1-grey : hsv(196, 93% / 2, 34% * 1.3);
 @c2 : hsv(197, 40%, 46%); @c2-red : hsv(326, 40%, 46%); @c2-yellow : hsv(68, 40%, 46%); @c2-grey : hsv(197, 40% / 2, 46% * 1.3);
 @c3 : hsv(197, 65%, 76%); @c3-red : hsv(326, 65%, 76%); @c3-yellow : hsv(68, 65%, 76%); @c3-grey : hsv(197, 65% / 2, 76% * 1.3);
@@ -37,6 +32,7 @@ html, body{
 }
 body{
 	font-family : @font;
+	background : @c5;
 }
 
 .hidden{
@@ -94,9 +90,6 @@ button{
 	}
 	&>.edit{
 		background : @c3;
-	}
-	&>.main{
-		background : @c5;
 	}
 }
 
@@ -241,11 +234,21 @@ button{
 }
 
 .dialog{
-	display : none;
-}
-
-.keyboard{
-	display : none;
+	position : fixed;
+	top : 0;
+	left : 0;
+	width : 100%;
+	height : 100%;
+	background : rgba(200, 200, 200, .7);
+	z-index : 50;
+	
+	.retune{
+		
+	}
+	
+	.keyboard{
+		
+	}
 }
 
 button{

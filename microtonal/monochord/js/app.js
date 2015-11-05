@@ -619,6 +619,7 @@
 		$scope.lowerString = lowerString;
 		$scope.canRaiseString = canRaiseString;
 		$scope.raiseString = raiseString;
+		$scope.getMultipliers = getMultipliers;
 		
 		$http.get('presets.json').then(function(reply){
 			updatePresets(reply.data);
@@ -630,6 +631,10 @@
 				$scope.$apply();
 			}
 		});
+		
+		// ------------------
+		
+		$scope.popup = '';
 		
 		// ------------------
 		

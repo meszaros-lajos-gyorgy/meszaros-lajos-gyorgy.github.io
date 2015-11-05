@@ -20,7 +20,7 @@
 	<script src="js/app.js"></script>
 </head>
 <body ng-app="Microtonal">
-	<div ng-controller="MonochordCtrl" class="wrapper">
+	<div ng-controller="MonochordCtrl as m" class="wrapper">
 		<header>
 			<h1>Monochord</h1>
 		</header>
@@ -62,7 +62,7 @@
 			</section>
 			
 			<button ng-click="addSet()" class="icon-add" title="add a new set">add a new set</button>
-			<button class="icon-piano" title="open piano">open piano</button>
+			<button ng-click="popup = 'keyboard'" class="icon-piano" title="open keyboard">open keyboard</button>
 			
 			<ul class="sets">
 				<li ng-repeat="set in sets">
@@ -89,7 +89,7 @@
 					<button hold-click ng-disabled="!canRaiseHarmonics(set)" ng-click="raiseHarmonics(set.id)" class="icon-increase smaller" title="raise all">raise all</button>
 					<button hold-click ng-disabled="!canDoubleHarmonics(set)" ng-click="doubleHarmonics(set.id)" class="icon-double smaller" title="double all">double all</button>
 					<button ng-disabled="!canBeNormalized(set)" ng-click="normalize(set.id)" class="icon-normalize smaller" title="normalize ratios by sorting and reducing them">normalize ratios</button>
-					<button class="icon-tuning-fork smaller" title="retune this set">retune this set</button>
+					<button ng-click="$parent.popup = 'retune'" class="icon-tuning-fork smaller" title="retune this set">retune this set</button>
 					<button ng-click="removeSet(set.id)" class="icon-delete red smaller" title="delete this set">delete this set</button>
 					
 					<!--
@@ -110,18 +110,24 @@
 				</li>
 			</ul>
 		</div>
-		<div class="dialog">
-			<div class="retune">
+		<div class="dialog" ng-class="popup === '' ? 'hidden' : ''">
+			<div class="retune" ng-class="popup === 'retune' ? '' : 'hidden'">
+				<h2>Retune</h2>
 				
 			</div>
-		</div>
-		<div class="keyboard">
-			<h2>Keyboard</h2>
-			<!-- double tap on key = toggle key hold -->
-			<!-- table layout for the keys -->
-			<ul>
-				<li></li>
-			</ul>
+			<div class="keyboard" ng-class="popup === 'keyboard' ? '' : 'hidden'">
+				<h2>Keyboard</h2>
+				<!-- double tap on key = toggle key hold -->
+				<!-- table layout for the keys -->
+				<table>
+					<tr>
+						<td ng-repeat="set in sets">
+							{{getMultipliers(set) | json}}
+							<!-- <button></button> -->
+						</td>
+					</tr>
+				</table>
+			</div>
 		</div>
 	</div>
 </body>

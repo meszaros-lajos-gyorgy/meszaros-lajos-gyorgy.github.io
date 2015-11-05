@@ -45,7 +45,7 @@
 			"ratio" : [3, 1]
 		}]
 	},{
-		"name" : "Just intonation",
+		"name" : "12 tone just intonation",
 		"ratios" : [{
 			"name" : "unision",
 			"ratio" : [1, 1]
