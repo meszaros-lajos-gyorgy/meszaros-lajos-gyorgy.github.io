@@ -26,17 +26,17 @@
 		<div class="edit">
 			<div ng-show="stringToEdit.hasOwnProperty('id')">
 				<div class="multiplier">
-					<button hold-click ng-disabled="!canLowerString(stringToEdit)" ng-click="lowerString(stringToEdit)" class="icon decrease" title="decrease">decrease</button>
+					<button hold-click ng-disabled="!canLowerString(stringToEdit)" ng-click="lowerString(stringToEdit)" class="icon-decrease" title="decrease">decrease</button>
 					<dragnumber ng-model="stringToEdit.multiplier" min="1" max="highestHarmonic" weight="10"></dragnumber>
-					<button hold-click ng-disabled="!canRaiseString(stringToEdit)" ng-click="raiseString(stringToEdit)" class="icon increase" title="increase">increase</button>
+					<button hold-click ng-disabled="!canRaiseString(stringToEdit)" ng-click="raiseString(stringToEdit)" class="icon-increase" title="increase">increase</button>
 				</div>
 				
-				<button ng-show="!stringToEdit.muted" ng-click="stringToEdit.muted = true" class="icon speaker-on">mute</button>
-				<button ng-show="stringToEdit.muted" ng-click="stringToEdit.muted = false" class="icon speaker-off">unmute</button>
+				<button ng-show="!stringToEdit.muted" ng-click="stringToEdit.muted = true" class="icon-speaker-on">mute</button>
+				<button ng-show="stringToEdit.muted" ng-click="stringToEdit.muted = false" class="icon-speaker-off">unmute</button>
 				
 				<!-- <input ng-show="set.retune.type === 'manual'" type="radio" autocomplete="off" ng-value="stringToEdit.id" ng-model="set.retune.subject" /> -->
 				
-				<button ng-click="removeString(stringToEdit.id);stringToEdit={}" class="icon red delete" title="delete string">delete string</button>
+				<button ng-click="removeString(stringToEdit.id);stringToEdit={}" class="icon-delete red" title="delete string">delete string</button>
 			</div>
 		</div>
 		<div class="main">
@@ -44,8 +44,6 @@
 				<label>Fundamental frequency: <dragnumber min="1" ng-model="baseFrequency" width="5"></dragnumber> Hz</label>
 				<label>Master volume: <input type="range" min="0" autocomplete="off" ng-model="baseVolume" />({{baseVolume}}/100)</label>
 				<!-- <label>Autostack: <button ng-show="autoStack" ng-click="autoStack=false">enabled</button><button class="off" ng-show="!autoStack" ng-click="autoStack=true">disabled</button></label> -->
-				
-				<!-- show keyboard -->
 			</section>
 			
 			<section ng-show="presets.tunings" class="presets">
@@ -62,8 +60,8 @@
 				</div>
 			</section>
 			
-			<button ng-click="addSet()" class="icon add" title="add a new set">add a new set</button>
-			<button class="icon piano" title="open piano">open piano</button>
+			<button ng-click="addSet()" class="icon-add" title="add a new set">add a new set</button>
+			<button class="icon-piano" title="open piano">open piano</button>
 			
 			<ul class="sets">
 				<li ng-repeat="set in sets">
@@ -84,11 +82,14 @@
 							</span>
 						</li>
 					</ul>
-					<button ng-click="addString(set.id)" class="icon add" title="add string">add string</button>
-					<button hold-click ng-disabled="!canHalveHarmonics(set)" ng-click="halveHarmonics(set.id)" class="icon halve" title="halve all">halve all</button>
-					<button hold-click ng-disabled="!canLowerHarmonics(set)" ng-click="lowerHarmonics(set.id)" class="icon decrease" title="lower all">lower all</button>
-					<button hold-click ng-disabled="!canRaiseHarmonics(set)" ng-click="raiseHarmonics(set.id)" class="icon increase" title="raise all">raise all</button>
-					<button hold-click ng-disabled="!canDoubleHarmonics(set)" ng-click="doubleHarmonics(set.id)" class="icon double" title="double all">double all</button>
+					<button ng-click="addString(set.id)" class="icon-add smaller" title="add string">add string</button>
+					<button hold-click ng-disabled="!canHalveHarmonics(set)" ng-click="halveHarmonics(set.id)" class="icon-halve smaller" title="halve all">halve all</button>
+					<button hold-click ng-disabled="!canLowerHarmonics(set)" ng-click="lowerHarmonics(set.id)" class="icon-decrease smaller" title="lower all">lower all</button>
+					<button hold-click ng-disabled="!canRaiseHarmonics(set)" ng-click="raiseHarmonics(set.id)" class="icon-increase smaller" title="raise all">raise all</button>
+					<button hold-click ng-disabled="!canDoubleHarmonics(set)" ng-click="doubleHarmonics(set.id)" class="icon-double smaller" title="double all">double all</button>
+					<button ng-disabled="!canBeNormalized(set)" ng-click="normalize(set.id)" class="icon-normalize smaller" title="normalize ratios by sorting and reducing them">normalize ratios</button>
+					<button class="icon-tuning-fork smaller" title="retune this set">retune this set</button>
+					<button ng-click="removeSet(set.id)" class="icon-delete red smaller" title="delete this set">delete this set</button>
 					
 					<!--
 					/*
@@ -96,9 +97,7 @@
 					<select ng-class="isSetAssignedToKey(set.id) ? 'hidden' : ''" ng-model="set._.selectedKey" ng-options="key as data.label disable when data.setId > 0 for (key, data) in keyAssignments"></select>
 					<button ng-show="isSetAssignedToKey(set.id)" ng-click="unassignSetFromKeys(set.id)">unassign from key <b>{{keyAssignments[getAssignedKeyOfSet(set.id)].label}}</b></button>
 					*/
-					-->
 					
-					<!--
 					Type: <select autocomplete="off" ng-model="set.retune.type">
 						<option value="off">none</option>
 						<option value="lowest">(auto) lowest harmony</option>
@@ -107,10 +106,6 @@
 					</select><br />
 					Target: <select autocomplete="off" ng-model="set.retune.target" ng-options="value.value as value.label group by value.group for value in _retuneStringTargets[set.id]"></select>
 					-->
-					
-					<button ng-disabled="!canBeNormalized(set)" ng-click="normalize(set.id)" class="icon normalize" title="normalize ratios by sorting and reducing them">normalize ratios</button>
-					<button class="icon tuning-fork" title="retune this set">retune this set</button>
-					<button ng-click="removeSet(set.id)" class="icon red delete" title="delete this set">delete this set</button>
 				</li>
 			</ul>
 		</div>

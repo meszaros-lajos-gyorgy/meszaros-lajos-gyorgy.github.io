@@ -262,13 +262,25 @@ button{
 	vertical-align : top;
 	position : relative;
 	
+	&.smaller{
+		margin-top : 4px;
+		width : 40px;
+		height : 40px;
+		line-height : 40px;
+	}
+	
 	&:active:not([disabled]){
 		box-shadow : none!important;
 		margin-top : 2px;
 		height : 46px;
+		line-height : 46px;
+		&.smaller{
+			height : 38px;
+			line-height : 38px;
+		}
 	}
 	
-	&.icon{
+	&[class*="icon-"]{
 		font-size : 0;
 		
 		&::before{
@@ -282,19 +294,24 @@ button{
 			line-height : 46px;
 			font-size : 24px;
 		}
-		
-		&.add::before{ content: '\e801'; }
-		&.delete::before{ content: '\e800'; }
-		&.increase::before{}
-		&.decrease::before{}
-		&.double::before{}
-		&.halve::before{}
-		&.piano::before{ content: '\e803'; }
-		&.tuning-fork::before{ content: '\e802'; }
-		&.normalize::before{}
-		&.speaker-on::before{}
-		&.speaker-off::before{}
+		&.smaller::before{
+			width : 40px;
+			height : 38px;
+			line-height : 38px;
+		}
 	}
+	
+	&.icon-add::before{ content: '\e801'; }
+	&.icon-delete::before{ content: '\e800'; }
+	&.icon-increase::before{}
+	&.icon-decrease::before{}
+	&.icon-double::before{}
+	&.icon-halve::before{}
+	&.icon-piano::before{ content: '\e803'; }
+	&.icon-tuning-fork::before{ content: '\e802'; }
+	&.icon-normalize::before{}
+	&.icon-speaker-on::before{}
+	&.icon-speaker-off::before{}
 	
 	&.muted,
 	&.unmuted{
