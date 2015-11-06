@@ -13,6 +13,7 @@ body{
 	padding : 0;
 	background : #ddd;
 	font-family : Tahoma;
+	cursor : default;
 }
 img{
 	position : absolute;
