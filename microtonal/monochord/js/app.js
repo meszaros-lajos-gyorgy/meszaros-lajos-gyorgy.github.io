@@ -636,6 +636,55 @@
 		
 		$scope.popup = '';
 		
+		function showKeyboard(){
+			closePopup();
+			$scope.popup = 'keyboard';
+			$scope.sets.forEach(function(set){
+				set.muted = true;
+			});
+		}
+		function showRetune(){
+			closePopup();
+			$scope.popup = 'retune';
+		}
+		
+		function closePopup(){
+			switch($scope.popup){
+				case 'keyboard' :
+					$scope.sets.forEach(function(set){
+						set.muted = false;
+					});
+				break;
+			}
+			$scope.popup = '';
+		}
+		
+		$scope.showKeyboard = showKeyboard;
+		$scope.showRetune = showRetune;
+		$scope.closePopup = closePopup;
+		
+		// ------------------
+		
+		// todo: use mouseover/mouseout to emulate swipe
+		// todo: doubleclick?
+		document.body.addEventListener('mousedown', function(e){
+			findSetById(parseInt(e.target.getAttribute('data-set')), function(set){
+				set.muted = false;
+			});
+			$scope.$apply();
+		});
+		document.body.addEventListener('mouseup', function(e){
+			$scope.sets.forEach(function(set){
+				set.muted = true;
+			});
+			$scope.$apply();
+		});
+		
+		// ------------------
+		
+		// todo: implement touch events
+		// todo: double tap on key = toggle key hold
+		
 		// ------------------
 		
 		/*
@@ -740,6 +789,8 @@
 			$scope.addString(1, 7);
 			$scope.addSet(undefined, undefined, true);
 			$scope.addString(2, 1, undefined, true);
+			$scope.showKeyboard();
+			$scope.baseVolume = 10;
 			$scope.$apply();
 		}, 0);
 	}]);
