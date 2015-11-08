@@ -669,19 +669,35 @@
 			// todo: implement touch events
 			// todo: double tap on key = toggle key hold
 		}else{
-			// todo: use mouseover/mouseout to emulate swipe
+			var listening = false;
+			
 			// todo: doubleclick?
 			document.body.addEventListener('mousedown', function(e){
-				findSetById(parseInt(e.target.getAttribute('data-set')), function(set){
-					set.muted = false;
-				});
-				$scope.$apply();
+				if(!document.querySelector('.dialog .keyboard').classList.contains('hidden')){
+					listening = true;
+					findSetById(parseInt(e.target.getAttribute('data-set')), function(set){
+						set.muted = false;
+					});
+					$scope.$apply();
+				}
 				e.preventDefault();
 			});
 			document.body.addEventListener('mouseup', function(e){
 				if(!document.querySelector('.dialog .keyboard').classList.contains('hidden')){
+					listening = false;
 					$scope.sets.forEach(function(set){
 						set.muted = true;
+					});
+					$scope.$apply();
+				}
+			});
+			document.body.addEventListener('mouseover', function(e){
+				if(listening){
+					findSetById(parseInt(e.relatedTarget.getAttribute('data-set')), function(set){
+						set.muted = true;
+					});
+					findSetById(parseInt(e.target.getAttribute('data-set')), function(set){
+						set.muted = false;
 					});
 					$scope.$apply();
 				}
