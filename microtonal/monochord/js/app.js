@@ -665,25 +665,28 @@
 		
 		// ------------------
 		
-		// todo: use mouseover/mouseout to emulate swipe
-		// todo: doubleclick?
-		document.body.addEventListener('mousedown', function(e){
-			findSetById(parseInt(e.target.getAttribute('data-set')), function(set){
-				set.muted = false;
+		if(window.TouchEvent){
+			// todo: implement touch events
+			// todo: double tap on key = toggle key hold
+		}else{
+			// todo: use mouseover/mouseout to emulate swipe
+			// todo: doubleclick?
+			document.body.addEventListener('mousedown', function(e){
+				findSetById(parseInt(e.target.getAttribute('data-set')), function(set){
+					set.muted = false;
+				});
+				$scope.$apply();
+				e.preventDefault();
 			});
-			$scope.$apply();
-		});
-		document.body.addEventListener('mouseup', function(e){
-			$scope.sets.forEach(function(set){
-				set.muted = true;
+			document.body.addEventListener('mouseup', function(e){
+				if(!document.querySelector('.dialog .keyboard').classList.contains('hidden')){
+					$scope.sets.forEach(function(set){
+						set.muted = true;
+					});
+					$scope.$apply();
+				}
 			});
-			$scope.$apply();
-		});
-		
-		// ------------------
-		
-		// todo: implement touch events
-		// todo: double tap on key = toggle key hold
+		}
 		
 		// ------------------
 		
@@ -784,11 +787,12 @@
 		
 		setTimeout(function(){
 			$scope.baseVolume = 0;
-			$scope.addSet(undefined, undefined, true);
-			$scope.addString(1, 6);
-			$scope.addString(1, 7);
-			$scope.addSet(undefined, undefined, true);
-			$scope.addString(2, 1, undefined, true);
+			
+			$scope.addPreset([4, 5]);
+			$scope.addPreset([5, 6]);
+			$scope.addPreset([6, 7]);
+			$scope.addPreset([7, 8]);
+			
 			$scope.showKeyboard();
 			$scope.baseVolume = 10;
 			$scope.$apply();

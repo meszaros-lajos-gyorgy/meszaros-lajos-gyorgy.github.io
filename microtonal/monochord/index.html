@@ -110,14 +110,14 @@
 		<div class="dialog" ng-class="popup === '' ? 'hidden' : ''">
 			<div class="retune" ng-class="popup === 'retune' ? '' : 'hidden'">
 				<header>
-					<button ng-click="closePopup()">close popup</button>
+					<button class="close icon-delete" ng-click="closePopup()">close popup</button>
 					<h2>Retune</h2>
 				</header>
 				
 			</div>
 			<div class="keyboard" ng-class="popup === 'keyboard' ? '' : 'hidden'">
 				<header>
-					<button ng-click="closePopup()">close popup</button>
+					<button class="close icon-delete" ng-click="closePopup()">close popup</button>
 					<h2>Keyboard</h2>
 					
 					<label>Fundamental frequency: <dragnumber min="1" ng-model="baseFrequency" width="5"></dragnumber> Hz</label>
