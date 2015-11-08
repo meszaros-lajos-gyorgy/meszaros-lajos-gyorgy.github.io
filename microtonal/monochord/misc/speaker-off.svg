@@ -1,1 +1,51 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44.501441 41.499999"><g fill-rule="evenodd" color="#000" font-family="sans-serif" white-space="normal"><path d="M20.43945 0L10 10.43945V31.0625L20.43945 41.5H26.5V0zm.6211 1.5H25V40h-3.93945L11.5 30.43945V11.0625zM0 10v21.5h8.5V10zM31.95674 12.87002l-3.3652 3.36604 4.58976 4.58891-4.58976 4.58974 3.3652 3.3652 4.58975-4.58891 4.58975 4.58891 3.3652-3.3652-4.58976-4.58974 4.58976-4.58891-3.3652-3.36604-4.58975 4.58975z" style="line-height:normal;text-indent:0;text-align:start;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;text-transform:none;block-progression:tb;isolation:auto;mix-blend-mode:normal" overflow="visible" solid-color="#000000"/></g></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.1"
+   width="46.001438"
+   height="41.5"
+   id="svg3503">
+  <defs
+     id="defs3505" />
+  <metadata
+     id="metadata3508">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-68.42785,-177.32647)"
+     id="layer1">
+    <g
+       transform="translate(-124.94715,45.715138)"
+       id="g4248">
+      <g
+         id="g4182">
+        <path
+           d="m 214.56445,131.61133 -10.43945,10.43945 0,20.62305 10.43945,10.4375 6.06055,0 0,-41.5 z m 0.6211,1.5 3.93945,0 0,38.5 -3.93945,0 -9.56055,-9.56055 0,-19.37695 z"
+           id="path4156-7"
+           style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:sans-serif" />
+        <path
+           d="m 194.125,141.61133 0,21.5 8.5,0 0,-21.5 z"
+           id="path4158-9"
+           style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:sans-serif" />
+      </g>
+      <path
+         d="m 226.08174,144.48135 -3.3652,3.36604 4.58976,4.58891 -4.58976,4.58974 3.3652,3.3652 4.58975,-4.58891 4.58975,4.58891 3.3652,-3.3652 -4.58976,-4.58974 4.58976,-4.58891 -3.3652,-3.36604 -4.58975,4.58975 z"
+         id="path4215-2"
+         style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:sans-serif" />
+    </g>
+  </g>
+</svg>

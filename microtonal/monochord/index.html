@@ -27,9 +27,9 @@
 		<div class="edit">
 			<div ng-show="stringToEdit.hasOwnProperty('id')">
 				<div class="multiplier">
-					<button hold-click ng-disabled="!canLowerString(stringToEdit)" ng-click="lowerString(stringToEdit)" class="icon-decrease" title="decrease">decrease</button>
+					<button hold-click ng-disabled="!canLowerString(stringToEdit)" ng-click="lowerString(stringToEdit)" class="icon-remove" title="decrease">decrease</button>
 					<dragnumber ng-model="stringToEdit.multiplier" min="1" max="highestHarmonic" weight="10"></dragnumber>
-					<button hold-click ng-disabled="!canRaiseString(stringToEdit)" ng-click="raiseString(stringToEdit)" class="icon-increase" title="increase">increase</button>
+					<button hold-click ng-disabled="!canRaiseString(stringToEdit)" ng-click="raiseString(stringToEdit)" class="icon-add" title="increase">increase</button>
 				</div>
 				
 				<button ng-show="!stringToEdit.muted" ng-click="stringToEdit.muted = true" class="icon-speaker-on">mute</button>
