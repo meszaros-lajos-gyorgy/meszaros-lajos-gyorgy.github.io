@@ -635,6 +635,7 @@
 		// ------------------
 		
 		$scope.popup = '';
+		$scope.retuningSetId = 0;
 		
 		function showKeyboard(){
 			closePopup();
@@ -643,9 +644,10 @@
 				set.muted = true;
 			});
 		}
-		function showRetune(){
+		function showRetune(setId){
 			closePopup();
 			$scope.popup = 'retune';
+			$scope.retuningSetId = setId;
 		}
 		
 		function closePopup(){
@@ -664,6 +666,14 @@
 		$scope.closePopup = closePopup;
 		
 		// ------------------
+		
+		// RETUNE:
+		
+		// $scope.retuningSetId
+		
+		// ------------------
+		
+		// KEYBOARD:
 		
 		if(window.TouchEvent){
 			// todo: implement touch events
@@ -806,8 +816,13 @@
 			$scope.addPreset([6, 7]);
 			$scope.addPreset([7, 8]);
 			
-			$scope.showKeyboard();
+			/*
 			$scope.baseVolume = 10;
+			$scope.showKeyboard();
+			*/
+			$scope.baseVolume = 0;
+			$scope.showRetune();
+			
 			$scope.$apply();
 		}, 0);
 	}]);

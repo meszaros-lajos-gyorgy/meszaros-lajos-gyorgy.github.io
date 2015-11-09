@@ -86,7 +86,7 @@
 					<button hold-click ng-disabled="!canRaiseHarmonics(set)" ng-click="raiseHarmonics(set.id)" class="icon-increase smaller" title="raise all">raise all</button>
 					<button hold-click ng-disabled="!canDoubleHarmonics(set)" ng-click="doubleHarmonics(set.id)" class="icon-double smaller" title="double all">double all</button>
 					<button ng-disabled="!canBeNormalized(set)" ng-click="normalize(set.id)" class="icon-normalize smaller" title="normalize ratios by sorting and reducing them">normalize ratios</button>
-					<button ng-click="$parent.showRetune()" class="icon-tuning-fork smaller" title="retune this set">retune this set</button>
+					<button ng-click="$parent.showRetune(set.id)" class="icon-tuning-fork smaller" title="retune this set">retune this set</button>
 					<button ng-click="removeSet(set.id)" class="icon-delete red smaller" title="delete this set">delete this set</button>
 					
 					<!--
@@ -114,6 +114,17 @@
 					<h2>Retune</h2>
 				</header>
 				
+				<!--
+				target to givenSet.whichString
+				
+				target = none|baseFrequency|otherSet.whatSring
+				if(target === none) then we don't have to tune anything
+				otherSet = previous|next|manually selected set
+				whatString = lowest harmony|highest harmony|manually selected harmony
+				
+				givenSet = retuningSetId
+				whichString = lowest harmony|highest harmony|manually selected harmony
+				-->
 			</div>
 			<div class="keyboard" ng-class="popup === 'keyboard' ? '' : 'hidden'">
 				<header>
