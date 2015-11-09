@@ -680,7 +680,6 @@
 					});
 					$scope.$apply();
 				}
-				e.preventDefault();
 			});
 			document.body.addEventListener('mouseup', function(e){
 				if(!document.querySelector('.dialog .keyboard').classList.contains('hidden')){
@@ -802,8 +801,6 @@
 		// === debug for sitebuild ===
 		
 		setTimeout(function(){
-			$scope.baseVolume = 0;
-			
 			$scope.addPreset([4, 5]);
 			$scope.addPreset([5, 6]);
 			$scope.addPreset([6, 7]);
