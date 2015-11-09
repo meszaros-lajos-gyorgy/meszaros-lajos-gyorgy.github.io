@@ -31,9 +31,7 @@
 			tunings : [],
 			misc : []
 		};
-		$scope._retuneStringTargets = {};
 		$scope.stringToEdit = {};
-		// $scope.autoStack = false;
 		
 		// ---------------
 		
@@ -211,14 +209,6 @@
 			return arr;
 		}
 		
-		function updateRetuneStringTargets(){
-			var targets = {};
-			$scope.sets.forEach(function(set){
-				targets[set.id] = getRetuneStringTargets(set.id);
-			});
-			$scope._retuneStringTargets = targets;
-		}
-		
 		function updateFrequencies(){
 			$scope.sets.forEach(function(set){
 				set.strings.forEach(function(string){
@@ -379,11 +369,6 @@
 			return lastSetId;
 		}
 		function removeSet(setId){
-			/*
-			if($scope.autoStack){
-				// todo
-			}
-			*/
 			findSetById(setId, function(set, index, array){
 				array.splice(index, 1);
 			});
@@ -397,27 +382,6 @@
 					volume : typeof volume !== 'undefined' ? volume : 100,
 					muted : typeof muted !== 'undefined' ? muted : false
 				});
-				/*
-				if($scope.autoStack){
-					findStringByHarmonic(set, getLowestHarmonic(set), function(string){
-						string.muted = true;
-					});
-					
-					set.retune.type = 'lowest';
-					
-					findPreviousSet(setId, function(_set){
-						findStringByHarmonic(_set, getHighestHarmonic(_set), function(string){
-							set.retune.target = string.id;
-						});
-					})
-					
-					findNextSet(setId, function(_set){
-						findStringByHarmonic(set, getHighestHarmonic(set), function(string){
-							_set.retune.target = string.id;
-						});
-					});
-				}
-				*/
 			});
 			return lastStringId;
 		}
@@ -427,11 +391,6 @@
 					removeSet(set.id);
 				}else{
 					array.splice(index, 1);
-					/*
-					if($scope.autoStack){
-						// todo
-					}
-					*/
 					if($scope.stringToEdit.id === stringId){
 						$scope.stringToEdit = {};
 					}
@@ -671,6 +630,16 @@
 		
 		// $scope.retuningSetId
 		
+		$scope._retuneStringTargets = {};
+		
+		function updateRetuneStringTargets(){
+			var targets = {};
+			$scope.sets.forEach(function(set){
+				targets[set.id] = getRetuneStringTargets(set.id);
+			});
+			$scope._retuneStringTargets = targets;
+		}
+		
 		// ------------------
 		
 		// KEYBOARD:
@@ -821,7 +790,7 @@
 			$scope.showKeyboard();
 			*/
 			$scope.baseVolume = 0;
-			$scope.showRetune();
+			// $scope.showRetune();
 			
 			$scope.$apply();
 		}, 0);

@@ -3,6 +3,8 @@
 	
 	var app = angular.module('HoldclickDirective', []);
 	
+	// TODO: should only work with left mouse button!
+	
 	app.directive('holdClick', function(){
 		return {
 			restrict: 'A',
