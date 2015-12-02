@@ -547,8 +547,9 @@
 			return ratios.join(', ');
 		}
 		
-		function setStringToEdit(string){
+		function setStringToEdit(string, set){
 			$scope.stringToEdit = string;
+			$scope.setOfStringToEdit = set;
 		}
 		
 		$scope.addSet = addSet;

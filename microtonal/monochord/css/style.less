@@ -83,84 +83,26 @@ button{
 
 .wrapper{
 	height : 100%;
-	&>header{
-		background : @c3;
-		text-align : center;
-		h1{
-			margin : 0;
-			padding : 0;
-			font-size : 5vh;
-			font-variant : small-caps;
-			color : @c2;
-			text-shadow :
-				0 -1px 0 @c1,
-				0 1px 0 @c4
-			;
-		}
-	}
-	&>.edit{
-		background : @c3;
-	}
 }
 
 @media (orientation: landscape){
 	.wrapper{
-		&>header{
-			position : fixed;
-			width : 30vw;
-			height : 10vh;
-			top : 0;
-			right : 0;
-			box-shadow : 0 -3px 0 0 @c5 inset;
-			h1{
-				line-height : 10vh;
-			}
-		}
-		&>.edit{
-			position : fixed;
-			width : 30vw;
-			height : 90vh;
-			bottom : 0;
-			right : 0;
-		}
 		&>.main{
 			min-height : 100%;
 			box-sizing : border-box;
-			padding : 0 30vw 0 0;
+			padding : 0;
 		}
 	}
 }
 
 @media (orientation: portrait){
 	.wrapper{
-		&>header{
-			height : 7vh;
-			position : fixed;
-			top : 0;
-			left : 0;
-			width : 100%;
-			h1{
-				line-height : 7vh;
-			}
-		}
-		&>.edit{
-			height : 30vh;
-			position : fixed;
-			bottom : 0;
-			left : 0;
-			width : 100%;
-		}
 		&>.main{
 			min-height : 100%;
 			box-sizing : border-box;
-			padding : 7vh 0 30vh 0;
+			padding : 0;
 		}
 	}
-}
-
-.edit .multiplier{
-	text-align : center;
-	padding : 10px 0;
 }
 
 .base-controls{
@@ -210,8 +152,9 @@ button{
 				margin-left : 0;
 			}
 			&:last-child{
-				border-right : 3px double @c1;
+				border-right : 1px solid @c1;
 				padding-right : 4px;
+				margin-right : 1px;
 			}
 			position : relative;
 			.hertz{
@@ -237,6 +180,15 @@ button{
 				overflow : hidden;
 			}
 		}
+	}
+	.string-edit{
+		display : inline-block;
+		padding-right : 4px;
+		vertical-align : top;
+	}
+	.set-controls{
+		display : inline-block;
+		border-left : 1px solid @c1;
 	}
 	button{
 		margin-left : 4px;
@@ -313,6 +265,7 @@ button{
 	
 	&.smaller{
 		margin-top : 4px;
+		margin-bottom : 4px;
 		width : 40px;
 		height : 40px;
 		line-height : 40px;

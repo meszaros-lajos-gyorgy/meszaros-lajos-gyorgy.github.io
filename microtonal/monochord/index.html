@@ -21,25 +21,6 @@
 </head>
 <body ng-app="Microtonal">
 	<div ng-controller="MonochordCtrl as m" class="wrapper">
-		<header>
-			<h1>Monochord</h1>
-		</header>
-		<div class="edit">
-			<div ng-show="stringToEdit.hasOwnProperty('id')">
-				<div class="multiplier">
-					<button hold-click ng-disabled="!canLowerString(stringToEdit)" ng-click="lowerString(stringToEdit)" class="icon-remove" title="decrease">decrease</button>
-					<dragnumber ng-model="stringToEdit.multiplier" min="1" max="highestHarmonic" weight="10"></dragnumber>
-					<button hold-click ng-disabled="!canRaiseString(stringToEdit)" ng-click="raiseString(stringToEdit)" class="icon-add" title="increase">increase</button>
-				</div>
-				
-				<button ng-show="!stringToEdit.muted" ng-click="stringToEdit.muted = true" class="icon-speaker-on">mute</button>
-				<button ng-show="stringToEdit.muted" ng-click="stringToEdit.muted = false" class="icon-speaker-off">unmute</button>
-				
-				<!-- <input ng-show="set.retune.type === 'manual'" type="radio" autocomplete="off" ng-value="stringToEdit.id" ng-model="set.retune.subject" /> -->
-				
-				<button ng-click="removeString(stringToEdit.id);stringToEdit={}" class="icon-delete red" title="delete string">delete string</button>
-			</div>
-		</div>
 		<div class="main">
 			<section class="base-controls">
 				<label>Fundamental frequency: <dragnumber min="1" ng-model="baseFrequency" width="5"></dragnumber> Hz</label>
@@ -65,7 +46,7 @@
 			
 			<ul class="sets">
 				<li ng-repeat="set in sets">
-					<!-- <label>Volume <input type="range" min="0" max="100" autocomplete="off" ng-model="set.volume" />({{set.volume}}/100{{set.muted ? ' - muted' : ''}})</label> -->
+					<!-- <label>Volume <input type="range" min="0" max="100" autocomplete="off" ng-model="set.volume" />({{set.volume}}/100)</label> -->
 					
 					<!-- <span style="float:left;">Ratio known as: <i>{{ratioKnownAs(set)}}</i></span> -->
 					
@@ -73,20 +54,38 @@
 					<ul class="strings">
 						<li ng-repeat="string in set.strings">
 							<span class="hertz">{{freqs[$index]|number:0}} Hz</span>
-							<button ng-click="setStringToEdit(string)" ng-class="[(stringToEdit.id === string.id ? 'active' : ''), (string.muted ? ' muted' : 'unmuted')]">{{string.multiplier}}</button>
+							<button ng-click="setStringToEdit(string, set)" ng-class="[(stringToEdit.id === string.id ? 'active' : ''), (string.muted ? ' muted' : 'unmuted')]">{{string.multiplier}}</button>
 							<span class="cent" ng-show="$index > 0">
 								{{cents[$index] - cents[$index - 1] >= 0 ? '+' : ''}}{{cents[$index] - cents[$index - 1] | number:2}} &cent;
 							</span>
 						</li>
 					</ul>
-					<button ng-click="addString(set.id)" class="icon-add smaller" title="add string">add string</button>
-					<button hold-click ng-disabled="!canHalveHarmonics(set)" ng-click="halveHarmonics(set.id)" class="icon-halve smaller" title="halve all">halve all</button>
-					<button hold-click ng-disabled="!canLowerHarmonics(set)" ng-click="lowerHarmonics(set.id)" class="icon-decrease smaller" title="lower all">lower all</button>
-					<button hold-click ng-disabled="!canRaiseHarmonics(set)" ng-click="raiseHarmonics(set.id)" class="icon-increase smaller" title="raise all">raise all</button>
-					<button hold-click ng-disabled="!canDoubleHarmonics(set)" ng-click="doubleHarmonics(set.id)" class="icon-double smaller" title="double all">double all</button>
-					<button ng-disabled="!canBeNormalized(set)" ng-click="normalize(set.id)" class="icon-normalize smaller" title="normalize ratios by sorting and reducing them">normalize ratios</button>
-					<button ng-click="$parent.showRetune(set.id)" class="icon-tuning-fork smaller" title="retune this set">retune this set</button>
-					<button ng-click="removeSet(set.id)" class="icon-delete red smaller" title="delete this set">delete this set</button>
+					
+					<div class="string-edit" ng-show="$parent.stringToEdit.hasOwnProperty('id') && $parent.setOfStringToEdit.id === set.id">
+						<button hold-click ng-disabled="!canLowerString($parent.stringToEdit)" ng-click="lowerString($parent.stringToEdit)" class="icon-remove smaller" title="decrease">decrease</button>
+						<dragnumber ng-model="$parent.stringToEdit.multiplier" min="1" max="highestHarmonic" weight="10"></dragnumber>
+						<button hold-click ng-disabled="!canRaiseString($parent.stringToEdit)" ng-click="raiseString($parent.stringToEdit)" class="icon-add smaller" title="increase">increase</button>
+						
+						<button ng-show="!$parent.stringToEdit.muted" ng-click="$parent.stringToEdit.muted = true" class="icon-speaker-on smaller">mute</button>
+						<button ng-show="$parent.stringToEdit.muted" ng-click="$parent.stringToEdit.muted = false" class="icon-speaker-off smaller">unmute</button>
+						
+						<!-- <input ng-show="set.retune.type === 'manual'" type="radio" autocomplete="off" ng-value="$parent.stringToEdit.id" ng-model="set.retune.subject" /> -->
+						
+						<button ng-click="removeString($parent.stringToEdit.id);$parent.stringToEdit={};$parent.setOfStringToEdit={}" class="icon-delete red smaller" title="delete string">delete string</button>
+					</div>
+					
+					<div class="set-controls">
+						<button ng-click="addString(set.id)" class="icon-add smaller" title="add string">add string</button>
+						<button hold-click ng-disabled="!canHalveHarmonics(set)" ng-click="halveHarmonics(set.id)" class="icon-halve smaller" title="halve all">halve all</button>
+						<button hold-click ng-disabled="!canLowerHarmonics(set)" ng-click="lowerHarmonics(set.id)" class="icon-decrease smaller" title="lower all">lower all</button>
+						<button hold-click ng-disabled="!canRaiseHarmonics(set)" ng-click="raiseHarmonics(set.id)" class="icon-increase smaller" title="raise all">raise all</button>
+						<button hold-click ng-disabled="!canDoubleHarmonics(set)" ng-click="doubleHarmonics(set.id)" class="icon-double smaller" title="double all">double all</button>
+						<button ng-disabled="!canBeNormalized(set)" ng-click="normalize(set.id)" class="icon-normalize smaller" title="normalize ratios by sorting and reducing them">normalize ratios</button>
+						<button ng-click="$parent.showRetune(set.id)" class="icon-tuning-fork smaller" title="retune this set">retune this set</button>
+						<button ng-click="removeSet(set.id)" class="icon-delete red smaller" title="delete this set">delete this set</button>
+						<button ng-show="!set.muted" ng-click="set.muted = true" class="icon-speaker-on smaller">mute</button>
+						<button ng-show="set.muted" ng-click="set.muted = false" class="icon-speaker-off smaller">unmute</button>
+					</div>
 					
 					<!--
 					/*
@@ -136,7 +135,7 @@
 				
 				<table>
 					<tr>
-						<td ng-repeat="set in sets" data-set="{{set.id}}">
+						<td ng-repeat="set in sets|filter:{muted:false}" data-set="{{set.id}}">
 							<!-- <label>Volume <input type="range" min="0" max="100" autocomplete="off" ng-model="set.volume" />({{set.volume}}/100{{set.muted ? ' - muted' : ''}})</label> -->
 							{{getMultipliers(set).join(':')}}
 						</td>
