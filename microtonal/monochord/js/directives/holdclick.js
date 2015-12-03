@@ -3,7 +3,7 @@
 	
 	var app = angular.module('HoldclickDirective', []);
 	
-	// TODO: should only work with left mouse button!
+	// var manualMouseupTarget = null;
 	
 	app.directive('holdClick', function(){
 		return {
@@ -16,12 +16,20 @@
 				var startHandler = function(e){
 					if(!$element[0].disabled){
 						$element.triggerHandler('click');
+						if($element[0].disabled){
+							stopHandler(e);
+							// manualMouseupTarget = $element[0];
+						}
 					}
 					
 					firstPeriod = setTimeout(function(){
 						secondPeriod = setInterval(function(){
 							if(over && !$element[0].disabled){
 								$element.triggerHandler('click');
+								if($element[0].disabled){
+									stopHandler(e);
+									// manualMouseupTarget = $element[0];
+								}
 							}
 						}, 50);
 					}, 700);
@@ -30,14 +38,18 @@
 					// e.preventDefault();
 				};
 				var stopHandler = function(e){
-					if(firstPeriod !== null){
-						clearTimeout(firstPeriod);
-						firstPeriod = null;
-					}
-					if(secondPeriod !== null){
-						clearInterval(secondPeriod);
-						secondPeriod = null;
-					}
+					// if(e.target === manualMouseupTarget){
+					// 	manualMouseupTarget = null;
+					// }else{
+						if(firstPeriod !== null){
+							clearTimeout(firstPeriod);
+							firstPeriod = null;
+						}
+						if(secondPeriod !== null){
+							clearInterval(secondPeriod);
+							secondPeriod = null;
+						}
+					// }
 				};
 				
 				$element[0].addEventListener('click', function(e){
@@ -53,9 +65,15 @@
 					over = false;
 					$element[0].addEventListener('mousedown', function(e){
 						over = true;
-						startHandler(e);
+						if(e.buttons === 1){
+							startHandler(e);
+						}
 					});
-					window.addEventListener('mouseup', stopHandler);
+					window.addEventListener('mouseup', function(e){
+						if(e.target === $element[0] && e.buttons !== 1){
+							stopHandler(e);
+						}
+					});
 					$element[0].addEventListener('mouseover', function(){
 						over = true;
 					});
