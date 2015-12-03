@@ -59,6 +59,9 @@
 								{{cents[$index] - cents[$index - 1] >= 0 ? '+' : ''}}{{cents[$index] - cents[$index - 1] | number:2}} &cent;
 							</span>
 						</li>
+						<li>
+							<button ng-click="addString(set.id)" class="icon-add" title="add string">add string</button>
+						</li>
 					</ul>
 					
 					<div class="string-edit" ng-show="$parent.stringToEdit.hasOwnProperty('id') && $parent.setOfStringToEdit.id === set.id">
@@ -75,7 +78,6 @@
 					</div>
 					
 					<div class="set-controls">
-						<button ng-click="addString(set.id)" class="icon-add smaller" title="add string">add string</button>
 						<button hold-click ng-disabled="!canHalveHarmonics(set)" ng-click="halveHarmonics(set.id)" class="icon-halve smaller" title="halve all">halve all</button>
 						<button hold-click ng-disabled="!canLowerHarmonics(set)" ng-click="lowerHarmonics(set.id)" class="icon-decrease smaller" title="lower all">lower all</button>
 						<button hold-click ng-disabled="!canRaiseHarmonics(set)" ng-click="raiseHarmonics(set.id)" class="icon-increase smaller" title="raise all">raise all</button>
@@ -135,7 +137,7 @@
 				
 				<table>
 					<tr>
-						<td ng-repeat="set in sets|filter:{muted:false}" data-set="{{set.id}}">
+						<td ng-repeat="set in sets" data-set="{{set.id}}">
 							<!-- <label>Volume <input type="range" min="0" max="100" autocomplete="off" ng-model="set.volume" />({{set.volume}}/100{{set.muted ? ' - muted' : ''}})</label> -->
 							{{getMultipliers(set).join(':')}}
 						</td>
