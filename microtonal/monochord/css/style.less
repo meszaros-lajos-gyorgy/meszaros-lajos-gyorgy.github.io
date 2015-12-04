@@ -81,6 +81,24 @@ button{
 }
 */
 
+._icon{
+	font-family: 'monochord';
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+._icon-increase{ content: '\e800'; }
+._icon-halve{ content: '\e801'; }
+._icon-double{ content: '\e802'; }
+._icon-decrease{ content: '\e803'; }
+._icon-speaker-on{ content: '\e804'; }
+._icon-piano{ content: '\e805'; }
+._icon-remove{ content: '\e806'; }
+._icon-speaker-off{ content: '\e807'; }
+._icon-tuning-fork{ content: '\e808'; }
+._icon-delete{ content: '\e809'; }
+._icon-add{ content: '\e80a'; }
+
 .wrapper{
 	height : 100%;
 }
@@ -106,7 +124,16 @@ button{
 }
 
 .base-controls{
-	
+	.volume{
+		&::before{
+			._icon;
+			._icon-speaker-off;
+		}
+		&::after{
+			._icon;
+			._icon-speaker-on;
+		}
+	}
 }
 .presets{
 	display : none;
@@ -250,6 +277,31 @@ button{
 	}
 }
 
+[class*="icon-"]{
+	font-size : 0;
+	
+	&::before{
+		._icon;
+		
+		display : inline-block;
+		width : 48px;
+		height : 46px;
+		line-height : 46px;
+		font-size : 24px;
+	}
+}
+.icon-increase::before{ ._icon-increase; }
+.icon-halve::before{ ._icon-halve; }
+.icon-double::before{ ._icon-double; }
+.icon-decrease::before{ ._icon-decrease; }
+.icon-speaker-on::before{ ._icon-speaker-on; }
+.icon-piano::before{ ._icon-piano; }
+.icon-remove::before{ ._icon-remove; }
+.icon-speaker-off::before{ ._icon-speaker-off; }
+.icon-tuning-fork::before{ ._icon-tuning-fork; }
+.icon-delete::before{ ._icon-delete; }
+.icon-add::before{ ._icon-add; }
+
 button{
 	border : 0;
 	padding : 0;
@@ -288,10 +340,6 @@ button{
 		font-size : 0;
 		
 		&::before{
-			font-family: 'monochord';
-			-webkit-font-smoothing: antialiased;
-			-moz-osx-font-smoothing: grayscale;
-			
 			display : block;
 			width : 48px;
 			height : 46px;
@@ -304,20 +352,6 @@ button{
 			line-height : 38px;
 		}
 	}
-	
-	// &.icon-normalize::before{}
-	
-	&.icon-increase:before { content: '\e800'; }
-	&.icon-halve:before { content: '\e801'; }
-	&.icon-double:before { content: '\e802'; }
-	&.icon-decrease:before { content: '\e803'; }
-	&.icon-speaker-on:before { content: '\e804'; }
-	&.icon-piano:before { content: '\e805'; }
-	&.icon-remove:before { content: '\e806'; }
-	&.icon-speaker-off:before { content: '\e807'; }
-	&.icon-tuning-fork:before { content: '\e808'; }
-	&.icon-delete:before { content: '\e809'; }
-	&.icon-add:before { content: '\e80a'; }
 	
 	&.muted,
 	&.unmuted{

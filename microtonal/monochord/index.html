@@ -24,7 +24,12 @@
 		<div class="main">
 			<section class="base-controls">
 				<label>Fundamental frequency: <dragnumber min="1" ng-model="baseFrequency" width="5"></dragnumber> Hz</label>
-				<label>Master volume: <input type="range" min="0" autocomplete="off" ng-model="baseVolume" />({{baseVolume}}/100)</label>
+				<div>Master volume:
+					<label class="volume">
+						<input type="range" min="0" max="100" autocomplete="off" ng-model="baseVolume" />
+						<span class="data">{{baseVolume}}%</span>
+					</label>
+				</div>
 			</section>
 			
 			<section ng-show="presets.tunings" class="presets">
@@ -49,7 +54,6 @@
 					<!-- <label>Volume <input type="range" min="0" max="100" autocomplete="off" ng-model="set.volume" />({{set.volume}}/100)</label> -->
 					
 					<!-- <span style="float:left;">Ratio known as: <i>{{ratioKnownAs(set)}}</i></span> -->
-					
 					{{freqs = calculateFrequencies(set);cents = calculateCents(set);''}}
 					<ul class="strings">
 						<li ng-repeat="string in set.strings">
@@ -71,9 +75,7 @@
 						
 						<button ng-show="!$parent.stringToEdit.muted" ng-click="$parent.stringToEdit.muted = true" class="icon-speaker-on smaller">mute</button>
 						<button ng-show="$parent.stringToEdit.muted" ng-click="$parent.stringToEdit.muted = false" class="icon-speaker-off smaller">unmute</button>
-						
 						<!-- <input ng-show="set.retune.type === 'manual'" type="radio" autocomplete="off" ng-value="$parent.stringToEdit.id" ng-model="set.retune.subject" /> -->
-						
 						<button ng-click="removeString($parent.stringToEdit.id);$parent.stringToEdit={};$parent.setOfStringToEdit={}" class="icon-delete red smaller" title="delete string">delete string</button>
 					</div>
 					
@@ -88,7 +90,6 @@
 						<button ng-show="!set.muted" ng-click="set.muted = true" class="icon-speaker-on smaller">mute</button>
 						<button ng-show="set.muted" ng-click="set.muted = false" class="icon-speaker-off smaller">unmute</button>
 					</div>
-					
 					<!--
 					/*
 					<button ng-disabled="!set._.selectedKey" ng-show="!isSetAssignedToKey(set.id)" ng-click="assignSetToKey(set.id, set._.selectedKey)">assign to key:</button>
@@ -113,7 +114,6 @@
 					<button class="close icon-delete" ng-click="closePopup()">close popup</button>
 					<h2>Retune</h2>
 				</header>
-				
 				<!--
 				target to givenSet.whichString
 				
