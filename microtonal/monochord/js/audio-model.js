@@ -107,7 +107,6 @@
 		var correctGains = function(diff){
 			var correctedDiff = JSON.parse(JSON.stringify(diff));
 			
-			/*
 			var totalSetGain = 0;
 			var setGainLimit = 1;
 			
@@ -127,16 +126,40 @@
 				});
 			}
 			
-			var totalStringGain = 0;
+			var totalStringGains = {}; // we have to calculate them for every set
+			var stringsPerSet = {};
 			var stringGainLimiter = 1;
 			
 			Object.keys(diff.added.stringGains).forEach(function(gStringId){
-				totalStringGain += diff.added.stringGains[gStringId].gain.value;
+				var setId = diff.added.stringGains[gStringId].connectTo;
+				if(!totalStringGains[setId]){
+					totalStringGains[setId] = 0;
+				}
+				if(!stringsPerSet[setId]){
+					stringsPerSet[setId] = 0;
+				}
+				totalStringGains[setId] += diff.added.stringGains[gStringId].gain.value;
+				stringsPerSet[setId]++;
 			});
 			Object.keys(diff.changed.stringGains).forEach(function(gStringId){
-				totalStringGain += diff.changed.stringGains[gStringId].gain.value;
+				var setId = diff.changed.stringGains[gStringId].connectTo;
+				if(!totalStringGains[setId]){
+					totalStringGains[setId] = 0;
+				}
+				if(!stringsPerSet[setId]){
+					stringsPerSet[setId] = 0;
+				}
+				totalStringGains[setId] += diff.changed.stringGains[gStringId].gain.value;
+				stringsPerSet[setId]++;
 			});
 			
+			/*
+			Object.keys(totalStringGains).forEach(function(setId){
+				if()
+			});
+			*/
+			
+			/*
 			if(totalStringGain > stringGainLimiter){
 				Object.keys(diff.added.stringGains).forEach(function(gStringId){
 					diff.added.stringGains[gStringId].gain.value *= (stringGainLimiter / totalStringGain);
