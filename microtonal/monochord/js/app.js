@@ -24,14 +24,19 @@
 		var lowestHarmonic = 1;
 		var highestHarmonic = 5000;
 		
-		$scope.baseVolume = 100;
-		$scope.baseFrequency = 100;
+		$scope.baseVolume = 10;
+		$scope.baseFrequency = 50;
 		$scope.sets = [];
 		$scope.presets = {
 			tunings : [],
 			misc : []
 		};
 		$scope.stringToEdit = {};
+		
+		// ---------------
+		
+		// initialize the base volume
+		AudioModel.setMainVolume($scope.baseVolume);
 		
 		// ---------------
 		
@@ -489,7 +494,7 @@
 				});
 			});
 			$scope.presets = data;
-			$scope.activePresetTuning = $scope.presets.tunings[0];
+			$scope.activePresetTuning = $scope.presets.tunings[$scope.presets.tunings.length - 1];
 		}
 		
 		function getMultipliers(set){
