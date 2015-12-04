@@ -104,6 +104,51 @@
 			
 			return diff;
 		};
+		var correctGains = function(diff){
+			var correctedDiff = JSON.parse(JSON.stringify(diff));
+			
+			/*
+			var totalSetGain = 0;
+			var setGainLimit = 1;
+			
+			Object.keys(diff.added.setGains).forEach(function(gSetId){
+				totalSetGain += diff.added.setGains[gSetId].gain.value;
+			});
+			Object.keys(diff.changed.setGains).forEach(function(gSetId){
+				totalSetGain += diff.changed.setGains[gSetId].gain.value;
+			});
+			
+			if(totalSetGain > setGainLimit){
+				Object.keys(diff.added.setGains).forEach(function(gSetId){
+					diff.added.setGains[gSetId].gain.value *= (setGainLimit / totalSetGain);
+				});
+				Object.keys(diff.changed.setGains).forEach(function(gSetId){
+					diff.changed.setGains[gSetId].gain.value *= (setGainLimit / totalSetGain);
+				});
+			}
+			
+			var totalStringGain = 0;
+			var stringGainLimiter = 1;
+			
+			Object.keys(diff.added.stringGains).forEach(function(gStringId){
+				totalStringGain += diff.added.stringGains[gStringId].gain.value;
+			});
+			Object.keys(diff.changed.stringGains).forEach(function(gStringId){
+				totalStringGain += diff.changed.stringGains[gStringId].gain.value;
+			});
+			
+			if(totalStringGain > stringGainLimiter){
+				Object.keys(diff.added.stringGains).forEach(function(gStringId){
+					diff.added.stringGains[gStringId].gain.value *= (stringGainLimiter / totalStringGain);
+				});
+				Object.keys(diff.changed.stringGains).forEach(function(gStringId){
+					diff.changed.stringGains[gStringId].gain.value *= (stringGainLimiter / totalStringGain);
+				});
+			}
+			*/
+			
+			return correctedDiff;
+		};
 		var applyDiff = function(diff){
 			Object.keys(diff.added.setGains).forEach(function(gSetId){
 				var g = ctx.createGain();
@@ -169,7 +214,8 @@
 		var updateReal = function(){
 			var parsedVirtual = summarizeVirtual();
 			var diff = diffReal(parsedVirtual);
-			applyDiff(diff);
+			var correctedDiff = correctGains(diff);
+			applyDiff(correctedDiff);
 		};
 		
 		AudioModel = {
