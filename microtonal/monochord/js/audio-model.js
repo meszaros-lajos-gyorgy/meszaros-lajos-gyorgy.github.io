@@ -59,23 +59,133 @@
 		};
 		var diffReal = function(parsedVirtual){
 			var diff = {
-				added : {},
-				changed : {},
-				removed : {}
+				added : {
+					oscillators : {},
+					stringGains : {},
+					setGains : {}
+				},
+				changed : {
+					oscillators : {},
+					stringGains : {},
+					setGains : {}
+				},
+				removed : {
+					oscillators : {},
+					stringGains : {},
+					setGains : {}
+				}
 			};
 			
+			Object.keys(parsedVirtual.oscillators).forEach(function(oStringId){
+				diff[real.oscillators[oStringId] ? 'changed' : 'added'].oscillators[oStringId] = parsedVirtual.oscillators[oStringId];
+			});
+			Object.keys(parsedVirtual.stringGains).forEach(function(gStringId){
+				diff[real.stringGains[gStringId] ? 'changed' : 'added'].stringGains[gStringId] = parsedVirtual.stringGains[gStringId];
+			});
+			Object.keys(parsedVirtual.setGains).forEach(function(gSetId){
+				diff[real.setGains[gSetId] ? 'changed' : 'added'].setGains[gSetId] = parsedVirtual.setGains[gSetId];
+			});
 			
+			Object.keys(real.oscillators).forEach(function(oStringId){
+				if(!parsedVirtual.oscillators[oStringId]){
+					diff.removed.oscillators[oStringId] = real.oscillators[oStringId];
+				}
+			});
+			Object.keys(real.stringGains).forEach(function(gStringId){
+				if(!parsedVirtual.stringGains[gStringId]){
+					diff.removed.stringGains[gStringId] = real.stringGains[gStringId];
+				}
+			});
+			Object.keys(real.setGains).forEach(function(gSetId){
+				if(!parsedVirtual.setGains[gSetId]){
+					diff.removed.setGains[gSetId] = real.setGains[gSetId];
+				}
+			});
 			
 			return diff;
 		};
 		var applyDiff = function(diff){
+			Object.keys(diff.added.setGains).forEach(function(gSetId){
+				var g = ctx.createGain();
+				g.connect(mainGain);
+				g.gain.value = diff.added.setGains[gSetId].gain.value;
+				
+				real.setGains[gSetId] = g;
+			});
+			Object.keys(diff.added.stringGains).forEach(function(gStringId){
+				var g = ctx.createGain();
+				/*
+				g.connect(setGains[setId]);
+				g.gain.value = (config.hasOwnProperty('volume') ? config.volume : 1);
+				
+				stringGains[stringId] = g;
+				*/
+			});
+			Object.keys(diff.added.oscillators).forEach(function(oStringId){
+				var o = ctx.createOscillator();
+				/*
+				o.type = 'sine';
+				if(config.hasOwnProperty('frequency')){
+					o.frequency.value = config.frequency;
+				}
+				o.connect(stringGains[stringId]);
+				o.start(0);
+				
+				oscillators[stringId] = o;
+				*/
+			});
 			
+			Object.keys(diff.changed.setGains).forEach(function(gSetId){
+				/*
+				if(setGains[setId] && config.hasOwnProperty('volume')){
+					setGains[setId].gain.value = config.volume;
+				}
+				*/
+			});
+			Object.keys(diff.changed.stringGains).forEach(function(gStringId){
+				/*
+				if(stringGains[stringId] && config.hasOwnProperty('volume')){
+					stringGains[stringId].gain.value = config.volume;
+				}
+				*/
+			});
+			Object.keys(diff.changed.oscillators).forEach(function(oStringId){
+				/*
+				if(oscillators[stringId]){
+					if(config.hasOwnProperty('frequency')){
+						oscillators[stringId].frequency.value = config.frequency;
+					}
+					if(config.hasOwnProperty('type')){
+						oscillators[stringId].type = config.type; // todo: implement custom type
+					}
+				}
+				*/
+			});
+			
+			Object.keys(diff.removed.setGains).forEach(function(gSetId){
+				/*
+				setGains[setId].disconnect();
+				delete setGains[setId];
+				*/
+			});
+			Object.keys(diff.removed.oscillators).forEach(function(oStringId){
+				/*
+				oscillators[stringId].stop(0);
+				oscillators[stringId].disconnect();
+				delete oscillators[stringId];
+				*/
+			});
+			Object.keys(diff.removed.stringGains).forEach(function(gStringId){
+				/*
+				stringGains[stringId].disconnect();
+				delete stringGains[stringId];
+				*/
+			});
 		};
 		var updateReal = function(){
 			var parsedVirtual = summarizeVirtual();
 			var diff = diffReal(parsedVirtual);
-			
-			// applyDiff(diff);
+			applyDiff(diff);
 		};
 		
 		AudioModel = {
@@ -160,62 +270,6 @@
 				}
 			}
 		};
-		
-		/*
-		AudioModel = {
-			setString : function(stringId, config){
-				if(oscillators[stringId]){
-					if(config.hasOwnProperty('frequency')){
-						oscillators[stringId].frequency.value = config.frequency;
-					}
-					if(config.hasOwnProperty('type')){
-						oscillators[stringId].type = config.type; // todo: implement custom type
-					}
-				}
-				if(stringGains[stringId] && config.hasOwnProperty('volume')){
-					stringGains[stringId].gain.value = config.volume;
-				}
-			},
-			setSet : function(setId, config){
-				if(setGains[setId] && config.hasOwnProperty('volume')){
-					setGains[setId].gain.value = config.volume;
-				}
-			},
-			addString : function(stringId, setId, config){
-				var g = ctx.createGain();
-				g.connect(setGains[setId]);
-				g.gain.value = (config.hasOwnProperty('volume') ? config.volume : 1);
-				var o = ctx.createOscillator();
-				o.type = 'sine';
-				if(config.hasOwnProperty('frequency')){
-					o.frequency.value = config.frequency;
-				}
-				o.connect(g);
-				o.start(0);
-				
-				stringGains[stringId] = g;
-				oscillators[stringId] = o;
-			},
-			addSet : function(setId, config){
-				var g = ctx.createGain();
-				g.connect(mainGain);
-				g.gain.value = (config.hasOwnProperty('volume') ? config.volume : 1);
-				
-				setGains[setId] = g;
-			},
-			removeString : function(stringId){
-				oscillators[stringId].stop(0);
-				oscillators[stringId].disconnect();
-				delete oscillators[stringId];
-				stringGains[stringId].disconnect();
-				delete stringGains[stringId];
-			},
-			removeSet : function(setId){
-				setGains[setId].disconnect();
-				delete setGains[setId];
-			}
-		};
-		*/
 	}else{
 		AudioModel = {
 			supported : false
