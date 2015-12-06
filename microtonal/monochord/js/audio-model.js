@@ -153,11 +153,20 @@
 				stringsPerSet[setId]++;
 			});
 			
-			/*
-			Object.keys(totalStringGains).forEach(function(setId){
-				if()
+			Object.keys(stringsPerSet).forEach(function(setId){
+				stringsPerSet[setId]
+				totalStringGains[setId]
+				
+				
+				Object.keys(diff.added.stringGains).forEach(function(gStringId){
+					var setId = diff.added.stringGains[gStringId].connectTo;
+					
+				});
+				Object.keys(diff.changed.stringGains).forEach(function(gStringId){
+					var setId = diff.changed.stringGains[gStringId].connectTo;
+					
+				});
 			});
-			*/
 			
 			/*
 			if(totalStringGain > stringGainLimiter){
