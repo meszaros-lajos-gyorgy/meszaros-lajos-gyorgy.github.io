@@ -55,6 +55,9 @@
 					
 					<!-- <span style="float:left;">Ratio known as: <i>{{ratioKnownAs(set)}}</i></span> -->
 					{{freqs = calculateFrequencies(set);cents = calculateCents(set);''}}
+					
+					<div style="font-size:16px;margin-bottom:20px;">{{set.strings|json}}</div>
+					
 					<ul class="strings">
 						<li ng-repeat="string in set.strings">
 							<span class="hertz">{{freqs[$index]|number:0}} Hz</span>

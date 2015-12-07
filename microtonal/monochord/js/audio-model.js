@@ -12,6 +12,26 @@
 	var AudioModel;
 	
 	if(supported){
+		// TODO!!!!!!
+		// there should be only 1 level of real gains
+		// realString -> realGain -> destination
+		// master, string gains and set gains should be calculated into a single real gain
+		/*
+		
+		[4] - 1 --- 0.1 ----- 1 ---> dest
+		[5] - 1 /         /
+		                 /
+		[5] - 1 --- 0.6 /
+		
+		should result in:
+		
+		[4] - 0.05 ----> dest
+		[5] - 0.65 -/
+		
+		this last, evaulated result should go into the diff!
+		
+		*/
+		
 		var mainGain = ctx.createGain();
 		mainGain.connect(ctx.destination);
 		mainGain.gain.value = 1;
@@ -36,26 +56,94 @@
 			};
 			
 			Object.keys(virtual.setGains).forEach(function(gSetId){
+				// skip, if set is muted
 				if(virtual.setGains[gSetId].gain.value <= 0){
 					return ;
 				}
 				Object.keys(virtual.stringGains).forEach(function(gStringId){
+					// skip, if string is not connected to current set or muted
 					if(virtual.stringGains[gStringId].connectTo !== gSetId || virtual.stringGains[gStringId].gain.value <= 0){
 						return ;
 					}
-					Object.keys(virtual.oscillators).forEach(function(oStringId){
-						if(virtual.oscillators[oStringId].connectTo !== gStringId || virtual.oscillators[oStringId].frequency.value < 0){
-							return ;
+					Object.keys(virtual.oscillators).some(function(oStringId){
+						// if string oscillator is connected to current string gain, and has valid frequency, then record it and we're done
+						if(virtual.oscillators[oStringId].connectTo === gStringId && virtual.oscillators[oStringId].frequency.value > 0){
+							parsedVirtual.oscillators[oStringId] = JSON.parse(JSON.stringify(virtual.oscillators[oStringId]));
+							parsedVirtual.stringGains[gStringId] = JSON.parse(JSON.stringify(virtual.stringGains[gStringId]));
+							parsedVirtual.setGains[gSetId] = JSON.parse(JSON.stringify(virtual.setGains[gSetId]));
+							
+							return true;
 						}
-						
-						parsedVirtual.oscillators[oStringId] = virtual.oscillators[oStringId];
-						parsedVirtual.stringGains[gStringId] = virtual.stringGains[gStringId];
-						parsedVirtual.setGains[gSetId] = virtual.setGains[gSetId];
 					});
 				});
 			});
 			
 			return parsedVirtual;
+		};
+		var correctGains = function(parsedVirtual){
+			var correctedVirtual = JSON.parse(JSON.stringify(parsedVirtual));
+			
+			// correct set gains
+			// correct string gains in strings per set to result in sum(string gains) = 1 per set
+			// apply set gains to string gains
+			// apply master gain to string gains
+			
+			/*
+			var totalSetGain = 0;
+			var setGainLimit = 1;
+			
+			Object.keys(correctedVirtual.setGains).forEach(function(gSetId){
+				totalSetGain += correctedVirtual.setGains[gSetId].gain.value;
+			});
+			
+			if(totalSetGain > setGainLimit){
+				Object.keys(correctedVirtual.setGains).forEach(function(gSetId){
+					correctedVirtual.setGains[gSetId].gain.value *= (setGainLimit / totalSetGain);
+				});
+			}
+			
+			// ------------
+			
+			var totalStringGains = {}; // we have to calculate them for every set
+			var stringsPerSet = {};
+			var stringGainLimit = 1;
+			
+			Object.keys(correctedVirtual.stringGains).forEach(function(gStringId){
+				var setId = correctedVirtual.stringGains[gStringId].connectTo;
+				if(!totalStringGains[setId]){
+					totalStringGains[setId] = 0;
+				}
+				if(!stringsPerSet[setId]){
+					stringsPerSet[setId] = 0;
+				}
+				totalStringGains[setId] += correctedVirtual.stringGains[gStringId].gain.value;
+				stringsPerSet[setId]++;
+			});
+			
+			Object.keys(totalStringGains).forEach(function(setId){
+				if(totalStringGains[setId] > stringGainLimit){
+					Object.keys(correctedVirtual.stringGains).forEach(function(gStringId){
+						var aSetId = correctedVirtual.stringGains[gStringId].connectTo;
+						if(aSetId === setId){
+							correctedVirtual.stringGains[gStringId].gain.value *= (setGainLimit / totalStringGains[setId]);
+						}
+					});
+				}
+			});
+			
+			// ------------
+			
+			Object.keys(correctedVirtual.oscillators).forEach(function(oStringId){
+				if(correctedVirtual.oscillators[oStringId].frequency.value === 0){
+					delete correctedVirtual.stringGains[oStringId];
+					delete correctedVirtual.oscillators[oStringId];
+				}
+			});
+			
+			console.log(correctedVirtual);
+			*/
+			
+			return correctedVirtual;
 		};
 		var diffReal = function(parsedVirtual){
 			var diff = {
@@ -103,83 +191,6 @@
 			});
 			
 			return diff;
-		};
-		var correctGains = function(diff){
-			var correctedDiff = JSON.parse(JSON.stringify(diff));
-			
-			var totalSetGain = 0;
-			var setGainLimit = 1;
-			
-			Object.keys(diff.added.setGains).forEach(function(gSetId){
-				totalSetGain += diff.added.setGains[gSetId].gain.value;
-			});
-			Object.keys(diff.changed.setGains).forEach(function(gSetId){
-				totalSetGain += diff.changed.setGains[gSetId].gain.value;
-			});
-			
-			if(totalSetGain > setGainLimit){
-				Object.keys(diff.added.setGains).forEach(function(gSetId){
-					diff.added.setGains[gSetId].gain.value *= (setGainLimit / totalSetGain);
-				});
-				Object.keys(diff.changed.setGains).forEach(function(gSetId){
-					diff.changed.setGains[gSetId].gain.value *= (setGainLimit / totalSetGain);
-				});
-			}
-			
-			var totalStringGains = {}; // we have to calculate them for every set
-			var stringsPerSet = {};
-			var stringGainLimiter = 1;
-			
-			Object.keys(diff.added.stringGains).forEach(function(gStringId){
-				var setId = diff.added.stringGains[gStringId].connectTo;
-				if(!totalStringGains[setId]){
-					totalStringGains[setId] = 0;
-				}
-				if(!stringsPerSet[setId]){
-					stringsPerSet[setId] = 0;
-				}
-				totalStringGains[setId] += diff.added.stringGains[gStringId].gain.value;
-				stringsPerSet[setId]++;
-			});
-			Object.keys(diff.changed.stringGains).forEach(function(gStringId){
-				var setId = diff.changed.stringGains[gStringId].connectTo;
-				if(!totalStringGains[setId]){
-					totalStringGains[setId] = 0;
-				}
-				if(!stringsPerSet[setId]){
-					stringsPerSet[setId] = 0;
-				}
-				totalStringGains[setId] += diff.changed.stringGains[gStringId].gain.value;
-				stringsPerSet[setId]++;
-			});
-			
-			Object.keys(stringsPerSet).forEach(function(setId){
-				stringsPerSet[setId]
-				totalStringGains[setId]
-				
-				
-				Object.keys(diff.added.stringGains).forEach(function(gStringId){
-					var setId = diff.added.stringGains[gStringId].connectTo;
-					
-				});
-				Object.keys(diff.changed.stringGains).forEach(function(gStringId){
-					var setId = diff.changed.stringGains[gStringId].connectTo;
-					
-				});
-			});
-			
-			/*
-			if(totalStringGain > stringGainLimiter){
-				Object.keys(diff.added.stringGains).forEach(function(gStringId){
-					diff.added.stringGains[gStringId].gain.value *= (stringGainLimiter / totalStringGain);
-				});
-				Object.keys(diff.changed.stringGains).forEach(function(gStringId){
-					diff.changed.stringGains[gStringId].gain.value *= (stringGainLimiter / totalStringGain);
-				});
-			}
-			*/
-			
-			return correctedDiff;
 		};
 		var applyDiff = function(diff){
 			Object.keys(diff.added.setGains).forEach(function(gSetId){
@@ -245,9 +256,9 @@
 		};
 		var updateReal = function(){
 			var parsedVirtual = summarizeVirtual();
-			var diff = diffReal(parsedVirtual);
-			var correctedDiff = correctGains(diff);
-			applyDiff(correctedDiff);
+			var correctedVirtual = correctGains(parsedVirtual);
+			var diff = diffReal(correctedVirtual);
+			applyDiff(diff);
 		};
 		
 		AudioModel = {

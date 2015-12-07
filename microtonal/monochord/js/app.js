@@ -786,10 +786,13 @@
 		// === debug for sitebuild ===
 		
 		setTimeout(function(){
+			/*
 			$scope.addPreset([4, 5]);
 			$scope.addPreset([5, 6]);
 			$scope.addPreset([6, 7]);
 			$scope.addPreset([7, 8]);
+			*/
+			$scope.addPreset([4, 5, 5]);
 			
 			/*
 			$scope.baseVolume = 10;
