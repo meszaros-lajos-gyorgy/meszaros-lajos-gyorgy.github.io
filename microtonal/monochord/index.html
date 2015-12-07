@@ -55,9 +55,6 @@
 					
 					<!-- <span style="float:left;">Ratio known as: <i>{{ratioKnownAs(set)}}</i></span> -->
 					{{freqs = calculateFrequencies(set);cents = calculateCents(set);''}}
-					
-					<div style="font-size:16px;margin-bottom:20px;">{{set.strings|json}}</div>
-					
 					<ul class="strings">
 						<li ng-repeat="string in set.strings">
 							<span class="hertz">{{freqs[$index]|number:0}} Hz</span>
@@ -72,9 +69,11 @@
 					</ul>
 					
 					<div class="string-edit" ng-show="$parent.stringToEdit.hasOwnProperty('id') && $parent.setOfStringToEdit.id === set.id">
-						<button hold-click ng-disabled="!canLowerString($parent.stringToEdit)" ng-click="lowerString($parent.stringToEdit)" class="icon-remove smaller" title="decrease">decrease</button>
+						<!-- <button hold-click ng-disabled="!canLowerString($parent.stringToEdit)" ng-click="lowerString($parent.stringToEdit)" class="icon-remove smaller" title="decrease">decrease</button> -->
+						<button ng-disabled="!canLowerString($parent.stringToEdit)" ng-click="lowerString($parent.stringToEdit)" class="icon-remove smaller" title="decrease">decrease</button>
 						<dragnumber ng-model="$parent.stringToEdit.multiplier" min="1" max="highestHarmonic" weight="10"></dragnumber>
-						<button hold-click ng-disabled="!canRaiseString($parent.stringToEdit)" ng-click="raiseString($parent.stringToEdit)" class="icon-add smaller" title="increase">increase</button>
+						<!-- <button hold-click ng-disabled="!canRaiseString($parent.stringToEdit)" ng-click="raiseString($parent.stringToEdit)" class="icon-add smaller" title="increase">increase</button> -->
+						<button ng-disabled="!canRaiseString($parent.stringToEdit)" ng-click="raiseString($parent.stringToEdit)" class="icon-add smaller" title="increase">increase</button>
 						
 						<button ng-show="!$parent.stringToEdit.muted" ng-click="$parent.stringToEdit.muted = true" class="icon-speaker-on smaller">mute</button>
 						<button ng-show="$parent.stringToEdit.muted" ng-click="$parent.stringToEdit.muted = false" class="icon-speaker-off smaller">unmute</button>
