@@ -16,20 +16,6 @@
 	var AudioModel;
 	
 	if(supported){
-		/*
-		[4] - 1 --- 0.1 ----- 1 ---> dest
-		[5] - 1 /         /
-		                 /
-		[5] - 1 --- 0.6 /
-		
-		should result in:
-		
-		[4] - 0.05 ----> dest
-		[5] - 0.65 -/
-		
-		this last, evaulated result should go into the diff!
-		*/
-		
 		var real = {
 			oscillators : {},
 			gains : {}
@@ -109,20 +95,20 @@
 			var totalStringGains = {};
 			var stringGainLimit = 1;
 			
-			Object.keys(correctedVirtual.stringGains).forEach(function(gStringId){
-				var setId = correctedVirtual.stringGains[gStringId].connectTo;
+			Object.keys(correctedVirtual.stringGains).forEach(function(stringId){
+				var setId = correctedVirtual.stringGains[stringId].connectTo;
 				if(!totalStringGains[setId]){
 					totalStringGains[setId] = 0;
 				}
-				totalStringGains[setId] += correctedVirtual.stringGains[gStringId].gain.value;
+				totalStringGains[setId] += correctedVirtual.stringGains[stringId].gain.value;
 			});
 			
 			Object.keys(totalStringGains).forEach(function(setId){
 				if(totalStringGains[setId] > stringGainLimit){
-					Object.keys(correctedVirtual.stringGains).forEach(function(gStringId){
-						var aSetId = correctedVirtual.stringGains[gStringId].connectTo;
+					Object.keys(correctedVirtual.stringGains).forEach(function(stringId){
+						var aSetId = correctedVirtual.stringGains[stringId].connectTo;
 						if(aSetId === setId){
-							correctedVirtual.stringGains[gStringId].gain.value *= (stringGainLimit / totalStringGains[setId]);
+							correctedVirtual.stringGains[stringId].gain.value *= (stringGainLimit / totalStringGains[setId]);
 						}
 					});
 				}
@@ -132,13 +118,13 @@
 			
 			correctedVirtual.gains = {};
 			
-			Object.keys(correctedVirtual.stringGains).forEach(function(gStringId){
-				var setId = correctedVirtual.stringGains[gStringId].connectTo;
-				delete correctedVirtual.oscillators[gStringId].connectTo;
-				correctedVirtual.gains[gStringId] = {
+			Object.keys(correctedVirtual.stringGains).forEach(function(stringId){
+				var setId = correctedVirtual.stringGains[stringId].connectTo;
+				delete correctedVirtual.oscillators[stringId].connectTo;
+				correctedVirtual.gains[stringId] = {
 					gain : {
 						value :
-							correctedVirtual.stringGains[gStringId].gain.value
+							correctedVirtual.stringGains[stringId].gain.value
 							* correctedVirtual.setGains[setId].gain.value
 							* correctedVirtual.mainGain.gain.value
 					}
@@ -151,37 +137,42 @@
 			
 			// collapse gains and oscillators
 			
-			/*
-			Object.keys(correctedVirtual.oscillators).forEach(function(oStringId){
-				if(correctedVirtual.oscillators[oStringId].frequency.value === 0){
-					delete correctedVirtual.stringGains[oStringId];
-					delete correctedVirtual.oscillators[oStringId];
+			Object.keys(correctedVirtual.oscillators).forEach(function(stringId, index, array){
+				if(index > 0){
+					for(var i = 0; i < index; i++){
+						if(
+							correctedVirtual.oscillators[array[i]] // <- we might have deleted it already
+							&& correctedVirtual.oscillators[array[i]].frequency.value === correctedVirtual.oscillators[stringId].frequency.value
+							&& correctedVirtual.oscillators[array[i]].type === correctedVirtual.oscillators[stringId].type
+						){
+							correctedVirtual.gains[array[i]].gain.value += correctedVirtual.gains[stringId].gain.value;
+							delete correctedVirtual.gains[stringId];
+							delete correctedVirtual.oscillators[stringId];
+							break;
+						}
+					}
 				}
 			});
-			*/
 			
 			return correctedVirtual;
 		};
 		var diffReal = function(parsedVirtual){
-			/*
 			var diff = {
 				added : {
 					oscillators : {},
-					stringGains : {},
-					setGains : {}
+					gains : {}
 				},
 				changed : {
 					oscillators : {},
-					stringGains : {},
-					setGains : {}
+					gains : {}
 				},
 				removed : {
 					oscillators : {},
-					stringGains : {},
-					setGains : {}
+					gains : {}
 				}
 			};
 			
+			/*
 			Object.keys(parsedVirtual.oscillators).forEach(function(oStringId){
 				diff[real.oscillators[oStringId] ? 'changed' : 'added'].oscillators[oStringId] = parsedVirtual.oscillators[oStringId];
 			});
