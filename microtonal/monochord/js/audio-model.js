@@ -172,113 +172,78 @@
 				}
 			};
 			
-			/*
-			Object.keys(parsedVirtual.oscillators).forEach(function(oStringId){
-				diff[real.oscillators[oStringId] ? 'changed' : 'added'].oscillators[oStringId] = parsedVirtual.oscillators[oStringId];
+			Object.keys(parsedVirtual.oscillators).forEach(function(stringId){
+				diff[real.oscillators[stringId] ? 'changed' : 'added'].oscillators[stringId] = parsedVirtual.oscillators[stringId];
 			});
-			Object.keys(parsedVirtual.stringGains).forEach(function(gStringId){
-				diff[real.stringGains[gStringId] ? 'changed' : 'added'].stringGains[gStringId] = parsedVirtual.stringGains[gStringId];
-			});
-			Object.keys(parsedVirtual.setGains).forEach(function(gSetId){
-				diff[real.setGains[gSetId] ? 'changed' : 'added'].setGains[gSetId] = parsedVirtual.setGains[gSetId];
+			Object.keys(parsedVirtual.gains).forEach(function(stringId){
+				diff[real.gains[stringId] ? 'changed' : 'added'].gains[stringId] = parsedVirtual.gains[stringId];
 			});
 			
-			Object.keys(real.oscillators).forEach(function(oStringId){
-				if(!parsedVirtual.oscillators[oStringId]){
-					diff.removed.oscillators[oStringId] = real.oscillators[oStringId];
+			Object.keys(real.oscillators).forEach(function(stringId){
+				if(!parsedVirtual.oscillators[stringId]){
+					diff.removed.oscillators[stringId] = real.oscillators[stringId];
 				}
 			});
-			Object.keys(real.stringGains).forEach(function(gStringId){
-				if(!parsedVirtual.stringGains[gStringId]){
-					diff.removed.stringGains[gStringId] = real.stringGains[gStringId];
-				}
-			});
-			Object.keys(real.setGains).forEach(function(gSetId){
-				if(!parsedVirtual.setGains[gSetId]){
-					diff.removed.setGains[gSetId] = real.setGains[gSetId];
+			Object.keys(real.gains).forEach(function(stringId){
+				if(!parsedVirtual.gains[stringId]){
+					diff.removed.gains[stringId] = real.gains[stringId];
 				}
 			});
 			
 			return diff;
-			*/
 		};
 		var applyDiff = function(diff){
-			/*
-			Object.keys(diff.added.setGains).forEach(function(gSetId){
-				var g = ctx.createGain();
-				g.connect(mainGain);
-				g.gain.value = diff.added.setGains[gSetId].gain.value;
-				
-				real.setGains[gSetId] = g;
-			});
-			Object.keys(diff.added.stringGains).forEach(function(gStringId){
-				var current = diff.added.stringGains[gStringId];
+			Object.keys(diff.added.gains).forEach(function(stringId){
+				var current = diff.added.gains[stringId];
 				
 				var g = ctx.createGain();
-				g.connect(real.setGains[current.connectTo]);
+				g.connect(ctx.destination);
 				g.gain.value = current.gain.value;
 				
-				real.stringGains[gStringId] = g;
+				real.gains[stringId] = g;
 			});
-			Object.keys(diff.added.oscillators).forEach(function(oStringId){
-				var current = diff.added.oscillators[oStringId];
+			
+			Object.keys(diff.added.oscillators).forEach(function(stringId){
+				var current = diff.added.oscillators[stringId];
 				
 				var o = ctx.createOscillator();
 				o.type = current.type;
 				o.frequency.value = current.frequency.value;
-				o.connect(real.stringGains[current.connectTo]);
+				o.connect(real.gains[stringId]);
 				o.start(0);
 				
-				real.oscillators[oStringId] = o;
+				real.oscillators[stringId] = o;
 			});
 			
-			Object.keys(diff.changed.setGains).forEach(function(gSetId){
-				if(real.setGains[gSetId]){
-					real.setGains[gSetId].gain.value = diff.changed.setGains[gSetId].gain.value;
+			Object.keys(diff.changed.gains).forEach(function(stringId){
+				if(real.gains[stringId]){
+					real.gains[stringId].gain.value = diff.changed.gains[stringId].gain.value;
 				}
 			});
-			Object.keys(diff.changed.stringGains).forEach(function(gStringId){
-				if(real.stringGains[gStringId]){
-					real.stringGains[gStringId].gain.value = diff.changed.stringGains[gStringId].gain.value;
-				}
-			});
-			Object.keys(diff.changed.oscillators).forEach(function(oStringId){
-				if(real.oscillators[oStringId]){
-					var current = diff.changed.oscillators[oStringId];
+			Object.keys(diff.changed.oscillators).forEach(function(stringId){
+				if(real.oscillators[stringId]){
+					var current = diff.changed.oscillators[stringId];
 					
-					real.oscillators[oStringId].frequency.value = current.frequency.value;
-					real.oscillators[oStringId].type = current.type;
+					real.oscillators[stringId].frequency.value = current.frequency.value;
+					real.oscillators[stringId].type = current.type;
 				}
 			});
 			
-			Object.keys(diff.removed.setGains).forEach(function(gSetId){
-				real.setGains[gSetId].disconnect();
-				delete real.setGains[gSetId];
+			Object.keys(diff.removed.oscillators).forEach(function(stringId){
+				real.oscillators[stringId].stop(0);
+				real.oscillators[stringId].disconnect();
+				delete real.oscillators[stringId];
 			});
-			Object.keys(diff.removed.oscillators).forEach(function(oStringId){
-				real.oscillators[oStringId].stop(0);
-				real.oscillators[oStringId].disconnect();
-				delete real.oscillators[oStringId];
+			Object.keys(diff.removed.gains).forEach(function(stringId){
+				real.gains[stringId].disconnect();
+				delete real.gains[stringId];
 			});
-			Object.keys(diff.removed.stringGains).forEach(function(gStringId){
-				real.stringGains[gStringId].disconnect();
-				delete real.stringGains[gStringId];
-			});
-			*/
-			
-			/*
-			var mainGain = ctx.createGain();
-			mainGain.connect(ctx.destination);
-			mainGain.gain.value = 1;
-			*/
 		};
 		var updateReal = function(){
 			var parsedVirtual = summarizeVirtual(virtual);
 			var correctedVirtual = correctGains(parsedVirtual);
-			/*
 			var diff = diffReal(correctedVirtual);
 			applyDiff(diff);
-			*/
 		};
 		
 		AudioModel = {
