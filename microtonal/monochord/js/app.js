@@ -798,7 +798,7 @@
 			$scope.baseVolume = 10;
 			$scope.showKeyboard();
 			*/
-			$scope.baseVolume = 0;
+			// $scope.baseVolume = 0;
 			// $scope.showRetune();
 			
 			$scope.$apply();
