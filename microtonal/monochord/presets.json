@@ -87,5 +87,13 @@
 			"ratio" : [2, 1]
 		}]
 	}],
-	"misc" : []
+	"misc" : [{
+		"name" : "Syntonic comma"
+		"ratio" : [81, 80],
+		"description" : "4 perfect fifths vs 2 octaves + 1 major third"
+	}, {
+		"name" : "Pythagorean comma"
+		"ratio" : [531441, 524288],
+		"description" : "12 perfect fifths vs 7 octaves"
+	}]
 }
