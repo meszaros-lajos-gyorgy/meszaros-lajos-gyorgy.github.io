@@ -193,8 +193,6 @@
 			return diff;
 		};
 		var applyDiff = function(diff){
-			console.log(Object.keys(diff.added.gains).length, Object.keys(diff.changed.gains).length, Object.keys(diff.removed.gains).length, '||',
-			Object.keys(diff.added.oscillators).length, Object.keys(diff.changed.oscillators).length, Object.keys(diff.removed.oscillators).length);
 			Object.keys(diff.added.gains).forEach(function(stringId){
 				var current = diff.added.gains[stringId];
 				

@@ -614,6 +614,10 @@
 			$scope.popup = 'retune';
 			$scope.retuningSetId = setId;
 		}
+		function showImportExport(){
+			closePopup();
+			$scope.popup = 'import-export';
+		}
 		
 		function closePopup(){
 			switch($scope.popup){
@@ -628,6 +632,7 @@
 		
 		$scope.showKeyboard = showKeyboard;
 		$scope.showRetune = showRetune;
+		$scope.showImportExport = showImportExport;
 		$scope.closePopup = closePopup;
 		
 		// ------------------

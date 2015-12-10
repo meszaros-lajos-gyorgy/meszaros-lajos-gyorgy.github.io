@@ -48,6 +48,7 @@
 			
 			<button ng-click="addSet()" class="icon-add" title="add a new set">add a new set</button>
 			<button ng-click="showKeyboard()" class="icon-piano" title="open keyboard">open keyboard</button>
+			<button ng-click="showImportExport()" class="icon-import-export" title="import/export">import/export</button>
 			
 			<ul class="sets">
 				<li ng-repeat="set in sets">
@@ -145,6 +146,12 @@
 						</td>
 					</tr>
 				</table>
+			</div>
+			<div class="keyboard" ng-class="popup === 'import-export' ? '' : 'hidden'">
+				<header>
+					<button class="close icon-delete" ng-click="closePopup()">close popup</button>
+					<h2>Import/Export</h2>
+				</header>
 			</div>
 		</div>
 	</div>
