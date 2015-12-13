@@ -46,48 +46,60 @@
 			
 			if(virtual.mainGain.gain.value > 0){
 				parsedVirtual.mainGain.gain.value = virtual.mainGain.gain.value;
-				Object.keys(virtual.setGains).forEach(function(gSetId){
+				var setIds = Object.keys(virtual.setGains);
+				var gStringIds = Object.keys(virtual.stringGains);
+				var oStringIds = Object.keys(virtual.oscillators)
+				var i = setIds.length, j, k;
+				while(i--){
+					var gSetId = setIds[i];
 					// skip, if set is muted
 					if(virtual.setGains[gSetId].gain.value <= 0){
-						return ;
+						continue;
 					}
-					Object.keys(virtual.stringGains).forEach(function(gStringId){
+					j = gStringIds.length;
+					while(j--){
+						var gStringId = gStringIds[j];
 						// skip, if string is not connected to current set or muted
 						if(virtual.stringGains[gStringId].connectTo !== gSetId || virtual.stringGains[gStringId].gain.value <= 0){
-							return ;
+							continue;
 						}
-						Object.keys(virtual.oscillators).some(function(oStringId){
+						k = oStringIds.length;
+						while(k--){
+							var oStringId = oStringIds[k];
 							// if string oscillator is connected to current string gain, and has valid frequency, then record it and we're done
 							if(virtual.oscillators[oStringId].connectTo === gStringId && virtual.oscillators[oStringId].frequency.value > 0){
 								parsedVirtual.oscillators[oStringId] = clone(virtual.oscillators[oStringId]);
 								parsedVirtual.stringGains[gStringId] = clone(virtual.stringGains[gStringId]);
 								parsedVirtual.setGains[gSetId] = clone(virtual.setGains[gSetId]);
-								
-								return true;
+								break;
 							}
-						});
-					});
-				});
+						}
+					}
+				}
 			}
 			
 			return parsedVirtual;
 		};
 		var correctGains = function(parsedVirtual){
-			var correctedVirtual = clone(parsedVirtual);
+			var correctedVirtual = parsedVirtual;
 			
 			// correct set gains
 			
 			var totalSetGain = 0;
 			var setGainLimit = 1;
+			var i,j;
 			
-			Object.keys(correctedVirtual.setGains).forEach(function(gSetId){
-				totalSetGain += correctedVirtual.setGains[gSetId].gain.value;
-			});
+			var setIds = Object.keys(correctedVirtual.setGains);
+			i = setIds.length;
+			while(i--){
+				totalSetGain += correctedVirtual.setGains[setIds[i]].gain.value;
+			}
 			
 			if(totalSetGain > setGainLimit){
-				Object.keys(correctedVirtual.setGains).forEach(function(gSetId){
-					correctedVirtual.setGains[gSetId].gain.value *= (setGainLimit / totalSetGain);
-				});
+				i = setIds.length;
+				while(i--){
+					correctedVirtual.setGains[setIds[i]].gain.value *= (setGainLimit / totalSetGain);
+				}
 			}
 			
 			// correct string gains per set to result in sum(string gains) = 1 per set
@@ -95,24 +107,26 @@
 			var totalStringGains = {};
 			var stringGainLimit = 1;
 			
-			Object.keys(correctedVirtual.stringGains).forEach(function(stringId){
-				var setId = correctedVirtual.stringGains[stringId].connectTo;
-				if(!totalStringGains[setId]){
-					totalStringGains[setId] = 0;
-				}
-				totalStringGains[setId] += correctedVirtual.stringGains[stringId].gain.value;
-			});
+			var stringIds = Object.keys(correctedVirtual.stringGains);
+			i = stringIds.length;
+			while(i--){
+				var setId = correctedVirtual.stringGains[stringIds[i]].connectTo;
+				totalStringGains[setId] = (totalStringGains[setId] ? totalStringGains[setId] : 0) + correctedVirtual.stringGains[stringIds[i]].gain.value;
+			}
 			
-			Object.keys(totalStringGains).forEach(function(setId){
+			var setIds = Object.keys(totalStringGains);
+			j = setIds.length;
+			while(j--){
+				var setId = setIds[j];
 				if(totalStringGains[setId] > stringGainLimit){
-					Object.keys(correctedVirtual.stringGains).forEach(function(stringId){
-						var aSetId = correctedVirtual.stringGains[stringId].connectTo;
-						if(aSetId === setId){
-							correctedVirtual.stringGains[stringId].gain.value *= (stringGainLimit / totalStringGains[setId]);
+					i = stringIds.length;
+					while(i--){
+						if(correctedVirtual.stringGains[stringIds[i]].connectTo === setId){
+							correctedVirtual.stringGains[stringIds[i]].gain.value *= (stringGainLimit / totalStringGains[setId]);
 						}
-					});
+					}
 				}
-			});
+			}
 			
 			// apply set gains and main gain to string gains
 			
@@ -172,41 +186,61 @@
 				}
 			};
 			
-			Object.keys(parsedVirtual.oscillators).forEach(function(stringId){
+			var stringIds = Object.keys(parsedVirtual.oscillators);
+			var i = stringIds.length;
+			var stringId;
+			while(i--){
+				stringId = stringIds[i];
 				diff[real.oscillators[stringId] ? 'changed' : 'added'].oscillators[stringId] = parsedVirtual.oscillators[stringId];
-			});
-			Object.keys(parsedVirtual.gains).forEach(function(stringId){
-				diff[real.gains[stringId] ? 'changed' : 'added'].gains[stringId] = parsedVirtual.gains[stringId];
-			});
+			}
 			
-			Object.keys(real.oscillators).forEach(function(stringId){
+			stringIds = Object.keys(parsedVirtual.gains);
+			i = stringIds.length;
+			while(i--){
+				stringId = stringIds[i];
+				diff[real.gains[stringId] ? 'changed' : 'added'].gains[stringId] = parsedVirtual.gains[stringId];
+			}
+			
+			stringIds = Object.keys(real.oscillators);
+			i = stringIds.length;
+			while(i--){
+				stringId = stringIds[i];
 				if(!parsedVirtual.oscillators[stringId]){
 					diff.removed.oscillators[stringId] = real.oscillators[stringId];
 				}
-			});
-			Object.keys(real.gains).forEach(function(stringId){
+			}
+			
+			stringIds = Object.keys(real.gains);
+			i = stringIds.length;
+			while(i--){
+				stringId = stringIds[i];
 				if(!parsedVirtual.gains[stringId]){
 					diff.removed.gains[stringId] = real.gains[stringId];
 				}
-			});
+			}
 			
 			return diff;
 		};
 		var applyDiff = function(diff){
-			console.log(Object.keys(diff.added.gains).length, Object.keys(diff.changed.gains).length, Object.keys(diff.removed.gains).length, '||',
-			Object.keys(diff.added.oscillators).length, Object.keys(diff.changed.oscillators).length, Object.keys(diff.removed.oscillators).length);
-			Object.keys(diff.added.gains).forEach(function(stringId){
-				var current = diff.added.gains[stringId];
+			var stringIds = Object.keys(diff.added.gains);
+			var i = stringIds.length;
+			var stringId, current;
+			while(i--){
+				stringId = stringIds[i];
+				current = diff.added.gains[stringId];
 				
 				var g = ctx.createGain();
 				g.connect(ctx.destination);
 				g.gain.value = current.gain.value;
 				
 				real.gains[stringId] = g;
-			});
+			}
 			
-			Object.keys(diff.added.oscillators).forEach(function(stringId){
-				var current = diff.added.oscillators[stringId];
+			stringIds = Object.keys(diff.added.oscillators);
+			i = stringIds.length;
+			while(i--){
+				stringId = stringIds[i];
+				current = diff.added.oscillators[stringId];
 				
 				var o = ctx.createOscillator();
 				o.type = current.type;
@@ -215,31 +249,45 @@
 				o.start(0);
 				
 				real.oscillators[stringId] = o;
-			});
+			}
 			
-			Object.keys(diff.changed.gains).forEach(function(stringId){
+			stringIds = Object.keys(diff.changed.gains);
+			i = stringIds.length;
+			while(i--){
+				stringId = stringIds[i];
 				if(real.gains[stringId]){
 					real.gains[stringId].gain.value = diff.changed.gains[stringId].gain.value;
 				}
-			});
-			Object.keys(diff.changed.oscillators).forEach(function(stringId){
+			}
+			
+			stringIds = Object.keys(diff.changed.oscillators);
+			i = stringIds.length;
+			while(i--){
+				stringId = stringIds[i];
 				if(real.oscillators[stringId]){
-					var current = diff.changed.oscillators[stringId];
+					current = diff.changed.oscillators[stringId];
 					
 					real.oscillators[stringId].frequency.value = current.frequency.value;
 					real.oscillators[stringId].type = current.type;
 				}
-			});
+			}
 			
-			Object.keys(diff.removed.oscillators).forEach(function(stringId){
+			stringIds = Object.keys(diff.removed.oscillators);
+			i = stringIds.length;
+			while(i--){
+				stringId = stringIds[i];
 				real.oscillators[stringId].stop(0);
 				real.oscillators[stringId].disconnect();
 				delete real.oscillators[stringId];
-			});
-			Object.keys(diff.removed.gains).forEach(function(stringId){
+			}
+			
+			stringIds = Object.keys(diff.removed.gains);
+			i = stringIds.length;
+			while(i--){
+				stringId = stringIds[i];
 				real.gains[stringId].disconnect();
 				delete real.gains[stringId];
-			});
+			}
 		};
 		var updateReal = function(){
 			var parsedVirtual = summarizeVirtual(virtual);
