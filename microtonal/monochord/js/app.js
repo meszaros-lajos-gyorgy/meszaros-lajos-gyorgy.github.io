@@ -1,3 +1,21 @@
+/*
+$scope.sets = [{
+	id : <int>,	// setId
+	muted : <bool>,
+	volume : 0..100,
+	strings : [{
+		id : <int>, // stringId
+		multiplier : lowestHarmonic..highestHarmonic,
+		muted : <bool>,
+		volume : 0..100
+	}, ...],
+	retune : {
+		subject : <stringId|0>, // 0=baseFrequency, stringId=string in different set
+		target : <stringId>,
+		type : 'off|lowest|highest|manual'
+	}
+}, ...];
+*/
 (function(){
 	'use strict';
 	
@@ -792,10 +810,11 @@
 		
 		setTimeout(function(){
 			$scope.addPreset([4, 5]);
+			/*
 			$scope.addPreset([5, 6]);
 			$scope.addPreset([6, 7]);
 			$scope.addPreset([7, 8]);
-			// $scope.addPreset([4, 5, 5]);
+			*/
 			
 			/*
 			$scope.baseVolume = 10;

@@ -296,6 +296,8 @@
 			applyDiff(diff);
 		};
 		
+		// --------------
+		
 		AudioModel = {
 			supported : true,
 			setMainVolume : function(volume){
@@ -356,13 +358,17 @@
 				updateReal();
 			},
 			stopAll : function(){
-				Object.keys(real.oscillators).forEach(function(key){
-					real.oscillators[key].stop(0);
-					real.oscillators[key].disconnect();
-				});
-				Object.keys(gains).forEach(function(key){
-					real.gains[key].disconnect();
-				});
+				var keys = Object.keys(real.oscillators);
+				var i = keys.length;
+				while(i--){
+					real.oscillators[keys[i]].stop(0);
+					real.oscillators[keys[i]].disconnect();
+				}
+				keys = Object.keys(real.gains);
+				i = keys.length;
+				while(i--){
+					real.gains[keys[i]].disconnect();
+				}
 				real = {
 					oscillators : {},
 					gains : {}

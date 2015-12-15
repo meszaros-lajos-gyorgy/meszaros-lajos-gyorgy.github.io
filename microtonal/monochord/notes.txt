@@ -1,15 +1,15 @@
 Todos:
+	- import from .scl file or using an inline editor, general support for the scala format
 	- on mobile, the app should go fullscreen
 	- clone set
 	- allow to input cents for strings
 	- alternative waveforms (audioContext.createPeriodicWave())
 	- import/export to Dave Ryan's notation/format (http://arxiv.org/ftp/arxiv/papers/1508/1508.07739.pdf)
-	- import from .scl file or using an inline editor, general support for the scala format
 	- midi support
 	- method to compare sets, when ratios are getting compared (125/124 should be gained as the diff between 25/21 and 6/5)
 
 Debug:
-	- firefox click sound bug when setting gain
+	- firefox click sound bug when setting gain - https://bugzilla.mozilla.org/show_bug.cgi?id=1232644
 	- chrome drag problem with dragbutton
 	- what should be done, when you delete a set, which is referred to by another set?
 
