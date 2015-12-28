@@ -87,17 +87,18 @@ button{
 	-moz-osx-font-smoothing: grayscale;
 }
 
-._icon-increase{ content: '\e800'; }
-._icon-halve{ content: '\e801'; }
-._icon-double{ content: '\e802'; }
-._icon-decrease{ content: '\e803'; }
-._icon-speaker-on{ content: '\e804'; }
-._icon-piano{ content: '\e805'; }
-._icon-remove{ content: '\e806'; }
-._icon-speaker-off{ content: '\e807'; }
-._icon-tuning-fork{ content: '\e808'; }
-._icon-delete{ content: '\e809'; }
-._icon-add{ content: '\e80a'; }
+._icon-speaker-off { content: '\e800'; }
+._icon-speaker-on { content: '\e801'; }
+._icon-tuning-fork { content: '\e802'; }
+._icon-increase { content: '\e803'; }
+._icon-remove { content: '\e804'; }
+._icon-decrease { content: '\e805'; }
+._icon-double { content: '\e806'; }
+._icon-halve { content: '\e807'; }
+._icon-delete { content: '\e808'; }
+._icon-add { content: '\e809'; }
+._icon-piano { content: '\e80a'; }
+._icon-normalize { content: '\e80b'; }
 
 .wrapper{
 	height : 100%;
@@ -123,8 +124,8 @@ button{
 	}
 }
 
-.base-controls{
-	.volume{
+.ui{
+	&.volume{
 		&::before{
 			._icon;
 			._icon-speaker-off;
@@ -247,7 +248,21 @@ button{
 		border-radius : 10px;
 		
 		header{
-			
+			button.close{
+				position : absolute;
+				width : 40px;
+				height : 40px;
+				top : -20px;
+				right : -20px;
+				border-radius : 20px;
+				&::before{
+					font-weight : normal;
+					font-size : 20px;
+					line-height : 40px;
+					height : 40px;
+					width : 40px;
+				}
+			}
 			h2{
 				margin : 0;
 			}
@@ -301,6 +316,7 @@ button{
 .icon-tuning-fork::before{ ._icon-tuning-fork; }
 .icon-delete::before{ ._icon-delete; }
 .icon-add::before{ ._icon-add; }
+.icon-normalize::before{ ._icon-normalize; }
 
 button{
 	border : 0;

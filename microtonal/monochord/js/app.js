@@ -29,7 +29,7 @@ $scope.sets = [{
 	
 	// -------------
 	
-	var app = angular.module('Microtonal', ['AudioModel', 'Math', 'DragnumberDirective', 'HoldclickDirective']);
+	var app = angular.module('Microtonal', ['AudioModel', 'Math', 'DragnumberDirective', 'HoldclickDirective', 'VolumeDirective']);
 	
 	app.controller('MonochordCtrl', ['$scope', '$http', 'audio', 'math', function($scope, $http, AudioModel, math){
 		if(!AudioModel.supported){

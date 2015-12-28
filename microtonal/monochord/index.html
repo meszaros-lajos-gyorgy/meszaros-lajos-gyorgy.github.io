@@ -17,6 +17,7 @@
 	<script src="js/math.js"></script>
 	<script src="js/directives/dragnumber.js"></script>
 	<script src="js/directives/holdclick.js"></script>
+	<script src="js/directives/ui/volume.js"></script>
 	<script src="js/app.js"></script>
 </head>
 <body ng-app="Microtonal">
@@ -24,12 +25,7 @@
 		<div class="main">
 			<section class="base-controls">
 				<label>Fundamental frequency: <dragnumber min="1" ng-model="baseFrequency" width="5"></dragnumber> Hz</label>
-				<div>Master volume:
-					<label class="volume">
-						<input type="range" min="0" max="100" autocomplete="off" ng-model="baseVolume" />
-						<span class="data">{{baseVolume}}%</span>
-					</label>
-				</div>
+				<div>Master volume: <volume ng-model="baseVolume"></volume></div>
 			</section>
 			
 			<section ng-show="presets.tunings" class="presets">
@@ -48,11 +44,11 @@
 			
 			<button ng-click="addSet()" class="icon-add" title="add a new set">add a new set</button>
 			<button ng-click="showKeyboard()" class="icon-piano" title="open keyboard">open keyboard</button>
-			<button ng-click="showImportExport()" class="icon-import-export" title="import/export">import/export</button>
+			<!-- <button ng-click="showImportExport()" class="icon-import-export" title="import/export">import/export</button> -->
 			
 			<ul class="sets">
 				<li ng-repeat="set in sets">
-					<!-- <label>Volume <input type="range" min="0" max="100" autocomplete="off" ng-model="set.volume" />({{set.volume}}/100)</label> -->
+					<!-- <div>Volume: <volume ng-model="set.volume"></volume></div> -->
 					
 					<!-- <span style="float:left;">Ratio known as: <i>{{ratioKnownAs(set)}}</i></span> -->
 					{{freqs = calculateFrequencies(set);cents = calculateCents(set);''}}
@@ -114,7 +110,7 @@
 		<div class="dialog" ng-class="popup === '' ? 'hidden' : ''">
 			<div class="retune" ng-class="popup === 'retune' ? '' : 'hidden'">
 				<header>
-					<button class="close icon-delete" ng-click="closePopup()">close popup</button>
+					<button class="close icon-delete red" ng-click="closePopup()">close popup</button>
 					<h2>Retune</h2>
 				</header>
 				<!--
@@ -131,17 +127,17 @@
 			</div>
 			<div class="keyboard" ng-class="popup === 'keyboard' ? '' : 'hidden'">
 				<header>
-					<button class="close icon-delete" ng-click="closePopup()">close popup</button>
+					<button class="close icon-delete red" ng-click="closePopup()">close popup</button>
 					<h2>Keyboard</h2>
 					
 					<label>Fundamental frequency: <dragnumber min="1" ng-model="baseFrequency" width="5"></dragnumber> Hz</label>
-					<label>Master volume: <input type="range" min="0" autocomplete="off" ng-model="baseVolume" />({{baseVolume}}/100)</label>
+					<div>Master volume: <volume ng-model="baseVolume"></volume></div>
 				</header>
 				
 				<table>
 					<tr>
 						<td ng-repeat="set in sets" data-set="{{set.id}}">
-							<!-- <label>Volume <input type="range" min="0" max="100" autocomplete="off" ng-model="set.volume" />({{set.volume}}/100{{set.muted ? ' - muted' : ''}})</label> -->
+							<!-- <div>Volume: <volume ng-model="set.volume"></volume></div> -->
 							{{getMultipliers(set).join(':')}}
 						</td>
 					</tr>
@@ -149,7 +145,7 @@
 			</div>
 			<div class="keyboard" ng-class="popup === 'import-export' ? '' : 'hidden'">
 				<header>
-					<button class="close icon-delete" ng-click="closePopup()">close popup</button>
+					<button class="close icon-delete red" ng-click="closePopup()">close popup</button>
 					<h2>Import/Export</h2>
 				</header>
 			</div>
