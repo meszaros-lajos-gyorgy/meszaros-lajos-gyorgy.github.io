@@ -10,9 +10,10 @@
 					ngModel: '=',
 					min: '=',
 					max: '=',
-					weight: '='
+					weight: '=',
+					ngClass: '='
 				},
-				template: '<input ng-model="ngModel" type="number" class="dragnumber" min="{{min}}" max="{{max}}" autocomplete="off" data-weight="{{weight}}" />',
+				template: '<input ng-model="ngModel" type="number" ng-class="ngClass" class="dragnumber" min="{{min}}" max="{{max}}" autocomplete="off" data-weight="{{weight}}" />',
 				controller: ['$scope', '$element', function($scope, $element){
 					var listening = false;
 					var startClientY;

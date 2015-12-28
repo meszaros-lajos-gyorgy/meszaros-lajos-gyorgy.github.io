@@ -55,7 +55,7 @@
 					<ul class="strings">
 						<li ng-repeat="string in set.strings">
 							<span class="hertz">{{freqs[$index]|number:0}} Hz</span>
-							<button ng-click="setStringToEdit(string, set)" ng-class="[(stringToEdit.id === string.id ? 'active' : ''), (string.muted ? ' muted' : 'unmuted')]">{{string.multiplier}}</button>
+							<button ng-click="setStringToEdit(string, set)" ng-class="[(stringToEdit.id === string.id ? 'active' : ''), (string.muted ? 'muted' : 'unmuted')]">{{string.multiplier}}</button>
 							<span class="cent" ng-show="$index > 0">
 								{{cents[$index] - cents[$index - 1] >= 0 ? '+' : ''}}{{cents[$index] - cents[$index - 1] | number:2}} &cent;
 							</span>
@@ -68,7 +68,7 @@
 					<div class="string-edit" ng-show="$parent.stringToEdit.hasOwnProperty('id') && $parent.setOfStringToEdit.id === set.id">
 						<!-- <button hold-click ng-disabled="!canLowerString($parent.stringToEdit)" ng-click="lowerString($parent.stringToEdit)" class="icon-remove smaller" title="decrease">decrease</button> -->
 						<button ng-disabled="!canLowerString($parent.stringToEdit)" ng-click="lowerString($parent.stringToEdit)" class="icon-remove smaller" title="decrease">decrease</button>
-						<dragnumber ng-model="$parent.stringToEdit.multiplier" min="1" max="highestHarmonic" weight="10"></dragnumber>
+						<dragnumber ng-class="'smaller'" ng-model="$parent.stringToEdit.multiplier" min="1" max="highestHarmonic" weight="10"></dragnumber>
 						<!-- <button hold-click ng-disabled="!canRaiseString($parent.stringToEdit)" ng-click="raiseString($parent.stringToEdit)" class="icon-add smaller" title="increase">increase</button> -->
 						<button ng-disabled="!canRaiseString($parent.stringToEdit)" ng-click="raiseString($parent.stringToEdit)" class="icon-add smaller" title="increase">increase</button>
 						

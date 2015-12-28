@@ -54,23 +54,40 @@ button{
 
 /* ----- build ----- */
 
-/*
 .dragnumber{
-	padding : 0;
-	-moz-appearance:textfield;
+	-moz-appearance: textfield;
+	text-align : center;
+	
 	border : 0;
+	padding : 0;
 	width : 48px;
 	height : 48px;
 	line-height : 48px;
-	background : #6080d7;
-	text-align : center;
+	border-radius : 5px;
 	font-size : 20px;
 	font-family : inherit;
-	cursor : pointer;
-	border-radius : 7px;
-	cursor : ns-resize;
-	display : inline-block;
+	outline : none;
 	vertical-align : top;
+	position : relative;
+	
+	color : @c1;
+	background : @c2 no-repeat center center;
+	text-shadow :
+		0 -1px 0 darken(@c2, 30%),
+		0 1px 0 lighten(@c2, 10%)
+	;
+	box-shadow : 0 -2px 0 0 @c1 inset;
+	
+	display : inline-block;
+	cursor : ns-resize;
+	
+	&.smaller{
+		margin-top : 4px;
+		margin-bottom : 4px;
+		width : 40px;
+		height : 40px;
+		line-height : 40px;
+	}
 }
 .dragnumber::-webkit-outer-spin-button,
 .dragnumber::-webkit-inner-spin-button {
@@ -79,7 +96,6 @@ button{
 .dragnumber.edit{
 	cursor : text;
 }
-*/
 
 ._icon{
 	font-family: 'monochord';
@@ -219,6 +235,7 @@ button{
 		border-left : 1px solid @c1;
 		float : right;
 	}
+	input,
 	button{
 		margin-left : 4px;
 	}
@@ -234,10 +251,10 @@ button{
 	z-index : 50;
 	&>div{
 		width : 90%;
-		height : 90%;
+		height : 84%;
 		background : #fff;
 		position : absolute;
-		top : 5%;
+		top : 8%;
 		left : 5%;
 		box-sizing : border-box;
 		padding : 10px 20px;
