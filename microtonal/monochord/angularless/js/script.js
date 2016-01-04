@@ -26,34 +26,36 @@
 	var createElement = function(tagName, attributes, children){
 		var element = document.createElement(tagName);
 		
-		for(var name in attributes){
-			var value = attributes[name];
-			switch(name){
-				case 'class' :
-					element.className = value;
-					break;
-				case 'html' :
-					element.innerHTML = value;
-					break;
-				case 'text' :
-					element.textContent = value;
-					break;
-				case 'data' :
-					for(var attr in value){
-						element.setAttribute('data-' + attr, value[attr]);
-					}
-					break;
-				case 'on' :
-					for(var event in value){
-						element.addEventListener(event, value[event]);
-					}
-					break;
-				default :
-					element.setAttribute(name, value + '');
+		if(attributes){
+			for(var name in attributes){
+				var value = attributes[name];
+				switch(name){
+					case 'class' :
+						element.className = value;
+						break;
+					case 'html' :
+						element.innerHTML = value;
+						break;
+					case 'text' :
+						element.textContent = value;
+						break;
+					case 'data' :
+						for(var attr in value){
+							element.setAttribute('data-' + attr, value[attr]);
+						}
+						break;
+					case 'on' :
+						for(var event in value){
+							element.addEventListener(event, value[event]);
+						}
+						break;
+					default :
+						element.setAttribute(name, value + '');
+				}
 			}
 		}
 		
-		if(children.push){
+		if(children && children.push){
 			for(var i = 0; i < children.length; i++){
 				element.appendChild(children);
 			}
@@ -99,7 +101,7 @@
 		modules.AudioModel.updateReal();
 	};
 	
-	onready(function(){
+	onReady(function(){
 		document.body.appendChild(createElement('input', {
 			type : 'range',
 			min : 0,
