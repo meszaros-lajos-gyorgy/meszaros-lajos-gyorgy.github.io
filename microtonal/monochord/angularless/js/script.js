@@ -5,6 +5,7 @@
 (function(modules){
 	'use strict';
 	
+	/*
 	modules.AudioModel.addSet(1, {
 		volume : 1
 	});
@@ -30,9 +31,6 @@
 			for(var name in attributes){
 				var value = attributes[name];
 				switch(name){
-					case 'class' :
-						element.className = value;
-						break;
 					case 'html' :
 						element.innerHTML = value;
 						break;
@@ -57,6 +55,9 @@
 		
 		if(children && children.push){
 			for(var i = 0; i < children.length; i++){
+				if(typeof child === 'string'){
+					child = document.createTextNode(child);
+				}
 				element.appendChild(children);
 			}
 		}
@@ -114,4 +115,27 @@
 			}
 		}));
 	});
+	*/
+	
+	// ----------
+	
+	var Reactor = function(options) {
+		var target = document.createTextNode(null);
+		
+		this.addEventListener    = target.addEventListener.bind(target);
+		this.removeEventListener = target.removeEventListener.bind(target);
+		this.dispatchEvent       = target.dispatchEvent.bind(target);
+	}
+	
+	var reactor = new Reactor();
+	
+	reactor.addEventListener('event1', function(){
+		console.log('event #1 being called');
+	});
+	reactor.addEventListener('event2', function(){
+		console.log('event #2 being called');
+	})
+	
+	reactor.dispatchEvent(new Event('event1'));
+	reactor.dispatchEvent(new Event('event2'));
 })(window.modules);
