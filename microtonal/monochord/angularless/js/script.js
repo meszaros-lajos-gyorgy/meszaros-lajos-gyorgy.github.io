@@ -5,24 +5,37 @@
 (function(modules){
 	'use strict';
 	
-	/*
-	modules.AudioModel.addSet(1, {
-		volume : 1
-	});
-	modules.AudioModel.addString(1, 1, {
-		volume : 1,
-		type : 'sine',
-		frequency : 440
-	});
-	modules.AudioModel.addString(2, 1, {
-		volume : 1,
-		type : 'sine',
-		frequency : 330
-	});
-	modules.AudioModel.setMainVolume(0.1);
-	modules.AudioModel.updateReal();
-	
-	// ----------
+	var bindToVariable = function(element, tagName, target){
+		var $scope = target[0];
+		var variable = target[1];
+		
+		switch(tagName){
+			case 'input' :
+				element.addEventListener('input', function(){
+					$scope[variable] = this.value;
+				});
+				element.addEventListener('init', function(){
+					var self = this;
+					$scope.$watch(variable, function(e){
+						if(e.newValue !== e.oldValue){
+							self.value = e.newValue;
+						}
+					});
+					element.value = $scope[variable];
+				});
+				break;
+			default :
+				element.addEventListener('init', function(){
+					var self = this;
+					$scope.$watch(variable, function(e){
+						if(e.newValue !== e.oldValue){
+							self.textContent = e.newValue;
+						}
+					});
+					element.textContent = $scope[variable];
+				});
+		}
+	};
 	
 	var createElement = function(tagName, attributes, children){
 		var element = document.createElement(tagName);
@@ -39,7 +52,11 @@
 						break;
 					case 'data' :
 						for(var attr in value){
-							element.setAttribute('data-' + attr, value[attr]);
+							if(attr === 'model'){
+								bindToVariable(element, tagName, value[attr]);
+							}else{
+								element.setAttribute('data-' + attr, value[attr]);
+							}
 						}
 						break;
 					case 'on' :
@@ -62,10 +79,12 @@
 			}
 		}
 		
+		element.dispatchEvent(new Event('init'));
+		
 		return element;
 	};
 	
-	var onReady = function(handler){
+	var onDocumentReady = function(handler){
 		var isValidReadyState = function(){
 			return (document.readyState === 'interactive' || document.readyState === 'complete');
 		};
@@ -84,58 +103,102 @@
 		}
 	};
 	
-	// ----------
-	
-	var mainVolume = 10;
-	
-	var getMainVolume = function(){
-		return mainVolume;
-	};
-	var setMainVolume = function(newValue){
-		if(newValue === mainVolume){
-			return;
-		}
-		
-		mainVolume = newValue;
-		
-		modules.AudioModel.setMainVolume(mainVolume / 100);
-		modules.AudioModel.updateReal();
-	};
-	
-	onReady(function(){
-		document.body.appendChild(createElement('input', {
-			type : 'range',
-			min : 0,
-			max : 100,
-			value : getMainVolume(),
-			on : {
-				input : function(){
-					setMainVolume(this.value);
-				}
-			}
-		}));
-	});
-	*/
-	
-	// ----------
-	
-	var Reactor = function(options) {
+	var Reactor = function(){
 		var target = document.createTextNode(null);
 		
 		this.addEventListener    = target.addEventListener.bind(target);
 		this.removeEventListener = target.removeEventListener.bind(target);
 		this.dispatchEvent       = target.dispatchEvent.bind(target);
-	}
+	};
 	
-	var reactor = new Reactor();
+	var Scope = function(){
+		var data = {};
+		var self = this;
+		
+		this.$register = function(variable, defaultValue){
+			data[variable] = {
+				oldValue : undefined,
+				value : defaultValue,
+				events : new Reactor()
+			};
+			Object.defineProperty(self, variable, {
+				get : function(){
+					return data[variable].value;
+				},
+				set : function(newValue){
+					if(data[variable].value === newValue){
+						return;
+					}
+					data[variable].oldValue = data[variable].value;
+					data[variable].value = newValue;
+					
+					var event = new Event('change');
+					event.oldValue = data[variable].oldValue;
+					event.newValue = data[variable].value;
+					data[variable].events.dispatchEvent(event);
+				}
+			});
+		};
+		this.$watch = function(variable, callback){
+			data[variable].events.addEventListener('change', callback);
+		};
+		this.$unwatch = function(variable, callback){
+			data[variable].events.removeEventListener('change', callback);
+		};
+	};
 	
-	reactor.addEventListener('event1', function(){
-		console.log('event #1 being called');
+	// ---------------
+	
+	var $scope = new Scope();
+	$scope.$register('mainVolume', 10);
+	
+	modules.AudioModel.setMainVolume($scope.mainVolume / 100);
+	modules.AudioModel.updateReal();
+	$scope.$watch('mainVolume', function(e){
+		modules.AudioModel.setMainVolume(e.newValue / 100);
+		modules.AudioModel.updateReal();
 	});
-	reactor.addEventListener('event2', function(){
-		console.log('event #2 being called');
-	})
 	
-	reactor.dispatchEvent(new Event('event1'));
-	reactor.dispatchEvent(new Event('event2'));
+	var em = createElement('em', {
+		data : {
+			model : [$scope, 'mainVolume']
+		}
+	});
+	
+	var range = createElement('input', {
+		type : 'range',
+		min : 0,
+		max : 100,
+		data : {
+			model : [$scope, 'mainVolume']
+		}
+	});
+	
+	var textField = createElement('input', {
+		type : 'text',
+		data : {
+			model : [$scope, 'mainVolume']
+		}
+	});
+	
+	onDocumentReady(function(){
+		document.body.appendChild(range);
+		document.body.appendChild(textField);
+		document.body.appendChild(em);
+		
+		modules.AudioModel.addSet(1, {
+			volume : 1
+		});
+		modules.AudioModel.addString(1, 1, {
+			volume : 1,
+			type : 'triangle',
+			frequency : 440
+		});
+		modules.AudioModel.addString(2, 1, {
+			volume : 1,
+			type : 'sine',
+			frequency : 330
+		});
+		modules.AudioModel.updateReal();
+	});
 })(window.modules);
