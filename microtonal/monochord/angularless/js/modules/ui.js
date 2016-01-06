@@ -2,109 +2,65 @@ if(!window.modules){
 	window.modules = {};
 }
 
+// requires:
+//   modules.DOM
+
 (function(modules){
 	'use strict';
 	
-	var bindToVariable = function(element, tagName, target){
-		var $scope = target[0];
-		var variable = target[1];
-		
-		switch(tagName){
-			case 'input' :
-				element.addEventListener('input', function(){
-					$scope[variable] = this.value;
-				});
-				element.addEventListener('init', function(){
-					var self = this;
-					$scope.$watch(variable, function(e){
-						if(e.newValue !== e.oldValue){
-							self.value = e.newValue;
+	function createVolume(model){
+		return modules.DOM.createElement('div', {}, [
+			'Master volume: ',
+			
+			modules.DOM.createElement('label', {
+				'class' : 'ui volume'
+			}, [
+				modules.DOM.createElement('input', {
+					type : 'range',
+					min : 0,
+					max : 100,
+					autocomplete : 'off',
+					data : {
+						model : model
+					}
+				}),
+				modules.DOM.createElement('span', {}, [
+					modules.DOM.createElement('text', {
+						data : {
+							model : model
 						}
-					});
-					element.value = $scope[variable];
-				});
-				break;
-			default :
-				element.addEventListener('init', function(){
-					var self = this;
-					$scope.$watch(variable, function(e){
-						if(e.newValue !== e.oldValue){
-							self.textContent = e.newValue;
-						}
-					});
-					element.textContent = $scope[variable];
-				});
-		}
-	};
+					}),
+					'%'
+				])
+			])
+		]);
+	}
 	
-	function createElement(tagName, attributes, children){
-		var element = document.createElement(tagName);
+	function createDragNumber(model, params){
+		var params = params || {};
 		
-		if(attributes){
-			for(var name in attributes){
-				var value = attributes[name];
-				switch(name){
-					case 'html' :
-						element.innerHTML = value;
-						break;
-					case 'text' :
-						element.textContent = value;
-						break;
-					case 'data' :
-						for(var attr in value){
-							if(attr === 'model'){
-								bindToVariable(element, tagName, value[attr]);
-							}else{
-								element.setAttribute('data-' + attr, value[attr]);
-							}
-						}
-						break;
-					case 'on' :
-						for(var event in value){
-							element.addEventListener(event, value[event]);
-						}
-						break;
-					default :
-						element.setAttribute(name, value + '');
-				}
+		var attrs = {
+			'class' : 'dragnumber',
+			autocomplete : 'off',
+			type : 'number',
+			data : {
+				model : model,
+				weight : (params.weight !== undefined ? params.weight : 10)
 			}
-		}
-		
-		if(children && children.push){
-			for(var i = 0; i < children.length; i++){
-				if(typeof child === 'string'){
-					child = document.createTextNode(child);
-				}
-				element.appendChild(children);
-			}
-		}
-		
-		element.dispatchEvent(new Event('init'));
-		
-		return element;
-	};
-	
-	function onDOMReady(handler){
-		var isValidReadyState = function(){
-			return (document.readyState === 'interactive' || document.readyState === 'complete');
 		};
 		
-		if(isValidReadyState()){
-			handler();
-		}else{
-			var rsHandler = function(){
-				document.removeEventListener('readystatechange', rsHandler);
-				
-				if(isValidReadyState()){
-					handler();
-				}
-			};
-			document.addEventListener('readystatechange', rsHandler);
+		if(params.min !== undefined){
+			attrs.min = params.min;
 		}
-	};
+		if(params.max !== undefined){
+			attrs.max = params.max;
+		}
+		
+		return modules.DOM.createElement('input', attrs);
+	}
 	
 	modules.UI = {
-		createElement : createElement,
-		onDOMReady : onDOMReady
+		createVolume : createVolume,
+		createDragNumber : createDragNumber
 	};
 })(window.modules);

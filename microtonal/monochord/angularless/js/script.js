@@ -7,56 +7,45 @@
 (function(modules){
 	'use strict';
 	
-	var $scope = new modules.Scope();
-	$scope.$register('mainVolume', 10);
+	if(!modules.AudioModel.supported){
+		alert('Web Audio API is not supported by this browser.\nTo see, which browsers support the Web Audio API, visit: http://caniuse.com/#feat=audio-api');
+		return ;
+	}
 	
-	modules.AudioModel.setMainVolume($scope.mainVolume / 100);
+	var $scope = new modules.Scope();
+	
+	var lastStringId = 0;
+	var lastSetId = 0;
+	var lowestHarmonic = 1;
+	var highestHarmonic = 5000;
+	
+	$scope.$register('baseVolume', 10);
+	$scope.$register('baseFrequency', 50);
+	
+	// --------------
+	
+	modules.AudioModel.setMainVolume($scope.baseVolume / 100);
 	modules.AudioModel.updateReal();
-	$scope.$watch('mainVolume', function(e){
+	
+	$scope.$watch('baseVolume', function(e){
 		modules.AudioModel.setMainVolume(e.newValue / 100);
 		modules.AudioModel.updateReal();
 	});
 	
-	var em = modules.UI.createElement('em', {
-		data : {
-			model : [$scope, 'mainVolume']
-		}
-	});
+	var baseControls = modules.DOM.createElement('section', {
+		'class' : 'base-controls'
+	}, [
+		modules.DOM.createElement('div', {}, [
+			'Fundamental frequency',
+			modules.UI.createDragNumber([$scope, 'baseFrequency'], {
+				min : 1,
+				weight : 5
+			})
+		]),
+		modules.UI.createVolume([$scope, 'baseVolume'])
+	]);
 	
-	var range = modules.UI.createElement('input', {
-		type : 'range',
-		min : 0,
-		max : 100,
-		data : {
-			model : [$scope, 'mainVolume']
-		}
-	});
-	
-	var textField = modules.UI.createElement('input', {
-		type : 'text',
-		data : {
-			model : [$scope, 'mainVolume']
-		}
-	});
-	
-	modules.UI.onDOMReady(function(){
-		document.body.appendChild(range);
-		document.body.appendChild(textField);
-		document.body.appendChild(em);
-		
-		modules.AudioModel.addSet(1, {
-			volume : 1
-		});
-		modules.AudioModel.addString(1, 1, {
-			volume : 1,
-			type : 'triangle',
-			frequency : 440
-		});
-		modules.AudioModel.addString(2, 1, {
-			volume : 1,
-			type : 'sine',
-			frequency : 330
-		});
-		modules.AudioModel.updateReal();
+	modules.DOM.onReady(function(){
+		document.body.appendChild(baseControls);
 	});
 })(window.modules);
