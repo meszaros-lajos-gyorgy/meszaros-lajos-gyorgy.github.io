@@ -32,6 +32,29 @@
 		modules.AudioModel.updateReal();
 	});
 	
+	// -----
+	
+	modules.AudioModel.addSet(1, {
+		volume : 1
+	});
+	modules.AudioModel.addString(1, 1, {
+		frequency : $scope.baseFrequency,
+		type : 'sine',
+		volume : 1
+	});
+	modules.AudioModel.updateReal();
+	
+	$scope.$watch('baseFrequency', function(e){
+		modules.AudioModel.setString(1, {
+			frequency : e.newValue
+		});
+		modules.AudioModel.updateReal();
+	})
+	
+	$scope.$register('test', 10);
+	
+	// -----
+	
 	var baseControls = modules.DOM.createElement('section', {
 		'class' : 'base-controls'
 	}, [
@@ -42,7 +65,8 @@
 				weight : 5
 			})
 		]),
-		modules.UI.createVolume([$scope, 'baseVolume'])
+		modules.UI.createVolume([$scope, 'baseVolume']),
+		modules.UI.createDragNumber([$scope, 'test'])
 	]);
 	
 	modules.DOM.onReady(function(){

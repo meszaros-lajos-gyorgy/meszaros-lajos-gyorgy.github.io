@@ -9,11 +9,14 @@ if(!window.modules){
 		var $scope = target[0];
 		var variable = target[1];
 		
+		function onChange(){
+			$scope[variable] = this.value;
+		}
+		
 		switch(tagName){
 			case 'input' :
-				element.addEventListener('input', function(){
-					$scope[variable] = this.value;
-				});
+				element.addEventListener('input', onChange);
+				element.addEventListener('change', onChange);
 				element.addEventListener('init', function(){
 					var self = this;
 					$scope.$watch(variable, function(e){
