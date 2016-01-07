@@ -28,7 +28,7 @@
 	modules.AudioModel.updateReal();
 	
 	$scope.$watch('baseVolume', function(e){
-		modules.AudioModel.setMainVolume(e.newValue / 100);
+		modules.AudioModel.setMainVolume(e.detail.newValue / 100);
 		modules.AudioModel.updateReal();
 	});
 	
@@ -46,7 +46,7 @@
 	
 	$scope.$watch('baseFrequency', function(e){
 		modules.AudioModel.setString(1, {
-			frequency : e.newValue
+			frequency : e.detail.newValue
 		});
 		modules.AudioModel.updateReal();
 	})

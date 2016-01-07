@@ -110,7 +110,7 @@ if(!window.modules){
 				}
 				
 				this.value = value;
-				this.dispatchEvent(new CustomEvent('change', {value : this.value}));
+				this.dispatchEvent(new Event('change'));
 			}
 			e.stopPropagation();
 			e.preventDefault();

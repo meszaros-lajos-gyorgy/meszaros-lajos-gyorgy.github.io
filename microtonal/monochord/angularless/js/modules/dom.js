@@ -9,19 +9,19 @@ if(!window.modules){
 		var $scope = target[0];
 		var variable = target[1];
 		
-		function onChange(){
-			$scope[variable] = this.value;
-		}
-		
 		switch(tagName){
 			case 'input' :
-				element.addEventListener('input', onChange);
-				element.addEventListener('change', onChange);
+				element.addEventListener('input', function(){
+					$scope[variable] = this.value;
+				});
+				element.addEventListener('change', function(){
+					$scope[variable] = this.value;
+				});
 				element.addEventListener('init', function(){
 					var self = this;
 					$scope.$watch(variable, function(e){
-						if(e.newValue !== e.oldValue){
-							self.value = e.newValue;
+						if(e.detail.newValue !== e.detail.oldValue){
+							self.value = e.detail.newValue;
 						}
 					});
 					element.value = $scope[variable];
@@ -31,8 +31,8 @@ if(!window.modules){
 				element.addEventListener('init', function(){
 					var self = this;
 					$scope.$watch(variable, function(e){
-						if(e.newValue !== e.oldValue){
-							self.textContent = e.newValue;
+						if(e.detail.newValue !== e.detail.oldValue){
+							self.value = e.detail.newValue;
 						}
 					});
 					element.textContent = $scope[variable];

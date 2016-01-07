@@ -29,10 +29,10 @@ if(!window.modules){
 					data[variable].oldValue = data[variable].value;
 					data[variable].value = newValue;
 					
-					data[variable].events.dispatchEvent(new CustomEvent('change', {
+					data[variable].events.dispatchEvent(new CustomEvent('change', {detail : {
 						oldValue : data[variable].oldValue,
 						newValue : data[variable].value
-					}));
+					}}));
 				}
 			});
 		};
