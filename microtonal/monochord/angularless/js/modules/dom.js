@@ -32,7 +32,7 @@ if(!window.modules){
 					var self = this;
 					$scope.$watch(variable, function(e){
 						if(e.detail.newValue !== e.detail.oldValue){
-							self.value = e.detail.newValue;
+							self.textContent = e.detail.newValue;
 						}
 					});
 					element.textContent = $scope[variable];

@@ -65,8 +65,7 @@
 				weight : 5
 			})
 		]),
-		modules.UI.createVolume([$scope, 'baseVolume']),
-		modules.UI.createDragNumber([$scope, 'test'])
+		modules.UI.createVolume([$scope, 'baseVolume'])
 	]);
 	
 	modules.DOM.onReady(function(){
