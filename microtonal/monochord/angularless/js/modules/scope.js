@@ -10,15 +10,16 @@ if(!window.modules){
 	
 	modules.Scope = function(){
 		var data = {};
-		var self = this;
 		
 		this.$register = function(variable, defaultValue){
 			data[variable] = {
 				oldValue : undefined,
 				value : defaultValue,
-				events : new modules.Reactor()
+				events : new modules.Reactor(),
+				handlers : {}
 			};
-			Object.defineProperty(self, variable, {
+			
+			Object.defineProperty(this, variable, {
 				get : function(){
 					return data[variable].value;
 				},
@@ -35,13 +36,28 @@ if(!window.modules){
 					}}));
 				}
 			});
+			
+			return this;
 		};
 		this.$watch = function(variable, callback){
-			// todo: this should register, if data[variable] doesn't exist yet
-			data[variable].events.addEventListener('change', callback);
+			if(!data.hasOwnProperty(variable)){
+				this.$register(variable);
+			}
+			
+			data[variable].handlers[callback] = function(e){
+				callback(e.detail.newValue, e.detail.oldValue);
+			};
+			data[variable].events.addEventListener('change', data[variable].handlers[callback]);
+			
+			return this;
 		};
 		this.$unwatch = function(variable, callback){
-			data[variable].events.removeEventListener('change', callback);
+			if(!data.hasOwnProperty(variable)){
+				this.$register(variable);
+			}
+			data[variable].events.removeEventListener('change', data[variable].handlers[callback]);
+			
+			return this;
 		};
 	};
 })(window.modules);

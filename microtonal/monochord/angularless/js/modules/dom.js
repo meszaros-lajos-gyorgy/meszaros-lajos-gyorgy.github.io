@@ -19,9 +19,9 @@ if(!window.modules){
 				});
 				element.addEventListener('init', function(){
 					var self = this;
-					$scope.$watch(variable, function(e){
-						if(e.detail.newValue !== e.detail.oldValue){
-							self.value = e.detail.newValue;
+					$scope.$watch(variable, function(newValue, oldValue){
+						if(newValue !== oldValue){
+							self.value = newValue;
 						}
 					});
 					element.value = $scope[variable];
@@ -30,9 +30,9 @@ if(!window.modules){
 			default :
 				element.addEventListener('init', function(){
 					var self = this;
-					$scope.$watch(variable, function(e){
-						if(e.detail.newValue !== e.detail.oldValue){
-							self.textContent = e.detail.newValue;
+					$scope.$watch(variable, function(newValue, oldValue){
+						if(newValue !== oldValue){
+							self.textContent = newValue;
 						}
 					});
 					element.textContent = $scope[variable];

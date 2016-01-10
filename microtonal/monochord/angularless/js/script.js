@@ -4,6 +4,24 @@
 //   modules.Scope
 //   modules.UI
 
+/*
+$scope.sets = [{
+	id : <int>,	// setId
+	muted : <bool>,
+	volume : 0..100,
+	strings : [{
+		id : <int>, // stringId
+		multiplier : lowestHarmonic..highestHarmonic,
+		muted : <bool>,
+		volume : 0..100
+	}, ...],
+	retune : {
+		subject : <stringId|0>, // 0=baseFrequency, stringId=string in different set
+		target : <stringId>,
+		type : 'off|lowest|highest|manual'
+	}
+}, ...];
+*/
 (function(modules){
 	'use strict';
 	
@@ -22,34 +40,41 @@
 	$scope.$register('baseVolume', 10);
 	$scope.$register('baseFrequency', 50);
 	
+	$scope.sets = [];
+	
 	// --------------
 	
-	modules.AudioModel.setMainVolume($scope.baseVolume / 100);
-	modules.AudioModel.updateReal();
+	modules.AudioModel
+		.setMainVolume($scope.baseVolume / 100)
+		.updateReal()
+	;
 	
-	$scope.$watch('baseVolume', function(e){
-		modules.AudioModel.setMainVolume(e.detail.newValue / 100);
-		modules.AudioModel.updateReal();
+	$scope.$watch('baseVolume', function(newValue, oldValue){
+		modules.AudioModel
+			.setMainVolume(newValue / 100)
+			.updateReal()
+		;
 	});
 	
 	// -----
 	
-	modules.AudioModel.addSet(1, {
-		volume : 1
-	});
-	modules.AudioModel.addString(1, 1, {
-		frequency : $scope.baseFrequency,
-		type : 'sine',
-		volume : 1
-	});
-	modules.AudioModel.updateReal();
+	modules.AudioModel
+		.addSet(1, {
+			volume : 1
+		}).addString(1, 1, {
+			frequency : $scope.baseFrequency,
+			type : 'sine',
+			volume : 1
+		}).updateReal()
+	;
 	
-	$scope.$watch('baseFrequency', function(e){
-		modules.AudioModel.setString(1, {
-			frequency : e.detail.newValue
-		});
-		modules.AudioModel.updateReal();
-	})
+	$scope.$watch('baseFrequency', function(newValue, oldValue){
+		modules.AudioModel
+			.setString(1, {
+				frequency : newValue
+			}).updateReal()
+		;
+	});
 	
 	$scope.$register('test', 10);
 	

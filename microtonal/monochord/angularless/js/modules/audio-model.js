@@ -306,85 +306,101 @@ if(!window.modules){
 		// --------------
 		
 		modules.AudioModel = {
-			supported : true,
-			setMainVolume : function(volume){
-				virtual.mainGain.gain.value = volume;
-				dirty = true;
-			},
-			setString : function(stringId, config){
-				if(virtual.oscillators[stringId]){
-					if(config.hasOwnProperty('frequency')){
-						virtual.oscillators[stringId].frequency.value = config.frequency;
-					}
-					if(config.hasOwnProperty('type')){
-						virtual.oscillators[stringId].type = config.type;
-					}
+			supported : true
+		};
+		
+		modules.AudioModel.setMainVolume = function(volume){
+			virtual.mainGain.gain.value = volume;
+			dirty = true;
+			return modules.AudioModel;
+		};
+		
+		modules.AudioModel.setString = function(stringId, config){
+			if(virtual.oscillators[stringId]){
+				if(config.hasOwnProperty('frequency')){
+					virtual.oscillators[stringId].frequency.value = config.frequency;
 				}
-				if(virtual.stringGains[stringId] && config.hasOwnProperty('volume')){
-					virtual.stringGains[stringId].gain.value = config.volume;
+				if(config.hasOwnProperty('type')){
+					virtual.oscillators[stringId].type = config.type;
 				}
-				dirty = true;
-			},
-			setSet : function(setId, config){
-				if(virtual.setGains[setId] && config.hasOwnProperty('volume')){
-					virtual.setGains[setId].gain.value = config.volume;
-				}
-				dirty = true;
-			},
-			addString : function(stringId, setId, config){
-				virtual.stringGains[stringId] = {
-					gain : {
-						value : (config.hasOwnProperty('volume') ? config.volume : 1)
-					},
-					connectTo : setId + ''
-				};
-				virtual.oscillators[stringId] = {
-					type : (config.hasOwnProperty('type') ? config.type : 'sine'),
-					frequency : {
-						value : (config.hasOwnProperty('frequency') ? config.frequency : 0)
-					},
-					connectTo : stringId + ''
-				};
-				dirty = true;
-			},
-			addSet : function(setId, config){
-				virtual.setGains[setId] = {
-					gain : {
-						value : (config.hasOwnProperty('volume') ? config.volume : 1)
-					}
-				};
-				dirty = true;
-			},
-			removeString : function(stringId){
-				delete virtual.oscillators[stringId];
-				delete virtual.stringGains[stringId];
-				dirty = true;
-			},
-			removeSet : function(setId){
-				delete virtual.setGains[setId];
-				dirty = true;
-			},
-			updateReal : updateReal,
-			stopAll : function(){
-				var keys = Object.keys(real.oscillators);
-				var i = keys.length;
-				while(i--){
-					real.oscillators[keys[i]].stop(0);
-					real.oscillators[keys[i]].disconnect();
-				}
-				keys = Object.keys(real.gains);
-				i = keys.length;
-				while(i--){
-					real.gains[keys[i]].disconnect();
-				}
-				real = {
-					oscillators : {},
-					gains : {}
-				}
-				virtual.oscillators = {};
-				virtual.stringGains = {};
-				virtual.setGains = {};
 			}
+			if(virtual.stringGains[stringId] && config.hasOwnProperty('volume')){
+				virtual.stringGains[stringId].gain.value = config.volume;
+			}
+			dirty = true;
+			return modules.AudioModel;
+		};
+		modules.AudioModel.setSet = function(setId, config){
+			if(virtual.setGains[setId] && config.hasOwnProperty('volume')){
+				virtual.setGains[setId].gain.value = config.volume;
+			}
+			dirty = true;
+			return modules.AudioModel;
+		};
+		
+		modules.AudioModel.addString = function(stringId, setId, config){
+			virtual.stringGains[stringId] = {
+				gain : {
+					value : (config.hasOwnProperty('volume') ? config.volume : 1)
+				},
+				connectTo : setId + ''
+			};
+			virtual.oscillators[stringId] = {
+				type : (config.hasOwnProperty('type') ? config.type : 'sine'),
+				frequency : {
+					value : (config.hasOwnProperty('frequency') ? config.frequency : 0)
+				},
+				connectTo : stringId + ''
+			};
+			dirty = true;
+			return modules.AudioModel;
+		};
+		modules.AudioModel.addSet = function(setId, config){
+			virtual.setGains[setId] = {
+				gain : {
+					value : (config.hasOwnProperty('volume') ? config.volume : 1)
+				}
+			};
+			dirty = true;
+			return modules.AudioModel;
+		};
+		
+		modules.AudioModel.removeString = function(stringId){
+			delete virtual.oscillators[stringId];
+			delete virtual.stringGains[stringId];
+			dirty = true;
+			return modules.AudioModel;
+		};
+		modules.AudioModel.removeSet = function(setId){
+			delete virtual.setGains[setId];
+			dirty = true;
+			return modules.AudioModel;
+		};
+		
+		modules.AudioModel.updateReal = function(){
+			updateReal();
+			return modules.AudioModel;
+		};
+		modules.AudioModel.stopAll = function(){
+			var keys = Object.keys(real.oscillators);
+			var i = keys.length;
+			while(i--){
+				real.oscillators[keys[i]].stop(0);
+				real.oscillators[keys[i]].disconnect();
+			}
+			keys = Object.keys(real.gains);
+			i = keys.length;
+			while(i--){
+				real.gains[keys[i]].disconnect();
+			}
+			real = {
+				oscillators : {},
+				gains : {}
+			}
+			virtual.oscillators = {};
+			virtual.stringGains = {};
+			virtual.setGains = {};
+			return modules.AudioModel;
 		};
 	}else{
 		modules.AudioModel = {
