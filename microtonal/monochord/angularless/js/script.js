@@ -55,9 +55,63 @@ $scope.sets = [{
 			.updateReal()
 		;
 	});
+	$scope.$watch('baseFrequency', function(newValue, oldValue){
+		// updateFrequencies();
+	});
+	$scope.$watch('sets', function(newValue, oldValue){
+		/*
+		var diff = diffSetsChange(newValue, oldValue);
+		
+		diff.sets.removed.forEach(function(setId){
+			// Object.keys($scope.keyAssignments).some(function(key){
+				// if($scope.keyAssignments[key].setId === setId){
+					// $scope.keyAssignments[key].setId = 0;
+				// }
+			// });
+			AudioModel.removeSet(setId);
+		});
+		diff.sets.added.forEach(function(setId){
+			findSetById(setId, function(set){
+				AudioModel.addSet(setId, {
+					volume : (set.muted ? 0 : set.volume / 100)
+				});
+			});
+		});
+		diff.sets.changed.forEach(function(setId){
+			findSetById(setId, function(set){
+				AudioModel.setSet(setId, {
+					volume : (set.muted ? 0 : set.volume / 100)
+				});
+			});
+		});
+		
+		diff.strings.removed.forEach(AudioModel.removeString);
+		
+		diff.strings.added.forEach(function(stringId){
+			findStringById(stringId, function(string, index, array, set){
+				AudioModel.addString(stringId, set.id, {
+					frequency : calculateFrequency(stringId),
+					volume : (string.muted ? 0 : string.volume / 100)
+				});
+			});
+		});
+		diff.strings.changed.forEach(function(stringId){
+			findStringById(stringId, function(string){
+				AudioModel.setString(stringId, {
+					frequency : calculateFrequency(stringId),
+					volume : (string.muted ? 0 : string.volume / 100)
+				});
+			});
+		});
+		*/
+	});
+	
 	
 	// -----
 	
+	
+	
+	/*
 	modules.AudioModel
 		.addSet(1, {
 			volume : 1
@@ -77,6 +131,7 @@ $scope.sets = [{
 	});
 	
 	$scope.$register('test', 10);
+	*/
 	
 	// -----
 	
