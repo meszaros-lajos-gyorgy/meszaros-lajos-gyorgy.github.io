@@ -44,6 +44,72 @@ $scope.sets = [{
 	
 	// --------------
 	
+	function diffSetsChange(newValue, oldValue){
+		var sets = {
+			added : [],
+			removed : [],
+			changed : []
+		};
+		var strings = {
+			added : [],
+			removed : [],
+			changed : []
+		};
+		
+		newValue.forEach(function(newSet){
+			var group = 'added';
+			var oldSet;
+			oldValue.some(function(_oldSet){
+				if(_oldSet.id === newSet.id){
+					oldSet = _oldSet;
+					group = 'changed';
+					return true;
+				}
+			});
+			
+			sets[group].push(newSet.id);
+			
+			newSet.strings.forEach(function(newString){
+				strings[
+					group !== 'added'
+					&& oldSet.strings.some(function(oldString){
+						return oldString.id == newString.id;
+					})
+					? 'changed'
+					: 'added'
+				].push(newString.id);
+			});
+		});
+		
+		oldValue.forEach(function(oldSet){
+			if(
+				sets.added.indexOf(oldSet.id) === -1
+				&& sets.changed.indexOf(oldSet.id) === -1
+			){
+				sets.removed.push(oldSet.id);
+				oldSet.strings.forEach(function(oldString){
+					strings.removed.push(oldString.id);
+				});
+			}else{
+				oldSet.strings.forEach(function(oldString){
+					if(
+						strings.added.indexOf(oldString.id) === -1
+						&& strings.changed.indexOf(oldString.id) === -1
+					){
+						strings.removed.push(oldString.id);
+					}
+				});
+			}
+		});
+		
+		return {
+			sets : sets,
+			strings : strings
+		};
+	}
+	
+	// --------------
+	
 	modules.AudioModel
 		.setMainVolume($scope.baseVolume / 100)
 		.updateReal()
@@ -59,9 +125,11 @@ $scope.sets = [{
 		// updateFrequencies();
 	});
 	$scope.$watch('sets', function(newValue, oldValue){
-		/*
 		var diff = diffSetsChange(newValue, oldValue);
 		
+		console.log(diff);
+		
+		/*
 		diff.sets.removed.forEach(function(setId){
 			// Object.keys($scope.keyAssignments).some(function(key){
 				// if($scope.keyAssignments[key].setId === setId){
@@ -109,8 +177,6 @@ $scope.sets = [{
 	
 	// -----
 	
-	
-	
 	/*
 	modules.AudioModel
 		.addSet(1, {
@@ -151,4 +217,29 @@ $scope.sets = [{
 	modules.DOM.onReady(function(){
 		document.body.appendChild(baseControls);
 	});
+	
+	// -----
+	
+	var sets = $scope.sets;
+	
+	sets.push({
+		/*
+		id : <int>,	// setId
+		muted : <bool>,
+		volume : 0..100,
+		strings : [{
+			id : <int>, // stringId
+			multiplier : lowestHarmonic..highestHarmonic,
+			muted : <bool>,
+			volume : 0..100
+		}, ...],
+		retune : {
+			subject : <stringId|0>, // 0=baseFrequency, stringId=string in different set
+			target : <stringId>,
+			type : 'off|lowest|highest|manual'
+		}
+		*/
+	});
+	
+	$scope.sets = sets;
 })(window.modules);
