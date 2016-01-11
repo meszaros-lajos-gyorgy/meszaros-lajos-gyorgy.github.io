@@ -2,6 +2,9 @@ if(!window.modules){
 	window.modules = {};
 }
 
+// requires:
+//   modules.Utils
+
 (function(modules){
 	'use strict';
 	
@@ -11,10 +14,6 @@ if(!window.modules){
 		var ctx = new AudioContext();
 	}catch(e){
 		supported = false;
-	}
-	
-	function clone(obj){
-		return JSON.parse(JSON.stringify(obj));
 	}
 	
 	if(supported){
@@ -72,9 +71,9 @@ if(!window.modules){
 							var oStringId = oStringIds[k];
 							// if string oscillator is connected to current string gain, and has valid frequency, then record it and we're done
 							if(virtual.oscillators[oStringId].connectTo === gStringId && virtual.oscillators[oStringId].frequency.value > 0){
-								parsedVirtual.oscillators[oStringId] = clone(virtual.oscillators[oStringId]);
-								parsedVirtual.stringGains[gStringId] = clone(virtual.stringGains[gStringId]);
-								parsedVirtual.setGains[gSetId] = clone(virtual.setGains[gSetId]);
+								parsedVirtual.oscillators[oStringId] = modules.Utils.clone(virtual.oscillators[oStringId]);
+								parsedVirtual.stringGains[gStringId] = modules.Utils.clone(virtual.stringGains[gStringId]);
+								parsedVirtual.setGains[gSetId] = modules.Utils.clone(virtual.setGains[gSetId]);
 								break;
 							}
 						}

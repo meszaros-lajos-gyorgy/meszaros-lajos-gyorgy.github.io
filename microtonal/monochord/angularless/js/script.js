@@ -3,6 +3,7 @@
 //   modules.Math
 //   modules.Scope
 //   modules.UI
+//   modules.TuningModel
 
 /*
 $scope.sets = [{
@@ -39,10 +40,102 @@ $scope.sets = [{
 	
 	$scope.$register('baseVolume', 10);
 	$scope.$register('baseFrequency', 50);
-	
-	$scope.sets = [];
+	$scope.$register('sets', []);
 	
 	// --------------
+	
+	function findStringById(stringId, run){
+		$scope.sets.some(function(set){
+			return set.strings.some(function(string, index, array){
+				if(string.id === stringId){
+					run(string, index, array, set);
+					return true;
+				}
+			});
+		});
+	}
+	
+	function calculateFrequency(stringId, stack){
+		var frequency;
+		
+		findStringById(stringId, function(string, index, array, set){
+			frequency = getBaseFrequency(stringId, set, stack) * string.multiplier;
+		});
+		
+		return frequency;
+	}
+	
+	function getBaseFrequency(stringId, set, stack){
+		var baseFrequency;
+		
+		if(set.retune.target > 0){
+			stack = stack || [];
+			if(stack.indexOf(stringId) !== -1){
+				alert('Infinite normalization target loop! There are no sets, that retune to the default baseFrequency!');
+				return 0;
+			}else{
+				stack.push(stringId);
+				baseFrequency = calculateFrequency(set.retune.target, stack);
+			}
+		}else{
+			baseFrequency = $scope.baseFrequency
+		}
+		
+		if(set.retune.type !== 'off'){
+			var retunedBaseFreq;
+			
+			switch(set.retune.type){
+				case 'lowest' : {
+					var ratios = [];
+					set.strings.forEach(function(string){
+						ratios.push(string.multiplier);
+					});
+					ratios = ratios.sort(function(a, b){
+						return a - b;
+					});
+					retunedBaseFreq = baseFrequency / ratios[0];
+					break;
+				}
+				case 'highest' : {
+					var ratios = [];
+					set.strings.forEach(function(string){
+						ratios.push(string.multiplier);
+					});
+					ratios = ratios.sort(function(a, b){
+						return b - a;
+					});
+					retunedBaseFreq = baseFrequency / ratios[0];
+					break;
+				}
+				case 'manual' : {
+					if(set.retune.subject > 0){
+						findStringById(set.retune.subject, function(string){
+							retunedBaseFreq = baseFrequency / string.multiplier;
+						})
+					}else{
+						retunedBaseFreq = baseFrequency;
+					}
+					break;
+				}
+			}
+			
+			baseFrequency = retunedBaseFreq;
+		}
+		
+		return baseFrequency;
+	}
+	
+	function updateFrequencies(){
+		var sets = modules.Utils.clone($scope.sets);
+		sets.forEach(function(set){
+			set.strings.forEach(function(string){
+				modules.AudioModel.setString(string.id, {
+					frequency : calculateFrequency(string.id)
+				});
+			});
+		});
+		$scope.sets = sets;
+	}
 	
 	function diffSetsChange(newValue, oldValue){
 		var sets = {
@@ -122,7 +215,7 @@ $scope.sets = [{
 		;
 	});
 	$scope.$watch('baseFrequency', function(newValue, oldValue){
-		// updateFrequencies();
+		updateFrequencies();
 	});
 	$scope.$watch('sets', function(newValue, oldValue){
 		var diff = diffSetsChange(newValue, oldValue);
@@ -220,26 +313,24 @@ $scope.sets = [{
 	
 	// -----
 	
-	var sets = $scope.sets;
-	
+	var sets = modules.Utils.clone($scope.sets);
 	sets.push({
-		/*
-		id : <int>,	// setId
-		muted : <bool>,
-		volume : 0..100,
-		strings : [{
-			id : <int>, // stringId
-			multiplier : lowestHarmonic..highestHarmonic,
-			muted : <bool>,
-			volume : 0..100
-		}, ...],
-		retune : {
-			subject : <stringId|0>, // 0=baseFrequency, stringId=string in different set
-			target : <stringId>,
-			type : 'off|lowest|highest|manual'
-		}
-		*/
+		id: 1,
+		muted: false,
+		volume: 100,
+		strings: [{
+			id: 1,
+			multiplier: 3,
+			muted: false,
+			volume: 100
+		}, {
+			id: 2,
+			multiplier: 2,
+			muted: false,
+			volume: 100
+		}],
+		retune : {}
 	});
-	
 	$scope.sets = sets;
+	
 })(window.modules);
