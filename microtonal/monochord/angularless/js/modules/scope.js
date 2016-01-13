@@ -24,9 +24,6 @@ if(!window.modules){
 					return data[variable].value;
 				},
 				set : function(newValue){
-					if(data[variable].value === newValue){
-						return;
-					}
 					data[variable].oldValue = data[variable].value;
 					data[variable].value = newValue;
 					

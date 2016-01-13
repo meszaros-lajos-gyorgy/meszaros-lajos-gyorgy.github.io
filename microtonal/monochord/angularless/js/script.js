@@ -33,8 +33,6 @@ $scope.sets = [{
 	
 	var $scope = new modules.Scope();
 	
-	var lastStringId = 0;
-	var lastSetId = 0;
 	var lowestHarmonic = 1;
 	var highestHarmonic = 5000;
 	
@@ -44,17 +42,7 @@ $scope.sets = [{
 	
 	// --------------
 	
-	function findStringById(stringId, run){
-		$scope.sets.some(function(set){
-			return set.strings.some(function(string, index, array){
-				if(string.id === stringId){
-					run(string, index, array, set);
-					return true;
-				}
-			});
-		});
-	}
-	
+	/*
 	function calculateFrequency(stringId, stack){
 		var frequency;
 		
@@ -200,6 +188,7 @@ $scope.sets = [{
 			strings : strings
 		};
 	}
+	*/
 	
 	// --------------
 	
@@ -218,11 +207,11 @@ $scope.sets = [{
 		updateFrequencies();
 	});
 	$scope.$watch('sets', function(newValue, oldValue){
+		/*
 		var diff = diffSetsChange(newValue, oldValue);
 		
 		console.log(diff);
 		
-		/*
 		diff.sets.removed.forEach(function(setId){
 			// Object.keys($scope.keyAssignments).some(function(key){
 				// if($scope.keyAssignments[key].setId === setId){
@@ -267,7 +256,6 @@ $scope.sets = [{
 		*/
 	});
 	
-	
 	// -----
 	
 	/*
@@ -294,6 +282,12 @@ $scope.sets = [{
 	
 	// -----
 	
+	var model = new modules.SetModel([$scope, 'sets']);
+	model.sets.add(100, false);
+	model.commit();
+	
+	// -----
+	
 	var baseControls = modules.DOM.createElement('section', {
 		'class' : 'base-controls'
 	}, [
@@ -313,7 +307,8 @@ $scope.sets = [{
 	
 	// -----
 	
-	var sets = modules.Utils.clone($scope.sets);
+	/*
+	var sets = $scope.sets;
 	sets.push({
 		id: 1,
 		muted: false,
@@ -332,5 +327,6 @@ $scope.sets = [{
 		retune : {}
 	});
 	$scope.sets = sets;
+	*/
 	
 })(window.modules);
