@@ -8,6 +8,8 @@ if(!window.modules){
 	modules.SetModel = function(model){
 		var lastSetId = 0;
 		var lastStringId = 0;
+		var lowestHarmonic = 1;
+		var highestHarmonic = 5000;
 		
 		var $scope = model[0];
 		var variable = model[1];
@@ -124,7 +126,14 @@ if(!window.modules){
 		};
 		
 		this.harmonics = {
-			findString : function(set, harmonic, run){
+			getMultipliers : function(set){
+				var multipliers = [];
+				set.strings.forEach(function(string){
+					multipliers.push(string.multiplier);
+				});
+				return multipliers;
+			},
+			findInSet : function(set, harmonic, run){
 				set.strings.some(function(string, index, array){
 					if(string.multiplier === harmonic){
 						run(string, index, array, set);
@@ -132,16 +141,13 @@ if(!window.modules){
 					}
 				});
 			},
-			
-			
-			
 			getLowest : function(set){
-				return getMultipliers(set).sort(function(a, b){
+				return self.harmonics.getMultipliers(set).sort(function(a, b){
 					return a - b;
 				})[0];
 			},
 			canLower : function(set){
-				return getLowestHarmonic(set) > lowestHarmonic;
+				return self.harmonics.getLowest(set) > lowestHarmonic;
 			},
 			canHalve : function(set){
 				return !set.strings.some(function(string){
@@ -149,7 +155,7 @@ if(!window.modules){
 				});
 			},
 			lower : function(setId){
-				findSetById(setId, function(set){
+				self.sets.findById(setId, function(set){
 					if(canLowerHarmonics(set)){
 						set.strings.forEach(function(string){
 							string.multiplier--;
@@ -158,7 +164,7 @@ if(!window.modules){
 				});
 			},
 			halve : function(setId){
-				findSetById(setId, function(set){
+				self.sets.findById(setId, function(set){
 					if(canHalveHarmonics(set)){
 						set.strings.forEach(function(string){
 							string.multiplier /= 2;
@@ -167,16 +173,23 @@ if(!window.modules){
 				});
 			},
 			getHighest : function(set){
-				return getMultipliers(set).sort(function(a, b){
+				return self.harmonics.getMultipliers(set).sort(function(a, b){
 					return b - a;
 				})[0];
 			},
 			canRaise : function(set){
-				return getHighestHarmonic(set) < highestHarmonic;
+				return self.harmonics.getHighest(set) < highestHarmonic;
 			},
 			canDouble : function(set){
-				return (getHighestHarmonic(set) * 2 < highestHarmonic);
+				return (self.harmonics.getHighest(set) * 2 < highestHarmonic);
 			},
+			
+			
+			
+			
+			
+			
+			
 			raise : function(setId){
 				findSetById(setId, function(set){
 					if(canRaiseHarmonics(set)){
@@ -196,16 +209,6 @@ if(!window.modules){
 				});
 			},
 			
-			
-			
-			
-			getMultipliers : function(set){
-				var multipliers = [];
-				set.strings.forEach(function(string){
-					multipliers.push(string.multiplier);
-				});
-				return multipliers;
-			},
 			
 			canBeNormalized : function(set){
 				if(set.strings.length > 1){

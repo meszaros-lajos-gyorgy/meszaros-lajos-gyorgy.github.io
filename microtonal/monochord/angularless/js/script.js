@@ -33,9 +33,6 @@ $scope.sets = [{
 	
 	var $scope = new modules.Scope();
 	
-	var lowestHarmonic = 1;
-	var highestHarmonic = 5000;
-	
 	$scope.$register('baseVolume', 10);
 	$scope.$register('baseFrequency', 50);
 	$scope.$register('sets', []);
