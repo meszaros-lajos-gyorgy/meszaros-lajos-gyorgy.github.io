@@ -141,6 +141,7 @@ if(!window.modules){
 					}
 				});
 			},
+			
 			getLowest : function(set){
 				return self.harmonics.getMultipliers(set).sort(function(a, b){
 					return a - b;
@@ -172,6 +173,7 @@ if(!window.modules){
 					}
 				});
 			},
+			
 			getHighest : function(set){
 				return self.harmonics.getMultipliers(set).sort(function(a, b){
 					return b - a;
@@ -183,16 +185,9 @@ if(!window.modules){
 			canDouble : function(set){
 				return (self.harmonics.getHighest(set) * 2 < highestHarmonic);
 			},
-			
-			
-			
-			
-			
-			
-			
 			raise : function(setId){
-				findSetById(setId, function(set){
-					if(canRaiseHarmonics(set)){
+				self.sets.findById(setId, function(set){
+					if(self.harmonics.canRaise(set)){
 						set.strings.forEach(function(string){
 							string.multiplier++;
 						});
@@ -200,8 +195,8 @@ if(!window.modules){
 				});
 			},
 			double : function(setId){
-				findSetById(setId, function(set){
-					if(canDoubleHarmonics(set)){
+				self.sets.findById(setId, function(set){
+					if(self.harmonics.canRaise(set)){
 						set.strings.forEach(function(string){
 							string.multiplier *= 2;
 						});
@@ -209,20 +204,16 @@ if(!window.modules){
 				});
 			},
 			
-			
 			canBeNormalized : function(set){
-				if(set.strings.length > 1){
-					if(math.greatestCommonDivisor.apply(null, getMultipliers(set)) > 1){
-						return true;
-					}
-				}
-				return false;
+				return (
+					set.strings.length > 1
+					&& modules.Math.greatestCommonDivisor.apply(null, self.harmonics.getMultipliers(set)) > 1
+				);
 			},
-			
 			normalize : function(setId){
-				findSetById(setId, function(set){
+				self.sets.findById(setId, function(set){
 					if(set.strings.length > 1){
-						var gcd = math.greatestCommonDivisor.apply(null, getMultipliers(set));
+						var gcd = modules.Math.greatestCommonDivisor.apply(null, self.harmonics.getMultipliers(set));
 						if(gcd > 1){
 							set.strings.forEach(function(string){
 								string.multiplier = string.multiplier / gcd;
@@ -233,32 +224,103 @@ if(!window.modules){
 			}
 		};
 		
-		
 		this.calculate = {
-			cent : function(stringId){
-				var cents;
+			baseFrequency : function(stringId, set, stack){
+				var baseFrequency;
 				
-				findStringById(stringId, function(string, index, array, set){
-					var baseFrequency = getBaseFrequency(stringId, set);
-					cents = math.calculateCents(baseFrequency, baseFrequency * string.multiplier);
+				/*
+				if(set.retune.target > 0){
+					stack = stack || [];
+					if(stack.indexOf(stringId) !== -1){
+						alert('Infinite normalization target loop! There are no sets, that retune to the default baseFrequency!');
+						return 0;
+					}else{
+						stack.push(stringId);
+						baseFrequency = calculateFrequency(set.retune.target, stack);
+					}
+				}else{
+				*/
+					baseFrequency = $scope.baseFrequency
+				/*
+				}
+				
+				if(set.retune.type !== 'off'){
+					var retunedBaseFreq;
+					
+					switch(set.retune.type){
+						case 'lowest' : {
+							var ratios = [];
+							set.strings.forEach(function(string){
+								ratios.push(string.multiplier);
+							});
+							ratios = ratios.sort(function(a, b){
+								return a - b;
+							});
+							retunedBaseFreq = baseFrequency / ratios[0];
+							break;
+						}
+						case 'highest' : {
+							var ratios = [];
+							set.strings.forEach(function(string){
+								ratios.push(string.multiplier);
+							});
+							ratios = ratios.sort(function(a, b){
+								return b - a;
+							});
+							retunedBaseFreq = baseFrequency / ratios[0];
+							break;
+						}
+						case 'manual' : {
+							if(set.retune.subject > 0){
+								findStringById(set.retune.subject, function(string){
+									retunedBaseFreq = baseFrequency / string.multiplier;
+								})
+							}else{
+								retunedBaseFreq = baseFrequency;
+							}
+							break;
+						}
+					}
+					
+					baseFrequency = retunedBaseFreq;
+				}
+				*/
+				
+				return baseFrequency;
+			},
+			frequency : function(stringId, stack){
+				var frequency;
+				
+				self.strings.findById(stringId, function(string, index, array, set){
+					frequency = self.calculate.baseFrequency(stringId, set, stack) * string.multiplier;
 				});
 				
-				return cents;
+				return frequency;
 			},
 			frequencies : function(set){
 				var arr = [];
 				
 				set.strings.forEach(function(string){
-					arr.push(calculateFrequency(string.id));
+					arr.push(self.calculate.frequency(string.id));
 				});
 				
 				return arr;
+			},
+			cent : function(stringId){
+				var cents;
+				
+				self.strings.findById(stringId, function(string, index, array, set){
+					var baseFrequency = self.calculate.baseFrequency(stringId, set);
+					cents = modules.Math.calculateCents(baseFrequency, baseFrequency * string.multiplier);
+				});
+				
+				return cents;
 			},
 			cents : function(set){
 				var arr = [];
 				
 				set.strings.forEach(function(string){
-					arr.push(calculateCent(string.id));
+					arr.push(self.calculate.cent(string.id));
 				});
 				
 				return arr;
