@@ -37,89 +37,24 @@ $scope.sets = [{
 	$scope.$register('baseFrequency', 50);
 	$scope.$register('sets', []);
 	
+	var model = new modules.SetModel([$scope, 'sets']);
+	
+	modules.AudioModel
+		.setMainVolume($scope.baseVolume / 100)
+		.updateReal()
+	;
+	
 	// --------------
 	
-	/*
-	function calculateFrequency(stringId, stack){
-		var frequency;
-		
-		findStringById(stringId, function(string, index, array, set){
-			frequency = getBaseFrequency(stringId, set, stack) * string.multiplier;
-		});
-		
-		return frequency;
-	}
-	
-	function getBaseFrequency(stringId, set, stack){
-		var baseFrequency;
-		
-		if(set.retune.target > 0){
-			stack = stack || [];
-			if(stack.indexOf(stringId) !== -1){
-				alert('Infinite normalization target loop! There are no sets, that retune to the default baseFrequency!');
-				return 0;
-			}else{
-				stack.push(stringId);
-				baseFrequency = calculateFrequency(set.retune.target, stack);
-			}
-		}else{
-			baseFrequency = $scope.baseFrequency
-		}
-		
-		if(set.retune.type !== 'off'){
-			var retunedBaseFreq;
-			
-			switch(set.retune.type){
-				case 'lowest' : {
-					var ratios = [];
-					set.strings.forEach(function(string){
-						ratios.push(string.multiplier);
-					});
-					ratios = ratios.sort(function(a, b){
-						return a - b;
-					});
-					retunedBaseFreq = baseFrequency / ratios[0];
-					break;
-				}
-				case 'highest' : {
-					var ratios = [];
-					set.strings.forEach(function(string){
-						ratios.push(string.multiplier);
-					});
-					ratios = ratios.sort(function(a, b){
-						return b - a;
-					});
-					retunedBaseFreq = baseFrequency / ratios[0];
-					break;
-				}
-				case 'manual' : {
-					if(set.retune.subject > 0){
-						findStringById(set.retune.subject, function(string){
-							retunedBaseFreq = baseFrequency / string.multiplier;
-						})
-					}else{
-						retunedBaseFreq = baseFrequency;
-					}
-					break;
-				}
-			}
-			
-			baseFrequency = retunedBaseFreq;
-		}
-		
-		return baseFrequency;
-	}
-	
-	function updateFrequencies(){
-		var sets = modules.Utils.clone($scope.sets);
-		sets.forEach(function(set){
+	function updateFrequencies(model){
+		$scope.sets.forEach(function(set){
 			set.strings.forEach(function(string){
 				modules.AudioModel.setString(string.id, {
-					frequency : calculateFrequency(string.id)
+					frequency : model.calculate.frequency(string.id)
 				});
 			});
 		});
-		$scope.sets = sets;
+		modules.AudioModel.updateReal();
 	}
 	
 	function diffSetsChange(newValue, oldValue){
@@ -185,14 +120,8 @@ $scope.sets = [{
 			strings : strings
 		};
 	}
-	*/
 	
 	// --------------
-	
-	modules.AudioModel
-		.setMainVolume($scope.baseVolume / 100)
-		.updateReal()
-	;
 	
 	$scope.$watch('baseVolume', function(newValue, oldValue){
 		modules.AudioModel
@@ -201,13 +130,10 @@ $scope.sets = [{
 		;
 	});
 	$scope.$watch('baseFrequency', function(newValue, oldValue){
-		updateFrequencies();
+		updateFrequencies(model);
 	});
 	$scope.$watch('sets', function(newValue, oldValue){
-		/*
 		var diff = diffSetsChange(newValue, oldValue);
-		
-		console.log(diff);
 		
 		diff.sets.removed.forEach(function(setId){
 			// Object.keys($scope.keyAssignments).some(function(key){
@@ -215,76 +141,63 @@ $scope.sets = [{
 					// $scope.keyAssignments[key].setId = 0;
 				// }
 			// });
-			AudioModel.removeSet(setId);
+			modules.AudioModel.removeSet(setId);
 		});
 		diff.sets.added.forEach(function(setId){
-			findSetById(setId, function(set){
-				AudioModel.addSet(setId, {
+			model.sets.findById(setId, function(set){
+				modules.AudioModel.addSet(setId, {
 					volume : (set.muted ? 0 : set.volume / 100)
 				});
 			});
 		});
 		diff.sets.changed.forEach(function(setId){
-			findSetById(setId, function(set){
-				AudioModel.setSet(setId, {
+			model.sets.findById(setId, function(set){
+				modules.AudioModel.setSet(setId, {
 					volume : (set.muted ? 0 : set.volume / 100)
 				});
 			});
 		});
 		
-		diff.strings.removed.forEach(AudioModel.removeString);
+		diff.strings.removed.forEach(modules.AudioModel.removeString);
 		
 		diff.strings.added.forEach(function(stringId){
-			findStringById(stringId, function(string, index, array, set){
-				AudioModel.addString(stringId, set.id, {
-					frequency : calculateFrequency(stringId),
+			model.strings.findById(stringId, function(string, index, array, set){
+				modules.AudioModel.addString(stringId, set.id, {
+					frequency : model.calculate.frequency(stringId),
 					volume : (string.muted ? 0 : string.volume / 100)
 				});
 			});
 		});
 		diff.strings.changed.forEach(function(stringId){
-			findStringById(stringId, function(string){
-				AudioModel.setString(stringId, {
-					frequency : calculateFrequency(stringId),
+			model.strings.findById(stringId, function(string){
+				modules.AudioModel.setString(stringId, {
+					frequency : model.calculate.frequency(stringId),
 					volume : (string.muted ? 0 : string.volume / 100)
 				});
 			});
 		});
-		*/
+		
+		modules.AudioModel.updateReal();
 	});
 	
 	// -----
 	
-	/*
-	modules.AudioModel
-		.addSet(1, {
-			volume : 1
-		}).addString(1, 1, {
-			frequency : $scope.baseFrequency,
-			type : 'sine',
-			volume : 1
-		}).updateReal()
-	;
+	$scope.baseFrequency = 100;
 	
-	$scope.$watch('baseFrequency', function(newValue, oldValue){
-		modules.AudioModel
-			.setString(1, {
-				frequency : newValue
-			}).updateReal()
-		;
-	});
+	var setId = model.sets.add();
 	
-	$scope.$register('test', 10);
-	*/
+	var limit = 10;
+	
+	for(var i = 1; i <= limit; i++){
+		(function(i){
+			setTimeout(function(){
+				model.strings.add(setId, i, 100 - (100 / limit * (i - 1)));
+				model.commit();
+			}, 500 * (i - 1));
+		})(i);
+	}
 	
 	// -----
-	
-	var model = new modules.SetModel([$scope, 'sets']);
-	model.sets.add(100, false);
-	model.commit();
-	
-	// -----
-	
 	var baseControls = modules.DOM.createElement('section', {
 		'class' : 'base-controls'
 	}, [
@@ -301,29 +214,4 @@ $scope.sets = [{
 	modules.DOM.onReady(function(){
 		document.body.appendChild(baseControls);
 	});
-	
-	// -----
-	
-	/*
-	var sets = $scope.sets;
-	sets.push({
-		id: 1,
-		muted: false,
-		volume: 100,
-		strings: [{
-			id: 1,
-			multiplier: 3,
-			muted: false,
-			volume: 100
-		}, {
-			id: 2,
-			multiplier: 2,
-			muted: false,
-			volume: 100
-		}],
-		retune : {}
-	});
-	$scope.sets = sets;
-	*/
-	
 })(window.modules);

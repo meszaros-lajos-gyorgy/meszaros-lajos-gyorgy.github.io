@@ -16,11 +16,12 @@ if(!window.modules){
 		var self = this;
 		
 		var dirty = false;
-		var sets = $scope[variable];
+		var sets = modules.Utils.clone($scope[variable]);
 		
 		this.commit = function(){
 			if(dirty){
 				$scope[variable] = sets;
+				sets = modules.Utils.clone($scope[variable]);
 			}
 		};
 		
