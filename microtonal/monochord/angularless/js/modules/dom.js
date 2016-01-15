@@ -5,6 +5,19 @@ if(!window.modules){
 (function(modules){
 	'use strict';
 	
+	// http://stackoverflow.com/a/384380/1806628
+	function isNode(o){
+		return (
+			typeof Node === 'object'
+			? o instanceof Node
+			:
+				o
+				&& typeof o === 'object'
+				&& typeof o.nodeType === 'number'
+				&& typeof o.nodeName === 'string'
+		);
+	}
+	
 	function bindToVariable(element, tagName, target){
 		var $scope = target[0];
 		var variable = target[1];
@@ -80,8 +93,8 @@ if(!window.modules){
 		if(children && children.push){
 			for(var i = 0; i < children.length; i++){
 				var child = children[i];
-				if(typeof child === 'string'){
-					child = document.createTextNode(child);
+				if(!isNode(child)){
+					child = document.createTextNode(child + '');
 				}
 				element.appendChild(child);
 			}
@@ -112,6 +125,7 @@ if(!window.modules){
 	
 	modules.DOM = {
 		createElement : createElement,
-		onReady : onReady
+		onReady : onReady,
+		isNode : isNode
 	};
 })(window.modules);

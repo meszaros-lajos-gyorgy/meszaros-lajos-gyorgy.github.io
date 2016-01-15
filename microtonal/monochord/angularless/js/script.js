@@ -1,10 +1,3 @@
-// requires:
-//   modules.AudioModel
-//   modules.Math
-//   modules.Scope
-//   modules.UI
-//   modules.TuningModel
-
 /*
 $scope.sets = [{
 	id : <int>,	// setId
@@ -17,9 +10,7 @@ $scope.sets = [{
 		volume : 0..100
 	}, ...],
 	retune : {
-		subject : <stringId|0>, // 0=baseFrequency, stringId=string in different set
-		target : <stringId>,
-		type : 'off|lowest|highest|manual'
+		
 	}
 }, ...];
 */
@@ -32,6 +23,8 @@ $scope.sets = [{
 	}
 	
 	var $scope = new modules.Scope();
+	
+	/*
 	
 	$scope.$register('baseVolume', 10);
 	$scope.$register('baseFrequency', 50);
@@ -185,19 +178,12 @@ $scope.sets = [{
 	$scope.baseFrequency = 100;
 	
 	var setId = model.sets.add();
-	
-	var limit = 10;
-	
-	for(var i = 1; i <= limit; i++){
-		(function(i){
-			setTimeout(function(){
-				model.strings.add(setId, i, 100 - (100 / limit * (i - 1)));
-				model.commit();
-			}, 500 * (i - 1));
-		})(i);
-	}
+	model.strings.add(setId, 3);
+	model.strings.add(setId, 2);
+	model.commit();
 	
 	// -----
+	
 	var baseControls = modules.DOM.createElement('section', {
 		'class' : 'base-controls'
 	}, [
@@ -214,4 +200,44 @@ $scope.sets = [{
 	modules.DOM.onReady(function(){
 		document.body.appendChild(baseControls);
 	});
+	*/
+	
+	$scope.$register('cntr', 3);
+	
+	// todo: do we need a diff here?
+	
+	function clearChildren(node){
+		var l = node.childNodes.length;
+		while(l--){
+			node.removeChild(node.childNodes[l]);
+		}
+	}
+	
+	function renderChildren(node, amount){
+		while(amount--){
+			var li = modules.DOM.createElement('li', {}, [
+				amount
+			]);
+			node.appendChild(li);
+		}
+	}
+	
+	var list = modules.DOM.createElement('ul', {
+		on : {
+			init : function(){
+				// todo: rebuild the inner DOM, if cntr changes
+				renderChildren(this, $scope.cntr);
+				
+				var self = this;
+				setTimeout(function(){
+					clearChildren(self);
+				}, 2000);
+			}
+		}
+	}, []);
+	
+	modules.DOM.onReady(function(){
+		document.body.appendChild(list);
+	});
+	
 })(window.modules);
