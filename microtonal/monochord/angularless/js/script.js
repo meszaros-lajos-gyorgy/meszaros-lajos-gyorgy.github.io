@@ -205,6 +205,7 @@ $scope.sets = [{
 	$scope.$register('cntr', 3);
 	
 	// todo: do we need a diff here?
+	// tip: virtual dom
 	
 	function clearChildren(node){
 		var l = node.childNodes.length;
