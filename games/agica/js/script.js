@@ -1,3 +1,4 @@
+/*
 (function(){
 	'use strict';
 
@@ -70,4 +71,31 @@
 			active.addEventListener('load', loaded);
 		}
 	})
+})();
+*/
+
+(function(){
+	'use strict';
+	
+	var resources = {
+		image : [
+			'img/active.jpg',
+			'img/active-desat1.jpg',
+			'img/active-desat2.jpg',
+			'img/active-desat3.jpg',
+			'img/active-desat4.jpg',
+			'img/normal.jpg',
+			'img/normal-desat1.jpg',
+			'img/normal-desat2.jpg',
+			'img/normal-desat3.jpg',
+			'img/normal-desat4.jpg'
+		],
+		audio : [
+			'sound/meow.mp3'
+		]
+	};
+	
+	modules.DOM.onReady(function(){
+		
+	});
 })();
