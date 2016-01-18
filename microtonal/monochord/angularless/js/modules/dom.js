@@ -51,7 +51,7 @@ if(!window.modules){
 					element.textContent = $scope[variable];
 				});
 		}
-	};
+	}
 	
 	function createElement(tagName, attributes, children){
 		var element = (
@@ -103,7 +103,7 @@ if(!window.modules){
 		element.dispatchEvent(new Event('init'));
 		
 		return element;
-	};
+	}
 	
 	function onReady(handler){
 		function isValidReadyState(){
@@ -121,11 +121,33 @@ if(!window.modules){
 			};
 			document.addEventListener('readystatechange', rsHandler);
 		}
-	};
+	}
+	
+	function loadJSON(src){
+		return new Promise(function(resolve, reject){
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET', src);
+			xhr.addEventListener('readystatechange', function(){
+				if(xhr.readyState === 4){
+					if(xhr.status === 200){
+						try{
+							resolve(JSON.parse(xhr.responseText));
+						}catch(e){
+							reject(e);
+						}
+					}else{
+						reject(new Error('loadJSON responded with status: ' + xhr.status));
+					}
+				}
+			});
+			xhr.send();
+		});
+	}
 	
 	modules.DOM = {
 		createElement : createElement,
 		onReady : onReady,
-		isNode : isNode
+		isNode : isNode,
+		loadJSON : loadJSON
 	};
 })(window.modules);

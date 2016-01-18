@@ -25,7 +25,6 @@ $scope.sets = [{
 	var $scope = new modules.Scope();
 	
 	/*
-	
 	$scope.$register('baseVolume', 10);
 	$scope.$register('baseFrequency', 50);
 	$scope.$register('sets', []);
@@ -202,10 +201,10 @@ $scope.sets = [{
 	});
 	*/
 	
-	$scope.$register('cntr', 3);
+	// -----------------
 	
-	// todo: do we need a diff here?
-	// tip: virtual dom
+	/*
+	$scope.$register('cntr', 3);
 	
 	function clearChildren(node){
 		var l = node.childNodes.length;
@@ -215,9 +214,10 @@ $scope.sets = [{
 	}
 	
 	function renderChildren(node, amount){
-		while(amount--){
+		var i = 0;
+		while(++i <= amount){
 			var li = modules.DOM.createElement('li', {}, [
-				amount
+				i
 			]);
 			node.appendChild(li);
 		}
@@ -247,5 +247,11 @@ $scope.sets = [{
 	modules.DOM.onReady(function(){
 		document.body.appendChild(list);
 	});
+	*/
 	
+	// -----------------
+	
+	modules.DOM.loadJSON('presets.json').then(function(data){
+		console.log(data);
+	});
 })(window.modules);
