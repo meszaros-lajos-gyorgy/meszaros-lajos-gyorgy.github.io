@@ -226,16 +226,23 @@ $scope.sets = [{
 	var list = modules.DOM.createElement('ul', {
 		on : {
 			init : function(){
-				// todo: rebuild the inner DOM, if cntr changes
 				renderChildren(this, $scope.cntr);
-				
-				var self = this;
-				setTimeout(function(){
-					clearChildren(self);
-				}, 2000);
 			}
 		}
 	}, []);
+	
+	$scope.$watch('cntr', function(newValue, oldValue){
+		clearChildren(list);
+		renderChildren(list, newValue);
+	});
+	
+	setTimeout(function(){
+		$scope.cntr = 10;
+	}, 2000);
+	
+	setTimeout(function(){
+		$scope.cntr = 5;
+	}, 4000);
 	
 	modules.DOM.onReady(function(){
 		document.body.appendChild(list);
