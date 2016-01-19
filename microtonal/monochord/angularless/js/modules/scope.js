@@ -12,31 +12,35 @@ if(!window.modules){
 		var data = {};
 		
 		this.$register = function(variable, defaultValue){
-			data[variable] = {
-				oldValue : undefined,
-				value : defaultValue,
-				events : new modules.Reactor(),
-				handlers : {}
-			};
-			
-			Object.defineProperty(this, variable, {
-				get : function(){
-					return data[variable].value;
-				},
-				set : function(newValue){
-					if(data[variable].value === newValue){
-						return ;
+			if(data.hasOwnProperty(variable)){
+				this[variable] = defaultValue;
+			}else{
+				data[variable] = {
+					oldValue : undefined,
+					value : defaultValue,
+					events : new modules.Reactor(),
+					handlers : {}
+				};
+				
+				Object.defineProperty(this, variable, {
+					get : function(){
+						return data[variable].value;
+					},
+					set : function(newValue){
+						if(data[variable].value === newValue){
+							return ;
+						}
+						
+						data[variable].oldValue = data[variable].value;
+						data[variable].value = newValue;
+						
+						data[variable].events.dispatchEvent(new CustomEvent('change', {detail : {
+							oldValue : data[variable].oldValue,
+							newValue : data[variable].value
+						}}));
 					}
-					
-					data[variable].oldValue = data[variable].value;
-					data[variable].value = newValue;
-					
-					data[variable].events.dispatchEvent(new CustomEvent('change', {detail : {
-						oldValue : data[variable].oldValue,
-						newValue : data[variable].value
-					}}));
-				}
-			});
+				});
+			}
 			
 			return this;
 		};

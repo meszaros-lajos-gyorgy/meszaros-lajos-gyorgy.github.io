@@ -203,8 +203,6 @@ $scope.sets = [{
 	
 	// -----------------
 	
-	/*
-	$scope.$register('cntr', 3);
 	
 	function clearChildren(node){
 		var l = node.childNodes.length;
@@ -226,32 +224,38 @@ $scope.sets = [{
 	var list = modules.DOM.createElement('ul', {
 		on : {
 			init : function(){
-				renderChildren(this, $scope.cntr);
+				var self = this;
+				renderChildren(self, $scope.cntr);
+				
+				$scope.$watch('cntr', function(newValue, oldValue){
+					clearChildren(self);
+					renderChildren(self, newValue);
+				});
 			}
 		}
-	}, []);
-	
-	$scope.$watch('cntr', function(newValue, oldValue){
-		clearChildren(list);
-		renderChildren(list, newValue);
 	});
 	
-	setTimeout(function(){
-		$scope.cntr = 10;
-	}, 2000);
+	// -----------
 	
-	setTimeout(function(){
-		$scope.cntr = 5;
-	}, 4000);
+	$scope.$register('cntr', 3);
 	
 	modules.DOM.onReady(function(){
 		document.body.appendChild(list);
+		
+		setTimeout(function(){
+			$scope.cntr = 10;
+		}, 1000);
+		
+		setTimeout(function(){
+			$scope.cntr = 5;
+		}, 2000);
 	});
-	*/
 	
 	// -----------------
 	
+	/*
 	modules.DOM.loadJSON('presets.json').then(function(data){
 		console.log(data);
 	});
+	*/
 })(window.modules);
