@@ -203,7 +203,7 @@ $scope.sets = [{
 	
 	// -----------------
 	
-	
+	/*
 	function clearChildren(node){
 		var l = node.childNodes.length;
 		while(l--){
@@ -250,6 +250,15 @@ $scope.sets = [{
 			$scope.cntr = 5;
 		}, 2000);
 	});
+	*/
+	
+	// -----------------
+	
+	/*
+	modules.DOM.createElement('', {
+		_repeat : ???
+	});
+	*/
 	
 	// -----------------
 	
