@@ -77,25 +77,91 @@
 (function(){
 	'use strict';
 	
+	var load = {
+		_loads : {
+			image : {},
+			audio : {}
+		},
+		from : function(resources){
+			this._resources = resources;
+			return this;
+		},
+		to : function(){
+			return this._loads;
+		},
+		image : function(index){
+			var src = 'resources/image/' + (!isNaN(index) ? this._resources.image[index] : index);
+			var self = this;
+			return new Promise(function(resolve, reject){
+				var img = document.createElement('img');
+				img.addEventListener('load', function(){
+					self._loads.image[index] = this;
+					resolve(src);
+				});
+				img.addEventListener('error', function(e){
+					reject(new Error('Could not load image: "' + src + '"'));
+				});
+				img.src = src;
+			});
+		},
+		audio : function(src){
+			
+		}
+	};
+	
+	load.all = {
+		_source : function(type){
+			var sources = [];
+			Object.keys(load._resources[type]).forEach(function(index){
+				sources.push(load[type](index));
+			});
+			
+			return Promise.all(sources);
+		},
+		image : function(){
+			return this._source('image');
+		},
+		audio : function(){
+			return this._source('audio');
+		}
+	};
+	
+	// -----------
+	
 	var resources = {
 		image : [
-			'img/active.jpg',
-			'img/active-desat1.jpg',
-			'img/active-desat2.jpg',
-			'img/active-desat3.jpg',
-			'img/active-desat4.jpg',
-			'img/normal.jpg',
-			'img/normal-desat1.jpg',
-			'img/normal-desat2.jpg',
-			'img/normal-desat3.jpg',
-			'img/normal-desat4.jpg'
+			'active.jpg',
+			'active-desat1.jpg',
+			'active-desat2.jpg',
+			'active-desat3.jpg',
+			'active-desat4.jpg',
+			'normal.jpg',
+			'normal-desat1.jpg',
+			'normal-desat2.jpg',
+			'normal-desat3.jpg',
+			'normal-desat4.jpg'
 		],
 		audio : [
-			'sound/meow.mp3'
+			'meow.mp3'
 		]
 	};
 	
+	load
+		.from(resources)
+		.all.image()
+			.then(function(){
+				console.log('all loaded');
+			}, function(e){
+				console.error(e);
+			})
+	;
+	
 	modules.DOM.onReady(function(){
-		
+		var elements = load.to();
+		console.log(elements, elements.image);
+		Object.keys(elements.image).forEach(function(index){
+			console.log(index, elements.image[index]);
+			// document.body.appendChild(elements.image[index]);
+		})
 	});
 })();
