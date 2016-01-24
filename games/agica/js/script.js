@@ -159,5 +159,12 @@
 			}, function(e){
 				console.error(e);
 			})
+	load
+		.all.audio()
+			.then(function(){
+				
+			}, function(e){
+				console.error(e);
+			});
 	;
 })();
