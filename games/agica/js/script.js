@@ -150,18 +150,14 @@
 		.from(resources)
 		.all.image()
 			.then(function(){
-				console.log('all loaded');
+				modules.DOM.onReady(function(){
+					var elements = load.to();
+					Object.keys(elements.image).forEach(function(index){
+						document.body.appendChild(elements.image[index]);
+					})
+				});
 			}, function(e){
 				console.error(e);
 			})
 	;
-	
-	modules.DOM.onReady(function(){
-		var elements = load.to();
-		console.log(elements, elements.image);
-		Object.keys(elements.image).forEach(function(index){
-			console.log(index, elements.image[index]);
-			// document.body.appendChild(elements.image[index]);
-		})
-	});
 })();
