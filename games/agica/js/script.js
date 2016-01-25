@@ -155,7 +155,12 @@
 			'normal-desat4.jpg'
 		],
 		audio : [
-			'meow.mp3'
+			'meow.mp3',
+			'meow-dark.mp3',
+			'tension-loop.mp3',
+			'heartbeat-normal.mp3',
+			'heartbeat-faster.mp3',
+			'heartbeat-fast.mp3'
 		]
 	};
 	
