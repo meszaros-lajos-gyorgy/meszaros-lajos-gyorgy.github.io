@@ -104,8 +104,21 @@
 				img.src = src;
 			});
 		},
-		audio : function(src){
-			
+		audio : function(index){
+			var src = 'resources/audio/' + (!isNaN(index) ? this._resources.audio[index] : index);
+			var self = this;
+			return new Promise(function(resolve, reject){
+				var audio = document.createElement('audio');
+				audio.addEventListener('canplaythrough', function(){
+					self._loads.audio[index] = this;
+					resolve(src);
+				});
+				audio.addEventListener('error', function(e){
+					reject(new Error('could not load audio: "' + src + '"'));
+				});
+				audio.src = src;
+				audio.controls = true;
+			});
 		}
 	};
 	
@@ -154,7 +167,7 @@
 					var elements = load.to();
 					Object.keys(elements.image).forEach(function(index){
 						document.body.appendChild(elements.image[index]);
-					})
+					});
 				});
 			}, function(e){
 				console.error(e);
@@ -162,7 +175,12 @@
 	load
 		.all.audio()
 			.then(function(){
-				
+				modules.DOM.onReady(function(){
+					var elements = load.to();
+					Object.keys(elements.audio).forEach(function(index){
+						document.body.appendChild(elements.audio[index]);
+					});
+				});
 			}, function(e){
 				console.error(e);
 			});
