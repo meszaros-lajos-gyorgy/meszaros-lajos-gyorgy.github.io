@@ -53,6 +53,46 @@ if(!window.modules){
 		}
 	}
 	
+	function appendChild(to, what){
+		to.appendChild(what);
+		what.dispatchEvent(new Event('appended'));
+	}
+	
+	/**
+	 * element - current DOM node, that we are working on(needed for parentNode reference)
+	 * value - this should be the value, that needs to be parsed
+	 * attr - [obj, prop] - where to write back the value, when parsed - might come in an async way
+	 */
+	function parseValue(element, value, attr){
+		var obj = attr[0];
+		var prop = attr[1];
+		
+		var tokens = value.match(/^(\w+):(.*)$/);
+		
+		if(tokens !== null){
+			switch(tokens[1]){
+				case 'parent' :
+					// todo: implement a way to travel more, than just 1 node up the DOM tree, eg: 'parent(3):id'
+					var target = element.parentNode;
+					if(target && target.getAttribute(tokens[2])){
+						target.addEventListener('appended', function(){
+							parseValue(this, this.getAttribute(tokens[2]), attr);
+						});
+					}
+					break;
+				/*
+				case 'self' :
+					if(element.getAttribute(tokens[2])){
+						value = parseValue(element, element.getAttribute(tokens[2]));
+					}
+					break;
+				*/
+			}
+		}
+		
+		obj[prop] = value;
+	}
+	
 	function createElement(tagName, attributes, children){
 		var element = (
 			tagName === 'text'
@@ -60,6 +100,24 @@ if(!window.modules){
 			: document.createElement(tagName)
 		);
 		
+		element.addEventListener('appended', function(){
+			var current, i;
+			var attributeCount = this.attributes.length;
+			var childNodesCount = this.childNodes.length;
+			
+			for(i = 0; i < attributeCount; i++){
+				current = this.attributes[i];
+				parseValue(this, current.value, [current, 'value']);
+			}
+			
+			for(i = 0; i < childNodesCount; i++){
+				current = this.childNodes[i];
+				if(current.nodeType === 3){
+					parseValue(this, current.textContent, [current, 'textContent']);
+				}
+			}
+		});
+				
 		if(attributes){
 			for(var name in attributes){
 				var value = attributes[name];
@@ -96,7 +154,7 @@ if(!window.modules){
 				if(!isNode(child)){
 					child = document.createTextNode(child + '');
 				}
-				element.appendChild(child);
+				appendChild(element, child);
 			}
 		}
 		
@@ -146,6 +204,7 @@ if(!window.modules){
 	
 	modules.DOM = {
 		createElement : createElement,
+		appendChild : appendChild,
 		onReady : onReady,
 		isNode : isNode,
 		loadJSON : loadJSON

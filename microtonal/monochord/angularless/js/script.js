@@ -235,7 +235,7 @@ $scope.sets = [{
 		}
 	});
 	
-	// -----------
+	// ----
 	
 	$scope.$register('cntr', 3);
 	
@@ -254,11 +254,25 @@ $scope.sets = [{
 	
 	// -----------------
 	
-	/*
-	modules.DOM.createElement('', {
-		_repeat : ???
+	var test = modules.DOM.createElement('div', {
+		id : 'cat'
+	}, [
+		modules.DOM.createElement('ul', {
+			id : 'parent:id'
+		}, [
+			modules.DOM.createElement('li', {
+				id : 'parent:id'
+			}, [
+				modules.DOM.createElement('span', {}, [
+					'parent:id'
+				])
+			])
+		])
+	]);
+	
+	modules.DOM.onReady(function(){
+		modules.DOM.appendChild(document.body, test);
 	});
-	*/
 	
 	// -----------------
 	
