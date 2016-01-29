@@ -18,6 +18,7 @@ if(!window.modules){
 		);
 	}
 	
+	/*
 	function bindToVariable(element, tagName, target){
 		var $scope = target[0];
 		var variable = target[1];
@@ -52,6 +53,7 @@ if(!window.modules){
 				});
 		}
 	}
+	*/
 	
 	function appendChild(to, what){
 		to.appendChild(what);
@@ -63,6 +65,7 @@ if(!window.modules){
 	 * value - this should be the value, that needs to be parsed
 	 * attr - [obj, prop] - where to write back the value, when parsed - might come in an async way
 	 */
+	/*
 	function parseValue(element, value, attr){
 		var obj = attr[0];
 		var prop = attr[1];
@@ -80,18 +83,12 @@ if(!window.modules){
 						});
 					}
 					break;
-				/*
-				case 'self' :
-					if(element.getAttribute(tokens[2])){
-						value = parseValue(element, element.getAttribute(tokens[2]));
-					}
-					break;
-				*/
 			}
 		}
 		
 		obj[prop] = value;
 	}
+	*/
 	
 	function createElement(tagName, attributes, children){
 		var element = (
@@ -100,6 +97,7 @@ if(!window.modules){
 			: document.createElement(tagName)
 		);
 		
+		/*
 		element.addEventListener('appended', function(){
 			var current, i;
 			var attributeCount = this.attributes.length;
@@ -117,6 +115,7 @@ if(!window.modules){
 				}
 			}
 		});
+		*/
 				
 		if(attributes){
 			for(var name in attributes){
@@ -130,11 +129,15 @@ if(!window.modules){
 						break;
 					case 'data' :
 						for(var attr in value){
+							/*
 							if(attr === 'model'){
 								bindToVariable(element, tagName, value[attr]);
 							}else{
+							*/
 								element.setAttribute('data-' + attr, value[attr]);
+							/*
 							}
+							*/
 						}
 						break;
 					case 'on' :

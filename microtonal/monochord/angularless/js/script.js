@@ -254,6 +254,7 @@ $scope.sets = [{
 	
 	// -----------------
 	
+	/*
 	var test = modules.DOM.createElement('div', {
 		id : 'cat'
 	}, [
@@ -273,6 +274,7 @@ $scope.sets = [{
 	modules.DOM.onReady(function(){
 		modules.DOM.appendChild(document.body, test);
 	});
+	*/
 	
 	// -----------------
 	
