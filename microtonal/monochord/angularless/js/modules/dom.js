@@ -111,20 +111,22 @@ if(!window.modules){
 							element.addEventListener(event, value[event]);
 						}
 						break;
-					case 'html' :
-						element.addEventListener('init', function(){
-							this.innerHTML = (typeof value === 'function' ? value(this.$scope) : value) + '';
-						});
-						break;
-					case 'text' :
-						element.addEventListener('init', function(){
-							this.textContent = (typeof value === 'function' ? value(this.$scope) : value) + '';
-						});
-						break;
 					default :
-						element.addEventListener('init', function(){
-							this.setAttribute(name, (typeof value === 'function' ? value(this.$scope) : value) + '');
-						});
+						(function(attr, value){
+							element.addEventListener('init', function(){
+								var value = (typeof value === 'function' ? value(this.$scope) : value) + '';
+								switch(attr){
+									case 'html' :
+										this.innerHTML = value;
+										break;
+									case 'text' :
+										this.textContent = value;
+										break;
+									default :
+										this.setAttribute(attr, value);
+								}
+							});
+						})(name, value);
 				}
 			}
 		}
