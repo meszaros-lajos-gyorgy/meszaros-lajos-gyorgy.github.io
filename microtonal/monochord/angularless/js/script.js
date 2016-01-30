@@ -276,6 +276,20 @@ $scope.sets = [{
 	});
 	*/
 	
+	$scope.register('alma', 12);
+	
+	modules.DOM.createElement('div', {
+		bind : $scope,
+		id : function(element, attr, scope){
+			element[attr] = scope.alma;
+			scope.$watch(function(newValue, oldValue){
+				if(newValue !== oldValue){
+					element[attr] = scope.alma;
+				}
+			})
+		}
+	});
+	
 	// -----------------
 	
 	/*
