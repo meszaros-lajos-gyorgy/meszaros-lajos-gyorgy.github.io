@@ -112,33 +112,19 @@ if(!window.modules){
 						}
 						break;
 					case 'html' :
-						if(typeof value === 'function'){
-							element.addEventListener('init', function(){
-								this.innerHTML = value(this.$scope) + '';
-							})
-						}else{
-							element.innerHTML = value + '';
-						}
+						element.addEventListener('init', function(){
+							this.innerHTML = (typeof value === 'function' ? value(this.$scope) : value) + '';
+						});
 						break;
 					case 'text' :
-						if(typeof value === 'function'){
-							element.addEventListener('init', function(){
-								this.textContent = value(this.$scope) + '';
-							})
-						}else{
-							element.textContent = value + '';
-						}
+						element.addEventListener('init', function(){
+							this.textContent = (typeof value === 'function' ? value(this.$scope) : value) + '';
+						});
 						break;
 					default :
-						if(typeof value === 'function'){
-							element.addEventListener('init', function(){
-								this.setAttribute(name, value(this.$scope) + '');
-							})
-						}else{
-							element.setAttribute(name, value + '');
-						}
-						
-						element.setAttribute(name, value + '');
+						element.addEventListener('init', function(){
+							this.setAttribute(name, (typeof value === 'function' ? value(this.$scope) : value) + '');
+						});
 				}
 			}
 		}
