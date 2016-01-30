@@ -254,40 +254,18 @@ $scope.sets = [{
 	
 	// -----------------
 	
-	/*
-	var test = modules.DOM.createElement('div', {
-		id : 'cat'
-	}, [
-		modules.DOM.createElement('ul', {
-			id : 'parent:id'
-		}, [
-			modules.DOM.createElement('li', {
-				id : 'parent:id'
-			}, [
-				modules.DOM.createElement('span', {}, [
-					'parent:id'
-				])
-			])
-		])
-	]);
-	
-	modules.DOM.onReady(function(){
-		modules.DOM.appendChild(document.body, test);
+	$scope.$register('alma', {
+		a : 12
 	});
-	*/
 	
-	$scope.register('alma', 12);
-	
-	modules.DOM.createElement('div', {
-		bind : $scope,
-		id : function(element, attr, scope){
-			element[attr] = scope.alma;
-			scope.$watch(function(newValue, oldValue){
-				if(newValue !== oldValue){
-					element[attr] = scope.alma;
-				}
-			})
+	var test = modules.DOM.createElement('div', {
+		$scope : $scope.alma,
+		id : function(scope){
+			return scope.a;
 		}
+	});
+	modules.DOM.onReady(function(){
+		document.body.appendChild(test);
 	});
 	
 	// -----------------

@@ -55,11 +55,6 @@ if(!window.modules){
 	}
 	*/
 	
-	function appendChild(to, what){
-		to.appendChild(what);
-		what.dispatchEvent(new Event('appended'));
-	}
-	
 	/**
 	 * element - current DOM node, that we are working on(needed for parentNode reference)
 	 * value - this should be the value, that needs to be parsed
@@ -97,47 +92,18 @@ if(!window.modules){
 			: document.createElement(tagName)
 		);
 		
-		/*
-		element.addEventListener('appended', function(){
-			var current, i;
-			var attributeCount = this.attributes.length;
-			var childNodesCount = this.childNodes.length;
-			
-			for(i = 0; i < attributeCount; i++){
-				current = this.attributes[i];
-				parseValue(this, current.value, [current, 'value']);
-			}
-			
-			for(i = 0; i < childNodesCount; i++){
-				current = this.childNodes[i];
-				if(current.nodeType === 3){
-					parseValue(this, current.textContent, [current, 'textContent']);
-				}
-			}
-		});
-		*/
-				
+		element.$scope = null;
+		
 		if(attributes){
 			for(var name in attributes){
 				var value = attributes[name];
 				switch(name){
-					case 'html' :
-						element.innerHTML = value;
-						break;
-					case 'text' :
-						element.textContent = value;
+					case '$scope' :
+						element.$scope = value;
 						break;
 					case 'data' :
 						for(var attr in value){
-							/*
-							if(attr === 'model'){
-								bindToVariable(element, tagName, value[attr]);
-							}else{
-							*/
-								element.setAttribute('data-' + attr, value[attr]);
-							/*
-							}
-							*/
+							element.setAttribute('data-' + attr, value[attr]);
 						}
 						break;
 					case 'on' :
@@ -145,7 +111,33 @@ if(!window.modules){
 							element.addEventListener(event, value[event]);
 						}
 						break;
+					case 'html' :
+						if(typeof value === 'function'){
+							element.addEventListener('init', function(){
+								this.innerHTML = value(this.$scope) + '';
+							})
+						}else{
+							element.innerHTML = value + '';
+						}
+						break;
+					case 'text' :
+						if(typeof value === 'function'){
+							element.addEventListener('init', function(){
+								this.textContent = value(this.$scope) + '';
+							})
+						}else{
+							element.textContent = value + '';
+						}
+						break;
 					default :
+						if(typeof value === 'function'){
+							element.addEventListener('init', function(){
+								this.setAttribute(name, value(this.$scope) + '');
+							})
+						}else{
+							element.setAttribute(name, value + '');
+						}
+						
 						element.setAttribute(name, value + '');
 				}
 			}
@@ -157,7 +149,7 @@ if(!window.modules){
 				if(!isNode(child)){
 					child = document.createTextNode(child + '');
 				}
-				appendChild(element, child);
+				element.appendChild(child);
 			}
 		}
 		
@@ -207,7 +199,6 @@ if(!window.modules){
 	
 	modules.DOM = {
 		createElement : createElement,
-		appendChild : appendChild,
 		onReady : onReady,
 		isNode : isNode,
 		loadJSON : loadJSON
