@@ -49,6 +49,7 @@ if(!window.modules){
 				this.$register(variable);
 			}
 			
+			// BUG! Only one callback is allowed???
 			data[variable].handlers[callback] = function(e){
 				callback(e.detail.newValue, e.detail.oldValue);
 			};

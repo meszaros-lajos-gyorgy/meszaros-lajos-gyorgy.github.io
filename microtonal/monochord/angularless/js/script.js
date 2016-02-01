@@ -254,43 +254,62 @@ $scope.sets = [{
 	
 	// -----------------
 	
-	// complex value for scope variable
-	$scope.valami = [{a : 12}, {a : 15}, {a : 18}];
-	
-	function getter(s){
-		console.log(s, '|', s[0], '|', s[1], '||', s[0][s[1]]);
-		return s[0][s[1]]
+	function appendArray(a, b){
+		var sum = a.splice(0);
+		Array.prototype.push.apply(sum, b);
+		return sum;
 	}
 	
+	function getter(s){
+		var sSize = s.length;
+		var tmp = s[0];
+		if(sSize > 1){
+			for(var i = 1; i < sSize; i++){
+				tmp = tmp[s[i]];
+			}
+		}
+		return tmp;
+	}
+	
+	// complex value for scope variable
+	$scope.$register('valami', [{a : 12}, {a : 15}, {a : 18}]);
+	
 	// bind it to a local variable
-	var scope = [$scope, 'valami'];
+	var outerScope = [$scope, 'valami'];
 	
-	// query some stuff through the local scope
-	(function(scope){
-		console.info('values from scope:', scope[0].a, scope[1].a, scope[2].a);
-	})(getter(scope));
-	
-	// watch for scope?
-	
+	// watch for scope
+	outerScope[0].$watch(outerScope[1], function(newValue, oldValue){
+		if(newValue === oldValue){
+			return ;
+		}
+		// query some stuff through the scope
+		(function(scope){
+			console.info('values from scope:', scope[0].a, scope[1].a, scope[2].a);
+		})(getter(outerScope));
+	});
 	
 	// assign inner scope
-	var innerScope = [getter(scope), 0];
+	var innerScope = appendArray(outerScope, [0]);
 	
-	// query some stuff through the local scope
-	(function(scope){
-		console.info('values from innerScope:', scope.a);
-	})(getter(innerScope));
-	
-	// watch for innerScope?
-	
+	// watch for innerScope
+	innerScope[0].$watch(innerScope[1], function(newValue, oldValue){
+		if(newValue === oldValue){
+			return ;
+		}
+		// query some stuff through the scope
+		(function(scope){
+			console.info('values from innerScope:', scope.a);
+		})(getter(innerScope));
+	});
 	
 	// change the scope variable
-	var tmp = $scope.valami;
-	tmp[0].a = 1;
-	tmp[1].a = 2;
-	tmp[2].a = 3;
-	$scope.valami = tmp;
-	
+	setTimeout(function(){
+		var tmp = modules.Utils.clone($scope.valami);
+		tmp[0].a = 1;
+		tmp[1].a = 2;
+		tmp[2].a = 3;
+		$scope.valami = tmp;
+	}, 1000);
 	
 	/*
 	$scope.$register('alma', {a : 12});
