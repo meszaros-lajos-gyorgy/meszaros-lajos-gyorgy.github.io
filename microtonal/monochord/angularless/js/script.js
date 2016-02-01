@@ -254,19 +254,91 @@ $scope.sets = [{
 	
 	// -----------------
 	
-	$scope.$register('alma', {
-		a : 12
-	});
+	// complex value for scope variable
+	$scope.valami = [{a : 12}, {a : 15}, {a : 18}];
 	
+	function getter(s){
+		console.log(s, '|', s[0], '|', s[1], '||', s[0][s[1]]);
+		return s[0][s[1]]
+	}
+	
+	// bind it to a local variable
+	var scope = [$scope, 'valami'];
+	
+	// query some stuff through the local scope
+	(function(scope){
+		console.info('values from scope:', scope[0].a, scope[1].a, scope[2].a);
+	})(getter(scope));
+	
+	// watch for scope?
+	
+	
+	// assign inner scope
+	var innerScope = [getter(scope), 0];
+	
+	// query some stuff through the local scope
+	(function(scope){
+		console.info('values from innerScope:', scope.a);
+	})(getter(innerScope));
+	
+	// watch for innerScope?
+	
+	
+	// change the scope variable
+	var tmp = $scope.valami;
+	tmp[0].a = 1;
+	tmp[1].a = 2;
+	tmp[2].a = 3;
+	$scope.valami = tmp;
+	
+	
+	/*
+	$scope.$register('alma', {a : 12});
+	
+	var scope = Object.getOwnPropertyDescriptor($scope, 'alma')
+	
+	console.log(scope.get());
+	*/
+	
+	/*
+	var tmp = $scope.alma;
+	tmp.a = 14;
+	$scope.alma = tmp;
+	
+	console.log(scope);
+	*/
+	
+	/*
+	console.log('value: ', $scope.alma.a);
+	console.log('typeof value: ', typeof $scope.alma.a);
+	console.log('gopd: ', Object.getOwnPropertyDescriptor($scope.alma, 'a'));
+	console.log('typeof gopd: ', typeof Object.getOwnPropertyDescriptor($scope.alma, 'a'));
+	console.log('gopd.get: ', Object.getOwnPropertyDescriptor($scope.alma, 'a').get);
+	console.log('typeof gopd.get', typeof Object.getOwnPropertyDescriptor($scope.alma, 'a').get);
+	*/
+	
+	/*
+	console.log($scope.alma.alma);
+	
+	console.log(Object.getOwnPropertyDescriptor.apply(undefined, [$scope.alma, 'alma']));
+	console.log(Object.getOwnPropertyDescriptor.apply(undefined, [$scope.alma, 'alma']).get.name);
+	*/
+	
+	/*
 	var test = modules.DOM.createElement('div', {
-		$scope : $scope.alma,
-		id : function(scope){
-			return scope.a;
+		$scope : $scope,
+		text : function(scope){
+			return [scope, 'alma'];
 		}
 	});
 	modules.DOM.onReady(function(){
 		document.body.appendChild(test);
+		
+		setTimeout(function(){
+			$scope.alma = 15;
+		}, 1000);
 	});
+	*/
 	
 	// -----------------
 	

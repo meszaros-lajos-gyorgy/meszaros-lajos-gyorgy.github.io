@@ -23,10 +23,10 @@ if(!window.modules){
 				};
 				
 				Object.defineProperty(this, variable, {
-					get : function(){
+					get : function ScopeGetter(){
 						return data[variable].value;
 					},
-					set : function(newValue){
+					set : function ScopeSetter(newValue){
 						if(data[variable].value === newValue){
 							return ;
 						}

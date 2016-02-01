@@ -114,17 +114,28 @@ if(!window.modules){
 					default :
 						(function(attr, value){
 							element.addEventListener('init', function(){
-								var value = (typeof value === 'function' ? value(this.$scope) : value) + '';
+								/*
+								var isFunction = typeof value === 'function';
+								var processedValue = (typeof value === 'function' ? value(this.$scope) : value) + '';
+								
+								if(isFunction && Array.isArray(processedValue) && processedValue[0] === this.$scope){
+									
+									processedValue = this.$scope[processedValue[1]];
+								}
+								*/
+								
+								/*
 								switch(attr){
 									case 'html' :
-										this.innerHTML = value;
+										this.innerHTML = processedValue;
 										break;
 									case 'text' :
-										this.textContent = value;
+										this.textContent = processedValue;
 										break;
 									default :
-										this.setAttribute(attr, value);
+										this.setAttribute(attr, processedValue);
 								}
+								*/
 							});
 						})(name, value);
 				}
