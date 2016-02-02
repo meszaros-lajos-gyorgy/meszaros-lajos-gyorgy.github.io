@@ -49,28 +49,42 @@
 	}
 	
 	function greatestCommonDivisor(){
-		var numbers = [].slice.call(arguments);
-		numbers.forEach(function(number, index, array){
-			array[index] = getPrimeFactors(number);
-		})
+		var numbers = Array.prototype.slice.call(arguments);
+		var numbersSize = numbers.length;
+		var factors = [];
+		var i = numbersSize;
+		var gcd = 1;
+		var j, firstNumber, factor, notContaining;
+		
+		while(i--){
+			numbers[i] = getPrimeFactors(numbers[i]);
+		}
 		numbers.sort(function(a, b){
 			return a.length - b.length;
 		});
-		var factors = [];
-		numbers.shift().forEach(function(factor){
-			var notContaining = numbers.some(function(number){
+		
+		numbersSize--;
+		firstNumber = numbers.shift();
+		i = firstNumber.length;
+		while(i--){
+			factor = firstNumber[i];
+			notContaining = numbers.some(function(number){
 				return number.indexOf(factor) === -1;
 			});
 			if(!notContaining){
-				numbers.forEach(function(number, index, array){
-					array[index].splice(number.indexOf(factor), 1);
-				});
+				j = numbersSize;
+				while(j--){
+					numbers[j].splice(numbers[j].indexOf(factor), 1);
+				}
 				factors.push(factor);
 			}
-		});
-		return factors.reduce(function(previousValue, currentValue){
-			return previousValue * currentValue;
-		}, 1);
+		}
+		
+		i = factors.length;
+		while(i--){
+			gcd *= factors[i];
+		}
+		return gcd;
 	}
 	
 	function calculateCents(f1, f2){
