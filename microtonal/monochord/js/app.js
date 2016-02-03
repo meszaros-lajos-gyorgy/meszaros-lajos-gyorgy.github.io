@@ -1,5 +1,3 @@
-(function(){
-	'use strict';
-	
-	var app = angular.module('Microtonal', ['Math']);
-})();
+angular
+	.module('Microtonal', ['Math', 'AudioModel'])
+;
