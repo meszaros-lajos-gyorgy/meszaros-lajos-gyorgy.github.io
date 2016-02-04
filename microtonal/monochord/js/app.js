@@ -1,30 +1,6 @@
 angular
 	.module('Monochord', ['Math', 'AudioModel'])
 	.controller('MonochordCtrl', ['$scope', 'audioModel', function($scope, audioModel){
-		/*
-		audioModel
-			.setMainVolume(0.3)
-			.addSet(1, {
-				volume : 1
-			})
-			.addString(1, 1, {
-				volume : 1,
-				type : 'sine',
-				frequency : 330
-			})
-			.addString(2, 1, {
-				volume : 1,
-				type : 'triangle',
-				frequency : 220
-			})
-			.commit()
-		;
-		
-		setTimeout(audioModel.stopAll, 1000);
-		*/
-		
-		// ----------------
-		
 		$scope.baseVolume = 10;
 		
 		$scope.$watch('baseVolume', function(newValue, oldValue){
@@ -39,7 +15,6 @@ angular
 		$scope.$register('sets', []);
 		
 		var model = new modules.SetModel([$scope, 'sets']);
-		
 		
 		// --------------
 		
@@ -171,8 +146,5 @@ angular
 			audioModel.commit();
 		});
 		*/
-		
-		
-		
 	}])
 ;

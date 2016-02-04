@@ -3,13 +3,17 @@ angular
 	.factory('SetModel', ['utils', 'math', function(utils, math){
 		'use strict';
 		
+		var lastSetId = 0;
+		var lastStringId = 0;
+		var lowestHarmonic = 1;
+		var highestHarmonic = 5000;
+		
+		return {
+			
+		};
+		
 		/*
 		modules.SetModel = function(model){
-			var lastSetId = 0;
-			var lastStringId = 0;
-			var lowestHarmonic = 1;
-			var highestHarmonic = 5000;
-			
 			var $scope = model[0];
 			var variable = model[1];
 			var self = this;
@@ -320,9 +324,5 @@ angular
 			};
 		};
 		*/
-		
-		return {
-			
-		};
 	}])
 ;
