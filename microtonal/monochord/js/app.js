@@ -1,6 +1,6 @@
 angular
-	.module('Monochord', ['Math', 'AudioModel'])
-	.controller('MonochordCtrl', ['$scope', 'audioModel', function($scope, audioModel){
+	.module('Monochord', ['Presets', 'AudioModel'])
+	.controller('MonochordCtrl', ['$scope', 'presets', 'audioModel', function($scope, presets, audioModel){
 		$scope.baseVolume = 10;
 		
 		$scope.$watch('baseVolume', function(newValue, oldValue){
@@ -9,6 +9,13 @@ angular
 				.commit()
 			;
 		});
+		
+		presets
+			.load()
+			.then(function(data){
+				$scope.presets = data;
+			})
+		;
 		
 		/*
 		$scope.$register('baseFrequency', 50);
