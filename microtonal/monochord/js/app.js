@@ -16,7 +16,7 @@ angular
 				type : 'triangle',
 				frequency : 220
 			})
-			.updateReal()
+			.commit()
 		;
 		
 		setTimeout(audioModel.stopAll, 1000);

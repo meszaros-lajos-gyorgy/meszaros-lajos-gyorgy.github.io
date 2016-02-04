@@ -358,7 +358,7 @@ angular
 				return this;
 			},
 			
-			updateReal : function(){
+			commit : function(){
 				if(dirty){
 					var parsedVirtual = summarizeVirtual(virtual);
 					var correctedVirtual = correctGains(parsedVirtual);
