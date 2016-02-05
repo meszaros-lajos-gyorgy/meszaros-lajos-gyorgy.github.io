@@ -6,7 +6,6 @@ angular
 		return function(models){
 			var sets = models.sets[0][models.sets[1]];
 			var self = this;
-			var dirty = false;
 			
 			var lastSetId = 0;
 			var lastStringId = 0;
@@ -14,14 +13,11 @@ angular
 			var highestHarmonic = 5000;
 			
 			this.commit = function(){
-				if(dirty){
-					models.sets[0].$apply();
-				}
+				models.sets[0].$apply();
 			};
 			
 			this.sets = {
 				add : function addSet(volume, muted, dontAddString){
-					dirty = true;
 					sets.push({
 						id : ++lastSetId,
 						retune : {
@@ -45,7 +41,6 @@ angular
 					// $scope.stringToEdit = {};
 				},
 				findById : function(setId, run){
-					dirty = true;
 					sets.some(function(set, index, array){
 						if(set.id === setId){
 							run(set, index, array);
@@ -55,7 +50,6 @@ angular
 				},
 				findPrevious : function(setId, run){
 					var prevSet = null;
-					dirty = true;
 					sets.some(function(set){
 						if(set.id === setId && prevSet !== null){
 							run(prevSet);
@@ -67,7 +61,6 @@ angular
 				},
 				findNext : function(setId, run){
 					var prevSet = null;
-					dirty = true;
 					sets.some(function(set){
 						if(prevSet !== null && prevSet.id === setId){
 							run(set);
@@ -106,7 +99,6 @@ angular
 					});
 				},
 				findById : function(stringId, run){
-					dirty = true;
 					sets.some(function(set){
 						return set.strings.some(function(string, index, array){
 							if(string.id === stringId){
