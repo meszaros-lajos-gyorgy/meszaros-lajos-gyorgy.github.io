@@ -1,30 +1,22 @@
 angular
 	.module('SetModel', ['Utils', 'Math'])
-	.factory('SetModel', ['utils', 'math', function(utils, math){
+	.factory('setModel', ['utils', 'math', function(utils, math){
 		'use strict';
 		
-		var lastSetId = 0;
-		var lastStringId = 0;
-		var lowestHarmonic = 1;
-		var highestHarmonic = 5000;
-		
-		return {
-			
-		};
-		
-		/*
-		modules.SetModel = function(model){
+		return function(model){
 			var $scope = model[0];
-			var variable = model[1];
+			var sets = $scope[model[1]];
 			var self = this;
-			
 			var dirty = false;
-			var sets = modules.Utils.clone($scope[variable]);
+			
+			var lastSetId = 0;
+			var lastStringId = 0;
+			var lowestHarmonic = 1;
+			var highestHarmonic = 5000;
 			
 			this.commit = function(){
 				if(dirty){
-					$scope[variable] = sets;
-					sets = modules.Utils.clone($scope[variable]);
+					$scope.$apply();
 				}
 			};
 			
@@ -323,6 +315,5 @@ angular
 				}
 			};
 		};
-		*/
 	}])
 ;

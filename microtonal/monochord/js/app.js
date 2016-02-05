@@ -1,27 +1,58 @@
 angular
-	.module('Monochord', ['Presets', 'AudioModel'])
-	.controller('MonochordCtrl', ['$scope', 'presets', 'audioModel', function($scope, presets, audioModel){
-		$scope.baseVolume = 10;
-		
-		$scope.$watch('baseVolume', function(newValue, oldValue){
-			audioModel
-				.setMainVolume(newValue / 100)
-				.commit()
-			;
-		});
-		
+	.module('Monochord', ['Presets', 'AudioModel', 'SetModel'])
+	.controller('MonochordCtrl', ['$scope', 'presets', 'audioModel', 'setModel', function($scope, presets, audioModel, setModel){
+		/*
 		presets
 			.load()
 			.then(function(data){
 				$scope.presets = data;
 			})
 		;
+		*/
 		
-		/*
-		$scope.$register('baseFrequency', 50);
-		$scope.$register('sets', []);
+		// --------------
 		
-		var model = new modules.SetModel([$scope, 'sets']);
+		$scope.baseVolume = 10;
+		$scope.baseFrequency = 50;
+		$scope.sets = [];
+		
+		var model = new setModel([$scope, 'sets']);
+		
+		
+		var setId;
+		setTimeout(function(){
+			setId = model.sets.add(100, false, true);
+			model.strings.add(setId, 4);
+			model.strings.add(setId, 6);
+			model.commit();
+		}, 500);
+		
+		setTimeout(function(){
+			model.strings.add(setId, 7);
+			model.commit();
+		}, 1000);
+		setTimeout(function(){
+			model.strings.add(setId, 8);
+			model.commit();
+		}, 1500);
+		setTimeout(function(){
+			model.strings.add(setId, 9);
+			model.commit();
+		}, 2000);
+		setTimeout(function(){
+			model.strings.add(setId, 12);
+			model.commit();
+		}, 2500);
+		
+		setTimeout(function(){
+			$scope.baseFrequency = 51;
+			$scope.$apply();
+		}, 4000);
+		setTimeout(function(){
+			$scope.baseFrequency = 50;
+			$scope.$apply();
+		}, 5000);
+		
 		
 		// --------------
 		
@@ -102,6 +133,12 @@ angular
 		
 		// --------------
 		
+		$scope.$watch('baseVolume', function(newValue, oldValue){
+			audioModel
+				.setMainVolume(newValue / 100)
+				.commit()
+			;
+		});
 		$scope.$watch('baseFrequency', function(newValue, oldValue){
 			updateFrequencies(model);
 		});
@@ -151,7 +188,6 @@ angular
 			});
 			
 			audioModel.commit();
-		});
-		*/
+		}, true);
 	}])
 ;
