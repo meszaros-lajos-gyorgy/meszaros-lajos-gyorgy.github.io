@@ -3,8 +3,8 @@ angular
 	.factory('SetModel', ['utils', 'math', 'audioModel', function(utils, math, audioModel){
 		'use strict';
 		
-		return function(setModel, baseFrequencyModel){
-			var sets = setModel[0][setModel[1]];
+		return function(models){
+			var sets = models.sets[0][models.sets[1]];
 			var self = this;
 			var dirty = false;
 			
@@ -15,7 +15,7 @@ angular
 			
 			this.commit = function(){
 				if(dirty){
-					setModel[0].$apply();
+					models.sets[0].$apply();
 				}
 			};
 			
@@ -231,7 +231,7 @@ angular
 							// baseFreq = calculateFrequency(set.retune.target, stack);
 						// }
 					// }else{
-						baseFreq = baseFrequencyModel[0][baseFrequencyModel[1]];
+						baseFreq = models.baseFrequency[0][models.baseFrequency[1]];
 					// }
 					
 					// if(set.retune.type !== 'off'){
@@ -382,7 +382,7 @@ angular
 				};
 			}
 			
-			setModel[0].$watch(setModel[1], function(newValue, oldValue){
+			models.sets[0].$watch(models.sets[1], function(newValue, oldValue){
 				var diff = diffScopeChange(newValue, oldValue);
 				
 				diff.sets.removed.forEach(function(setId){
@@ -432,7 +432,7 @@ angular
 				audioModel.commit();
 			}, true);
 			
-			baseFrequencyModel[0].$watch(baseFrequencyModel[1], function(newValue, oldValue){
+			models.baseFrequency[0].$watch(models.baseFrequency[1], function(newValue, oldValue){
 				sets.forEach(function(set){
 					set.strings.forEach(function(string){
 						audioModel.setString(string.id, {
@@ -441,6 +441,13 @@ angular
 					});
 				});
 				audioModel.commit();
+			});
+			
+			models.baseVolume[0].$watch(models.baseVolume[1], function(newValue, oldValue){
+				audioModel
+					.setMainVolume(newValue / 100)
+					.commit()
+				;
 			});
 		};
 	}])
