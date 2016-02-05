@@ -1,11 +1,10 @@
 angular
-	.module('SetModel', ['Utils', 'Math'])
-	.factory('setModel', ['utils', 'math', function(utils, math){
+	.module('SetModel', ['Utils', 'Math', 'AudioModel'])
+	.factory('SetModel', ['utils', 'math', 'audioModel', function(utils, math, audioModel){
 		'use strict';
 		
-		return function(model){
-			var $scope = model[0];
-			var sets = $scope[model[1]];
+		return function(setModel, baseFrequencyModel){
+			var sets = setModel[0][setModel[1]];
 			var self = this;
 			var dirty = false;
 			
@@ -16,7 +15,7 @@ angular
 			
 			this.commit = function(){
 				if(dirty){
-					$scope.$apply();
+					setModel[0].$apply();
 				}
 			};
 			
@@ -81,13 +80,15 @@ angular
 			};
 			
 			this.strings = {
-				add : function(setId, multiplier, volume, muted){
+				VALID_TYPES : ['sine', 'square', 'sawtooth', 'triangle'],
+				add : function(setId, multiplier, volume, muted, type){
 					self.sets.findById(setId, function(set){
 						set.strings.push({
 							id : ++lastStringId,
 							multiplier : multiplier || 1,
 							volume : typeof volume !== 'undefined' ? volume : 100,
-							muted : typeof muted !== 'undefined' ? muted : false
+							muted : typeof muted !== 'undefined' ? muted : false,
+							type : self.strings.VALID_TYPES.indexOf(type) !== -1 ? type : self.strings.VALID_TYPES[0]
 						});
 					});
 					return lastStringId;
@@ -218,7 +219,7 @@ angular
 			
 			this.calculate = {
 				baseFrequency : function(stringId, set, stack){
-					var baseFrequency;
+					var baseFreq;
 					
 					// if(set.retune.target > 0){
 						// stack = stack || [];
@@ -227,10 +228,10 @@ angular
 							// return 0;
 						// }else{
 							// stack.push(stringId);
-							// baseFrequency = calculateFrequency(set.retune.target, stack);
+							// baseFreq = calculateFrequency(set.retune.target, stack);
 						// }
 					// }else{
-						baseFrequency = $scope.baseFrequency
+						baseFreq = baseFrequencyModel[0][baseFrequencyModel[1]];
 					// }
 					
 					// if(set.retune.type !== 'off'){
@@ -245,7 +246,7 @@ angular
 								// ratios = ratios.sort(function(a, b){
 									// return a - b;
 								// });
-								// retunedBaseFreq = baseFrequency / ratios[0];
+								// retunedBaseFreq = baseFreq / ratios[0];
 								// break;
 							// }
 							// case 'highest' : {
@@ -256,25 +257,25 @@ angular
 								// ratios = ratios.sort(function(a, b){
 									// return b - a;
 								// });
-								// retunedBaseFreq = baseFrequency / ratios[0];
+								// retunedBaseFreq = baseFreq / ratios[0];
 								// break;
 							// }
 							// case 'manual' : {
 								// if(set.retune.subject > 0){
 									// findStringById(set.retune.subject, function(string){
-										// retunedBaseFreq = baseFrequency / string.multiplier;
+										// retunedBaseFreq = baseFreq / string.multiplier;
 									// })
 								// }else{
-									// retunedBaseFreq = baseFrequency;
+									// retunedBaseFreq = baseFreq;
 								// }
 								// break;
 							// }
 						// }
 						
-						// baseFrequency = retunedBaseFreq;
+						// baseFreq = retunedBaseFreq;
 					// }
 					
-					return baseFrequency;
+					return baseFreq;
 				},
 				frequency : function(stringId, stack){
 					var frequency;
@@ -298,8 +299,8 @@ angular
 					var cents;
 					
 					self.strings.findById(stringId, function(string, index, array, set){
-						var baseFrequency = self.calculate.baseFrequency(stringId, set);
-						cents = modules.Math.calculateCents(baseFrequency, baseFrequency * string.multiplier);
+						var baseFreq = self.calculate.baseFrequency(stringId, set);
+						cents = modules.Math.calculateCents(baseFreq, baseFreq * string.multiplier);
 					});
 					
 					return cents;
@@ -314,6 +315,133 @@ angular
 					return arr;
 				}
 			};
+			
+			// -----------------
+			
+			function diffScopeChange(newValue, oldValue){
+				var sets = {
+					added : [],
+					removed : [],
+					changed : []
+				};
+				var strings = {
+					added : [],
+					removed : [],
+					changed : []
+				};
+				
+				newValue.forEach(function(newSet){
+					var group = 'added';
+					var oldSet;
+					oldValue.some(function(_oldSet){
+						if(_oldSet.id === newSet.id){
+							oldSet = _oldSet;
+							group = 'changed';
+							return true;
+						}
+					});
+					
+					sets[group].push(newSet.id);
+					
+					newSet.strings.forEach(function(newString){
+						strings[
+							group !== 'added'
+							&& oldSet.strings.some(function(oldString){
+								return oldString.id == newString.id;
+							})
+							? 'changed'
+							: 'added'
+						].push(newString.id);
+					});
+				});
+				
+				oldValue.forEach(function(oldSet){
+					if(
+						sets.added.indexOf(oldSet.id) === -1
+						&& sets.changed.indexOf(oldSet.id) === -1
+					){
+						sets.removed.push(oldSet.id);
+						oldSet.strings.forEach(function(oldString){
+							strings.removed.push(oldString.id);
+						});
+					}else{
+						oldSet.strings.forEach(function(oldString){
+							if(
+								strings.added.indexOf(oldString.id) === -1
+								&& strings.changed.indexOf(oldString.id) === -1
+							){
+								strings.removed.push(oldString.id);
+							}
+						});
+					}
+				});
+				
+				return {
+					sets : sets,
+					strings : strings
+				};
+			}
+			
+			setModel[0].$watch(setModel[1], function(newValue, oldValue){
+				var diff = diffScopeChange(newValue, oldValue);
+				
+				diff.sets.removed.forEach(function(setId){
+					// Object.keys($scope.keyAssignments).some(function(key){
+						// if($scope.keyAssignments[key].setId === setId){
+							// $scope.keyAssignments[key].setId = 0;
+						// }
+					// });
+					audioModel.removeSet(setId);
+				});
+				diff.sets.added.forEach(function(setId){
+					self.sets.findById(setId, function(set){
+						audioModel.addSet(setId, {
+							volume : (set.muted ? 0 : set.volume / 100)
+						});
+					});
+				});
+				diff.sets.changed.forEach(function(setId){
+					self.sets.findById(setId, function(set){
+						audioModel.setSet(setId, {
+							volume : (set.muted ? 0 : set.volume / 100)
+						});
+					});
+				});
+				
+				diff.strings.removed.forEach(audioModel.removeString);
+				
+				diff.strings.added.forEach(function(stringId){
+					self.strings.findById(stringId, function(string, index, array, set){
+						audioModel.addString(stringId, set.id, {
+							frequency : self.calculate.frequency(stringId),
+							volume : (string.muted ? 0 : string.volume / 100),
+							type : string.type
+						});
+					});
+				});
+				diff.strings.changed.forEach(function(stringId){
+					self.strings.findById(stringId, function(string){
+						audioModel.setString(stringId, {
+							frequency : self.calculate.frequency(stringId),
+							volume : (string.muted ? 0 : string.volume / 100),
+							type : string.type
+						});
+					});
+				});
+				
+				audioModel.commit();
+			}, true);
+			
+			baseFrequencyModel[0].$watch(baseFrequencyModel[1], function(newValue, oldValue){
+				sets.forEach(function(set){
+					set.strings.forEach(function(string){
+						audioModel.setString(string.id, {
+							frequency : self.calculate.frequency(string.id)
+						});
+					});
+				});
+				audioModel.commit();
+			});
 		};
 	}])
 ;
