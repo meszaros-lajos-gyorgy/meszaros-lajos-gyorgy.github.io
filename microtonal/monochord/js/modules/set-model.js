@@ -3,8 +3,8 @@ angular
 	.factory('SetModel', ['utils', 'math', 'audioModel', function(utils, math, audioModel){
 		'use strict';
 		
-		return function(models){
-			var sets = models.sets[0][models.sets[1]];
+		return function($scope, models){
+			var sets = $scope[models.sets];
 			var self = this;
 			
 			var lastSetId = 0;
@@ -13,7 +13,7 @@ angular
 			var highestHarmonic = 5000;
 			
 			this.commit = function(){
-				models.sets[0].$apply();
+				$scope.$apply();
 			};
 			
 			this.sets = {
@@ -223,7 +223,7 @@ angular
 							// baseFreq = calculateFrequency(set.retune.target, stack);
 						// }
 					// }else{
-						baseFreq = models.baseFrequency[0][models.baseFrequency[1]];
+						baseFreq = $scope[models.baseFrequency];
 					// }
 					
 					// if(set.retune.type !== 'off'){
@@ -374,7 +374,7 @@ angular
 				};
 			}
 			
-			models.sets[0].$watch(models.sets[1], function(newValue, oldValue){
+			$scope.$watch(models.sets, function(newValue, oldValue){
 				var diff = diffScopeChange(newValue, oldValue);
 				
 				diff.sets.removed.forEach(function(setId){
@@ -424,7 +424,7 @@ angular
 				audioModel.commit();
 			}, true);
 			
-			models.baseFrequency[0].$watch(models.baseFrequency[1], function(newValue, oldValue){
+			$scope.$watch(models.baseFrequency, function(newValue, oldValue){
 				sets.forEach(function(set){
 					set.strings.forEach(function(string){
 						audioModel.setString(string.id, {
@@ -435,7 +435,7 @@ angular
 				audioModel.commit();
 			});
 			
-			models.baseVolume[0].$watch(models.baseVolume[1], function(newValue, oldValue){
+			$scope.$watch(models.baseVolume, function(newValue, oldValue){
 				audioModel
 					.setMainVolume(newValue / 100)
 					.commit()

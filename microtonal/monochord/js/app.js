@@ -16,10 +16,10 @@ angular
 		$scope.baseFrequency = 50;
 		$scope.sets = [];
 		
-		var model = new SetModel({
-			sets : [$scope, 'sets'],
-			baseFrequency : [$scope, 'baseFrequency'],
-			baseVolume : [$scope, 'baseVolume']
+		var model = new SetModel($scope, {
+			sets : 'sets',
+			baseFrequency : 'baseFrequency',
+			baseVolume : 'baseVolume'
 		});
 		
 		// -------
