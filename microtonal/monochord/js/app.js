@@ -24,6 +24,7 @@ angular
 		
 		// -------
 		
+		/*
 		var setId;
 		setTimeout(function(){
 			setId = model.sets.add(100, false, true);
@@ -57,5 +58,6 @@ angular
 			$scope.baseFrequency = 50;
 			$scope.$apply();
 		}, 5000);
+		*/
 	}])
 ;
