@@ -94,12 +94,17 @@ angular
 			return 1200 * Math.log(f2 / f1) / Math.log(2);
 		}
 		
+		function calculateRatio(cent){
+			return Math.pow(2, (cent / 1200))
+		}
+		
 		return {
 			isPrime : isPrime,
 			leastFactor : leastFactor,
 			getPrimeFactors : getPrimeFactors,
 			greatestCommonDivisor : greatestCommonDivisor,
-			calculateCents : calculateCents
+			calculateCents : calculateCents,
+			calculateRatio : calculateRatio
 		};
 	}])
 ;

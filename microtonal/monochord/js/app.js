@@ -1,6 +1,6 @@
 angular
-	.module('Monochord', ['Presets', 'SetModel'])
-	.controller('MonochordCtrl', ['$scope', 'presets', 'SetModel', function($scope, presets, SetModel){
+	.module('Monochord', ['Presets', 'SetModel', 'Math'])
+	.controller('MonochordCtrl', ['$scope', 'presets', 'SetModel', 'math', function($scope, presets, SetModel, math){
 		/*
 		presets
 			.load()
@@ -12,6 +12,7 @@ angular
 		
 		// --------------
 		
+		/*
 		$scope.baseVolume = 30;
 		$scope.baseFrequency = 50;
 		$scope.sets = [];
@@ -21,6 +22,11 @@ angular
 			baseFrequency : 'baseFrequency',
 			baseVolume : 'baseVolume'
 		});
+		*/
+		
+		console.log(3/2);
+		console.log(math.calculateCents(2, 3));
+		console.log(math.calculateRatio(701.9550008653874));
 		
 		// -------
 		
