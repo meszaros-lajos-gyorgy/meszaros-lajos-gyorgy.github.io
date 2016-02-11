@@ -51,7 +51,7 @@ angular
 			return [minFactor].concat(getPrimeFactors(n / minFactor));
 		}
 		
-		function greatestCommonDivisor(){
+		function greatestCommonDivisor(/*num1, num2, ...*/){
 			var numbers = Array.prototype.slice.call(arguments);
 			var numbersSize = numbers.length;
 			var factors = [];
@@ -90,12 +90,29 @@ angular
 			return gcd;
 		}
 		
-		function calculateCents(f1, f2){
-			return 1200 * Math.log(f2 / f1) / Math.log(2);
+		function fractionToCents(fraction){
+			return 1200 * Math.log(fraction) / Math.log(2);
 		}
 		
-		function calculateRatio(cent){
-			return Math.pow(2, (cent / 1200))
+		function centsToFraction(cents){
+			return Math.pow(2, (cents / 1200))
+		}
+		
+		function fractionToRatio(fraction){
+			// check, if fraction has repeating decimals (0.333...)
+			// if we have repeating decimals
+			//     then: https://www.illustrativemathematics.org/content-standards/tasks/335
+			//     else:
+			//        ratio = [fraction, 1]
+			//        frac = (a + '').split('.')[1].length;
+			//        x = Math.pow(10, frac);
+			//        ratio = [fraction * x, x]
+			//        gcd = greatestCommonDivisor(ratio[0], ratio[1])
+			//        ratio[0] /= gcd; ratio[1] /= gcd;
+		}
+		
+		function ratioToFraction(f1, f2){
+			return f2 > f1 ? (f2 / f1) : (f1 / f2);
 		}
 		
 		return {
@@ -103,8 +120,10 @@ angular
 			leastFactor : leastFactor,
 			getPrimeFactors : getPrimeFactors,
 			greatestCommonDivisor : greatestCommonDivisor,
-			calculateCents : calculateCents,
-			calculateRatio : calculateRatio
+			fractionToCents : fractionToCents,
+			centsToFraction : centsToFraction,
+			fractionToRatio : fractionToRatio,
+			ratioToFraction : ratioToFraction
 		};
 	}])
 ;

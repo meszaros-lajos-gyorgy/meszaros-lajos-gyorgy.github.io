@@ -24,12 +24,6 @@ angular
 		});
 		*/
 		
-		console.log(3/2);
-		console.log(math.calculateCents(2, 3));
-		console.log(math.calculateRatio(701.9550008653874));
-		
-		// -------
-		
 		/*
 		var setId;
 		setTimeout(function(){

@@ -300,7 +300,7 @@ angular
 					
 					self.strings.findById(stringId, function(string, index, array, set){
 						var baseFreq = self.calculate.baseFrequency(stringId, set);
-						cents = math.calculateCents(baseFreq, baseFreq * string.multiplier);
+						cents = math.fractionToCents(math.ratioToFraction(baseFreq, baseFreq * string.multiplier));
 					});
 					
 					return cents;
