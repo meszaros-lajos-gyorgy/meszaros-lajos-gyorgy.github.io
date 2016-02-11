@@ -131,9 +131,7 @@ angular
 				: Math.pow(10, (fraction + '').split('.')[1].length)
 			);
 			
-			var gcd = greatestCommonDivisor(fraction * multiplier, multiplier);
-			
-			multiplier /= gcd;
+			multiplier /= greatestCommonDivisor(fraction * multiplier, multiplier);
 			
 			return [fraction * multiplier, multiplier];
 		}
