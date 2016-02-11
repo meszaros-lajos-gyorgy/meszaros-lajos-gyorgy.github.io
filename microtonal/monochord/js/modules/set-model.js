@@ -1,6 +1,21 @@
+/*
+$scope.sets = [{
+	id : <int>,	// setId
+	muted : <bool>,
+	volume : 0..100,
+	displayAsCents : <bool>,
+	strings : [{
+		id : <int>, // stringId
+		multiplier : lowestHarmonic..highestHarmonic,
+		muted : <bool>,
+		volume : 0..100
+	}, ...],
+	retune : {}
+}, ...];
+*/
 angular
-	.module('SetModel', ['Utils', 'Math', 'AudioModel'])
-	.factory('SetModel', ['utils', 'math', 'audioModel', function(utils, math, audioModel){
+	.module('SetModel', ['Math', 'AudioModel'])
+	.factory('SetModel', ['math', 'audioModel', function(math, audioModel){
 		'use strict';
 		
 		return function($scope, models){
@@ -20,14 +35,11 @@ angular
 				add : function addSet(volume, muted, dontAddString){
 					sets.push({
 						id : ++lastSetId,
-						retune : {
-							// type : 'off',
-							// subject : 0,
-							// target : 0
-						},
+						retune : {},
 						strings : [],
 						volume : typeof volume !== 'undefined' ? volume : 100,
-						muted : typeof muted !== 'undefined' ? muted : false
+						muted : typeof muted !== 'undefined' ? muted : false,
+						displayAsCents : false
 					});
 					if(dontAddString !== true){
 						self.strings.add(lastSetId, 1);
@@ -38,7 +50,6 @@ angular
 					self.sets.findById(setId, function(set, index, array){
 						array.splice(index, 1);
 					});
-					// $scope.stringToEdit = {};
 				},
 				findById : function(setId, run){
 					sets.some(function(set, index, array){
@@ -92,9 +103,6 @@ angular
 							removeSet(set.id);
 						}else{
 							array.splice(index, 1);
-							// if($scope.stringToEdit.id === stringId){
-								// $scope.stringToEdit = {};
-							// }
 						}
 					});
 				},
@@ -192,13 +200,13 @@ angular
 				canBeNormalized : function(set){
 					return (
 						set.strings.length > 1
-						&& modules.Math.greatestCommonDivisor.apply(null, self.harmonics.getMultipliers(set)) > 1
+						&& math.greatestCommonDivisor.apply(null, self.harmonics.getMultipliers(set)) > 1
 					);
 				},
 				normalize : function(setId){
 					self.sets.findById(setId, function(set){
 						if(set.strings.length > 1){
-							var gcd = modules.Math.greatestCommonDivisor.apply(null, self.harmonics.getMultipliers(set));
+							var gcd = math.greatestCommonDivisor.apply(null, self.harmonics.getMultipliers(set));
 							if(gcd > 1){
 								set.strings.forEach(function(string){
 									string.multiplier = string.multiplier / gcd;
@@ -292,7 +300,7 @@ angular
 					
 					self.strings.findById(stringId, function(string, index, array, set){
 						var baseFreq = self.calculate.baseFrequency(stringId, set);
-						cents = modules.Math.calculateCents(baseFreq, baseFreq * string.multiplier);
+						cents = math.calculateCents(baseFreq, baseFreq * string.multiplier);
 					});
 					
 					return cents;
@@ -378,11 +386,6 @@ angular
 				var diff = diffScopeChange(newValue, oldValue);
 				
 				diff.sets.removed.forEach(function(setId){
-					// Object.keys($scope.keyAssignments).some(function(key){
-						// if($scope.keyAssignments[key].setId === setId){
-							// $scope.keyAssignments[key].setId = 0;
-						// }
-					// });
 					audioModel.removeSet(setId);
 				});
 				diff.sets.added.forEach(function(setId){
