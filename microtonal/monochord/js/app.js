@@ -12,6 +12,12 @@ angular
 		
 		// --------------
 		
+		// var fraction = 412 / 9;
+		// var fraction = 5 / 2;
+		var fraction = 66 / 9;
+		
+		console.log(fraction, math.fractionToRatio(fraction));
+		
 		/*
 		$scope.baseVolume = 30;
 		$scope.baseFrequency = 50;

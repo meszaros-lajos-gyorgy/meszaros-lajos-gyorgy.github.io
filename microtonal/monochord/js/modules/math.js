@@ -90,6 +90,27 @@ angular
 			return gcd;
 		}
 		
+		// http://stackoverflow.com/a/10803250/1806628
+		function getRepeatingDecimal(fraction){
+			fraction += '';
+			var RE_PatternInRepeatDec = /(?:[^\.]+\.\d*)(\d{2,})+(?:\1)$/;
+			var RE_RepeatingNums = /^(\d+)(?:\1)$/;
+			var match = RE_PatternInRepeatDec.exec(fraction);
+
+			if(!match){
+				// Try again but take off last digit incase of precision error.
+				fraction = fraction.replace(/\d$/, '');
+				match = RE_PatternInRepeatDec.exec(fraction);
+			}
+			
+			if(match && match.length > 1){
+				// Reset the match[1] if there is a pattern inside the matched pattern.
+				match[1] = RE_RepeatingNums.test(match[1]) ? RE_RepeatingNums.exec(match[1])[1] : match[1];
+			}
+			
+			return match ? match[1] : null;
+		}
+		
 		function fractionToCents(fraction){
 			return 1200 * Math.log(fraction) / Math.log(2);
 		}
@@ -99,16 +120,22 @@ angular
 		}
 		
 		function fractionToRatio(fraction){
-			// check, if fraction has repeating decimals (0.333...)
-			// if we have repeating decimals
-			//     then: https://www.illustrativemathematics.org/content-standards/tasks/335
-			//     else:
-			//        ratio = [fraction, 1]
-			//        frac = (a + '').split('.')[1].length;
-			//        x = Math.pow(10, frac);
-			//        ratio = [fraction * x, x]
-			//        gcd = greatestCommonDivisor(ratio[0], ratio[1])
-			//        ratio[0] /= gcd; ratio[1] /= gcd;
+			if(Number.isInteger(fraction)){
+				return [fraction, 1];
+			}
+			
+			var repetition = getRepeatingDecimal(fraction);
+			var multiplier = (
+				repetition !== null
+				? Math.pow(10, repetition.length) - 1
+				: Math.pow(10, (fraction + '').split('.')[1].length)
+			);
+			
+			var gcd = greatestCommonDivisor(fraction * multiplier, multiplier);
+			
+			multiplier /= gcd;
+			
+			return [fraction * multiplier, multiplier];
 		}
 		
 		function ratioToFraction(f1, f2){
@@ -120,6 +147,7 @@ angular
 			leastFactor : leastFactor,
 			getPrimeFactors : getPrimeFactors,
 			greatestCommonDivisor : greatestCommonDivisor,
+			getRepeatingDecimal : getRepeatingDecimal,
 			fractionToCents : fractionToCents,
 			centsToFraction : centsToFraction,
 			fractionToRatio : fractionToRatio,
