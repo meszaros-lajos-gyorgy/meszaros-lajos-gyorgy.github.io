@@ -20,6 +20,8 @@ angular
 			[3, 2],	// 3:2
 			[2, 1]	// 2:1
 		];
+		
+		// 400 cents look horrible as a ratio: 3149802624737183 / 2500000000000000
 		*/
 		
 		$scope.baseVolume = 30;
@@ -32,8 +34,8 @@ angular
 			baseVolume : 'baseVolume'
 		});
 		
+		/*
 		setTimeout(function(){
-			/*
 			for(var i = 0; i < scale.length; i++){
 				var setId = model.sets.add(100, false, true);
 				if(Array.isArray(scale[i])){
@@ -48,11 +50,25 @@ angular
 				}
 			}
 			model.commit();
-			*/
-			// 400 cents look horrible as a ratio: 3149802624737183 / 2500000000000000
-			var ratio = math.fractionToRatio(math.centsToFraction(400));
-			console.log(ratio);
 		}, 100);
+		*/
+		
+		var precision = 7;
+		var cents = 900;
+		
+		function eee(cents, precision){
+			var prec = Math.pow(10, precision);
+			var fraction = Math.floor(prec * math.centsToFraction(cents)) / prec;
+			var ratio = math.fractionToRatio(fraction);
+			var gcd = math.greatestCommonDivisor(ratio[0], ratio[1]);
+			var ratio2 = [ratio[0] / gcd, ratio[1] / gcd];
+			
+			console.log(cents, precision, fraction, ratio, gcd, ratio2);
+		}
+		
+		for(var i = 15; i >= 0; i--){
+			eee(900, i);
+		}		
 		
 		// bug:
 		// we need to call model.commit(); here, if we add sets, strings, etc. here

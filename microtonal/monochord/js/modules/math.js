@@ -3,6 +3,11 @@ angular
 	.factory('math', [function(){
 		'use strict';
 		
+		var cache = {
+			f2c : {}, // fraction to cache
+			c2f : {}  // cache to fraction	
+		};
+		
 		function isPrime(n){
 			if (isNaN(n) || !isFinite(n) || n % 1 || n < 2) return false;
 			if (n % 2 === 0) return n === 2;
@@ -112,11 +117,17 @@ angular
 		}
 		
 		function fractionToCents(fraction){
-			return 1200 * Math.log(fraction) / Math.log(2);
+			if(!cache.f2c.hasOwnProperty(fraction)){
+				cache.f2c[fraction] = 1200 * Math.log(fraction) / Math.LN2;
+			}
+			return cache.f2c[fraction];
 		}
 		
 		function centsToFraction(cents){
-			return Math.pow(2, (cents / 1200))
+			if(!cache.c2f.hasOwnProperty(cents)){
+				cache.c2f[cents] = Math.pow(2, (cents / 1200));
+			}
+			return cache.c2f[cents];
 		}
 		
 		function fractionToRatio(fraction){
@@ -131,7 +142,7 @@ angular
 				: Math.pow(10, (fraction + '').split('.')[1].length)
 			);
 			
-			multiplier /= greatestCommonDivisor(fraction * multiplier, multiplier);
+			// multiplier /= greatestCommonDivisor(fraction * multiplier, multiplier);
 			
 			return [fraction * multiplier, multiplier];
 		}
