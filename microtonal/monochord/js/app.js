@@ -12,6 +12,7 @@ angular
 		
 		// --------------
 		
+		/*
 		// My example scale:
 		var scale = [
 			[1, 1], // 1:1
@@ -19,6 +20,7 @@ angular
 			[3, 2], // 3:2
 			[2, 1]  // 2:1
 		];
+		*/
 		
 		$scope.baseVolume = 30;
 		$scope.baseFrequency = 50;
@@ -31,6 +33,16 @@ angular
 		});
 		
 		setTimeout(function(){
+			/*
+			// JI:
+			var setId = model.sets.add(100, false, true);
+			model.strings.add(setId, 3, 100, false, model.strings.VALID_TYPES[0]);
+			model.strings.add(setId, 2, 100, false, model.strings.VALID_TYPES[0]);
+			*/
+			
+			// cents:
+			var setId = model.sets.add(100, false, false);
+			model.cents.add(setId, 400, 100, false, model.strings.VALID_TYPES[0]);
 			
 			model.commit();
 		}, 100);

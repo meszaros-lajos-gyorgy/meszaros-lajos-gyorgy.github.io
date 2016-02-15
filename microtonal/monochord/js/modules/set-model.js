@@ -3,11 +3,20 @@ $scope.sets = [{
 	id : <int>,	// setId
 	muted : <bool>,
 	volume : 0..100,
+	isJustRatio : <bool>,
+	cents : [{
+		id : <int>, // centId
+		multiplier : <int>,
+		muted : <bool>,
+		volume : 0..100,
+		type : <string> // Math.strings.VALID_TYPES
+	}, ...],
 	strings : [{
 		id : <int>, // stringId
 		multiplier : lowestHarmonic..highestHarmonic,
 		muted : <bool>,
-		volume : 0..100
+		volume : 0..100,
+		type : <string> // Math.strings.VALID_TYPES
 	}, ...],
 	retune : {}
 }, ...];
@@ -31,17 +40,16 @@ angular
 			};
 			
 			this.sets = {
-				add : function addSet(volume, muted, dontAddString){
+				add : function(volume, muted, isJustRatio){
 					sets.push({
 						id : ++lastSetId,
 						retune : {},
 						strings : [],
+						cents : [],
 						volume : typeof volume !== 'undefined' ? volume : 100,
-						muted : typeof muted !== 'undefined' ? muted : false
+						muted : typeof muted !== 'undefined' ? muted : false,
+						isJustRatio : typeof isJustRatio !== 'undefined' ? isJustRatio : true
 					});
-					if(dontAddString !== true){
-						self.strings.add(lastSetId, 1);
-					}
 					return lastSetId;
 				},
 				remove : function(setId){
@@ -113,6 +121,18 @@ angular
 							}
 						});
 					});
+				}
+			};
+			
+			this.cents = {
+				add : function(setId, multiplier, volume, muted, type){
+					
+				},
+				remove : function(centId){
+					
+				},
+				findById : function(centId, run){
+					
 				}
 			};
 			
