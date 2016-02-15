@@ -3,7 +3,6 @@ $scope.sets = [{
 	id : <int>,	// setId
 	muted : <bool>,
 	volume : 0..100,
-	displayAsCents : <bool>,
 	strings : [{
 		id : <int>, // stringId
 		multiplier : lowestHarmonic..highestHarmonic,
@@ -38,8 +37,7 @@ angular
 						retune : {},
 						strings : [],
 						volume : typeof volume !== 'undefined' ? volume : 100,
-						muted : typeof muted !== 'undefined' ? muted : false,
-						displayAsCents : false
+						muted : typeof muted !== 'undefined' ? muted : false
 					});
 					if(dontAddString !== true){
 						self.strings.add(lastSetId, 1);

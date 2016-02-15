@@ -142,7 +142,7 @@ angular
 				: Math.pow(10, (fraction + '').split('.')[1].length)
 			);
 			
-			// multiplier /= greatestCommonDivisor(fraction * multiplier, multiplier);
+			multiplier /= greatestCommonDivisor(fraction * multiplier, multiplier);
 			
 			return [fraction * multiplier, multiplier];
 		}
