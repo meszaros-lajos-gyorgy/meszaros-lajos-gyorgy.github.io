@@ -6,7 +6,7 @@ $scope.sets = [{
 	isJustRatio : <bool>,
 	cents : [{
 		id : <int>, // centId
-		multiplier : <int>,
+		cents : <float>,
 		muted : <bool>,
 		volume : 0..100,
 		type : <string> // Math.strings.VALID_TYPES
@@ -90,15 +90,16 @@ angular
 			};
 			
 			this.strings = {
-				VALID_TYPES : ['sine', 'square', 'sawtooth', 'triangle'],
-				add : function(setId, multiplier, volume, muted, type){
+				/*VALID_TYPES : ['sine', 'square', 'sawtooth', 'triangle'],*/
+				add : function(setId, multiplier, volume, muted/*, type*/){
 					self.sets.findById(setId, function(set){
 						set.strings.push({
 							id : ++lastStringId,
-							multiplier : multiplier || 1,
+							multiplier : typeof multiplier !== 'undefined' ? multiplier : 1,
 							volume : typeof volume !== 'undefined' ? volume : 100,
 							muted : typeof muted !== 'undefined' ? muted : false,
-							type : self.strings.VALID_TYPES.indexOf(type) !== -1 ? type : self.strings.VALID_TYPES[0]
+							/*type : self.strings.VALID_TYPES.indexOf(type) !== -1 ? type : self.strings.VALID_TYPES[0]*/
+							type : 'sine'
 						});
 					});
 					return lastStringId;
@@ -106,7 +107,7 @@ angular
 				remove : function(stringId){
 					self.strings.findById(stringId, function(string, index, array, set){
 						if(set.strings.length === 1){
-							removeSet(set.id);
+							self.sets.remove(set.id);
 						}else{
 							array.splice(index, 1);
 						}
@@ -125,14 +126,37 @@ angular
 			};
 			
 			this.cents = {
-				add : function(setId, multiplier, volume, muted, type){
-					
+				add : function(setId, cents, volume, muted/*, type*/){
+					self.sets.findById(setId, function(set){
+						set.cents.push({
+							id : ++lastStringId,
+							cents : cents || 0,
+							volume : typeof volume !== 'undefined' ? volume : 100,
+							muted : typeof muted !== 'undefined' ? muted : false,
+							/*type : self.strings.VALID_TYPES.indexOf(type) !== -1 ? type : self.strings.VALID_TYPES[0]*/
+							type : 'sine'
+						});
+					});
+					return lastStringId;
 				},
 				remove : function(centId){
-					
+					self.cents.findById(centId, function(cent, index, array, set){
+						if(set.cents.length === 1){
+							self.sets.remove(set.id);
+						}else{
+							array.splice(index, 1);
+						}
+					});
 				},
 				findById : function(centId, run){
-					
+					sets.some(function(set){
+						return set.cents.some(function(cent, index, array){
+							if(cent.id === centId){
+								run(cent, index, array, set);
+								return true;
+							}
+						})
+					});
 				}
 			};
 			
@@ -316,17 +340,19 @@ angular
 				cent : function(stringId){
 					var cents;
 					
-					self.strings.findById(stringId, function(string, index, array, set){
+					/*
+					self.cents.findById(stringId, function(string, index, array, set){
 						var baseFreq = self.calculate.baseFrequency(stringId, set);
 						cents = math.fractionToCents(math.ratioToFraction(baseFreq, baseFreq * string.multiplier));
 					});
+					*/
 					
 					return cents;
 				},
 				cents : function(set){
 					var arr = [];
 					
-					set.strings.forEach(function(string){
+					set.cents.forEach(function(string){
 						arr.push(self.calculate.cent(string.id));
 					});
 					

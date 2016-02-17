@@ -36,13 +36,13 @@ angular
 			/*
 			// JI:
 			var setId = model.sets.add(100, false, true);
-			model.strings.add(setId, 3, 100, false, model.strings.VALID_TYPES[0]);
-			model.strings.add(setId, 2, 100, false, model.strings.VALID_TYPES[0]);
+			model.strings.add(setId, 3, 100, false);
+			model.strings.add(setId, 2, 100, false);
 			*/
 			
 			// cents:
 			var setId = model.sets.add(100, false, false);
-			model.cents.add(setId, 400, 100, false, model.strings.VALID_TYPES[0]);
+			model.cents.add(setId, 400, 100, false);
 			
 			model.commit();
 		}, 100);
