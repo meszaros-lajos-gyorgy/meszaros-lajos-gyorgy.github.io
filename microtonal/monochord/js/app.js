@@ -33,16 +33,13 @@ angular
 		});
 		
 		setTimeout(function(){
-			/*
 			// JI:
 			var setId = model.sets.add(100, false, true);
-			model.strings.add(setId, 3, 100, false);
-			model.strings.add(setId, 2, 100, false);
-			*/
+			model.strings.add(setId, 5, 100, false);
 			
 			// cents:
 			var setId = model.sets.add(100, false, false);
-			model.cents.add(setId, 400, 100, false);
+			model.cents.add(setId, 2400 + 400, 100, false);
 			
 			model.commit();
 		}, 100);

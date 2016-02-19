@@ -90,15 +90,13 @@ angular
 			};
 			
 			this.strings = {
-				/*VALID_TYPES : ['sine', 'square', 'sawtooth', 'triangle'],*/
-				add : function(setId, multiplier, volume, muted/*, type*/){
+				add : function(setId, multiplier, volume, muted){
 					self.sets.findById(setId, function(set){
 						set.strings.push({
 							id : ++lastStringId,
 							multiplier : typeof multiplier !== 'undefined' ? multiplier : 1,
 							volume : typeof volume !== 'undefined' ? volume : 100,
 							muted : typeof muted !== 'undefined' ? muted : false,
-							/*type : self.strings.VALID_TYPES.indexOf(type) !== -1 ? type : self.strings.VALID_TYPES[0]*/
 							type : 'sine'
 						});
 					});
@@ -126,14 +124,13 @@ angular
 			};
 			
 			this.cents = {
-				add : function(setId, cents, volume, muted/*, type*/){
+				add : function(setId, cents, volume, muted){
 					self.sets.findById(setId, function(set){
 						set.cents.push({
 							id : ++lastStringId,
 							cents : cents || 0,
 							volume : typeof volume !== 'undefined' ? volume : 100,
 							muted : typeof muted !== 'undefined' ? muted : false,
-							/*type : self.strings.VALID_TYPES.indexOf(type) !== -1 ? type : self.strings.VALID_TYPES[0]*/
 							type : 'sine'
 						});
 					});
@@ -260,7 +257,7 @@ angular
 			};
 			
 			this.calculate = {
-				baseFrequency : function(stringId, set, stack){
+				baseFrequency : function(id, type, set, stack){
 					var baseFreq;
 					
 					// if(set.retune.target > 0){
@@ -319,20 +316,30 @@ angular
 					
 					return baseFreq;
 				},
-				frequency : function(stringId, stack){
-					var frequency;
+				frequency : function(id, type, stack){
+					if(type !== 'string' && type !== 'cent'){
+						return 0;
+					}
 					
-					self.strings.findById(stringId, function(string, index, array, set){
-						frequency = self.calculate.baseFrequency(stringId, set, stack) * string.multiplier;
+					var freq;
+					
+					self[type + 's'].findById(id, function(element, index, array, set){
+						freq = self.calculate.baseFrequency(id, type, set, stack)
+						if(type === 'string'){
+							freq *= element.multiplier;
+						}else if(type === 'cent'){
+							freq *= math.centsToFraction(element.cents);
+						}
 					});
 					
-					return frequency;
+					return freq;
 				},
+				/*
 				frequencies : function(set){
 					var arr = [];
 					
 					set.strings.forEach(function(string){
-						arr.push(self.calculate.frequency(string.id));
+						arr.push(self.calculate.frequency(string.id, 'string'));
 					});
 					
 					return arr;
@@ -340,24 +347,23 @@ angular
 				cent : function(stringId){
 					var cents;
 					
-					/*
-					self.cents.findById(stringId, function(string, index, array, set){
-						var baseFreq = self.calculate.baseFrequency(stringId, set);
+					self.strings.findById(stringId, function(string, index, array, set){
+						var baseFreq = self.calculate.baseFrequency(id, 'string', set);
 						cents = math.fractionToCents(math.ratioToFraction(baseFreq, baseFreq * string.multiplier));
 					});
-					*/
 					
 					return cents;
 				},
 				cents : function(set){
 					var arr = [];
 					
-					set.cents.forEach(function(string){
+					set.strings.forEach(function(string){
 						arr.push(self.calculate.cent(string.id));
 					});
 					
 					return arr;
 				}
+				*/
 			};
 			
 			// -----------------
@@ -369,6 +375,11 @@ angular
 					changed : []
 				};
 				var strings = {
+					added : [],
+					removed : [],
+					changed : []
+				};
+				var cents = {
 					added : [],
 					removed : [],
 					changed : []
@@ -397,6 +408,17 @@ angular
 							: 'added'
 						].push(newString.id);
 					});
+					
+					newSet.cents.forEach(function(newCent){
+						cents[
+							group !== 'added'
+							&& oldSet.cents.some(function(oldCent){
+								return oldCent.id == newCent.id;
+							})
+							? 'changed'
+							: 'added'
+						].push(newCent.id);
+					});
 				});
 				
 				oldValue.forEach(function(oldSet){
@@ -408,6 +430,9 @@ angular
 						oldSet.strings.forEach(function(oldString){
 							strings.removed.push(oldString.id);
 						});
+						oldSet.cents.push(function(oldCent){
+							cents.removed.push(oldCent.id);
+						})
 					}else{
 						oldSet.strings.forEach(function(oldString){
 							if(
@@ -417,12 +442,21 @@ angular
 								strings.removed.push(oldString.id);
 							}
 						});
+						oldSet.cents.forEach(function(oldCent){
+							if(
+								cents.added.indexOf(oldCent.id) === -1
+								&& cents.changed.indexOf(oldCent.id) === -1
+							){
+								cents.removed.push(oldCent.id);
+							}
+						});
 					}
 				});
 				
 				return {
 					sets : sets,
-					strings : strings
+					strings : strings,
+					cents : cents
 				};
 			}
 			
@@ -452,7 +486,7 @@ angular
 				diff.strings.added.forEach(function(stringId){
 					self.strings.findById(stringId, function(string, index, array, set){
 						audioModel.addString(stringId, set.id, {
-							frequency : self.calculate.frequency(stringId),
+							frequency : self.calculate.frequency(stringId, 'string'),
 							volume : (string.muted ? 0 : string.volume / 100),
 							type : string.type
 						});
@@ -461,7 +495,28 @@ angular
 				diff.strings.changed.forEach(function(stringId){
 					self.strings.findById(stringId, function(string){
 						audioModel.setString(stringId, {
-							frequency : self.calculate.frequency(stringId),
+							frequency : self.calculate.frequency(stringId, 'string'),
+							volume : (string.muted ? 0 : string.volume / 100),
+							type : string.type
+						});
+					});
+				});
+				
+				diff.cents.removed.forEach(audioModel.removeCent);
+				
+				diff.cents.added.forEach(function(centId){
+					self.cents.findById(centId, function(string, index, array, set){
+						audioModel.addCent(centId, set.id, {
+							frequency : self.calculate.frequency(centId, 'cent'),
+							volume : (string.muted ? 0 : string.volume / 100),
+							type : string.type
+						});
+					});
+				});
+				diff.cents.changed.forEach(function(centId){
+					self.cents.findById(centId, function(string){
+						audioModel.setCent(centId, {
+							frequency : self.calculate.frequency(centId, 'cent'),
 							volume : (string.muted ? 0 : string.volume / 100),
 							type : string.type
 						});
@@ -475,7 +530,13 @@ angular
 				sets.forEach(function(set){
 					set.strings.forEach(function(string){
 						audioModel.setString(string.id, {
-							frequency : self.calculate.frequency(string.id)
+							frequency : self.calculate.frequency(string.id, 'string')
+						});
+					});
+					
+					set.cents.forEach(function(cent){
+						audioModel.setCent(cent.id, {
+							frequency : self.calculate.frequency(cent.id, 'cent')
 						});
 					});
 				});

@@ -311,6 +311,9 @@ angular
 				dirty = true;
 				return this;
 			},
+			setCent : function(centId, config){
+				return this.setString('c' + centId, config);
+			},
 			setSet : function(setId, config){
 				if(virtual.setGains[setId] && config.hasOwnProperty('volume')){
 					virtual.setGains[setId].gain.value = config.volume;
@@ -336,6 +339,9 @@ angular
 				dirty = true;
 				return this;
 			},
+			addCent : function(centId, setId, config){
+				return this.addString('c' + centId, setId, config);
+			},
 			addSet : function(setId, config){
 				virtual.setGains[setId] = {
 					gain : {
@@ -351,6 +357,9 @@ angular
 				delete virtual.stringGains[stringId];
 				dirty = true;
 				return this;
+			},
+			removeCent : function(centId){
+				return this.removeString('c' + centId);
 			},
 			removeSet : function(setId){
 				delete virtual.setGains[setId];
