@@ -9,14 +9,14 @@ $scope.sets = [{
 		cents : <float>,
 		muted : <bool>,
 		volume : 0..100,
-		type : <string> // Math.strings.VALID_TYPES
+		type : <string>
 	}, ...],
 	strings : [{
 		id : <int>, // stringId
 		multiplier : lowestHarmonic..highestHarmonic,
 		muted : <bool>,
 		volume : 0..100,
-		type : <string> // Math.strings.VALID_TYPES
+		type : <string>
 	}, ...],
 	retune : {}
 }, ...];
