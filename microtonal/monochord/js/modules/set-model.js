@@ -3,7 +3,6 @@ $scope.sets = [{
 	id : <int>,	// setId
 	muted : <bool>,
 	volume : 0..100,
-	isJustRatio : <bool>,
 	cents : [{
 		id : <int>, // centId
 		cents : <float>,
@@ -40,15 +39,14 @@ angular
 			};
 			
 			this.sets = {
-				add : function(volume, muted, isJustRatio){
+				add : function(volume, muted){
 					sets.push({
 						id : ++lastSetId,
 						retune : {},
 						strings : [],
 						cents : [],
 						volume : typeof volume !== 'undefined' ? volume : 100,
-						muted : typeof muted !== 'undefined' ? muted : false,
-						isJustRatio : typeof isJustRatio !== 'undefined' ? isJustRatio : true
+						muted : typeof muted !== 'undefined' ? muted : false
 					});
 					return lastSetId;
 				},
