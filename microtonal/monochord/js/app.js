@@ -14,7 +14,7 @@ angular
 		// --------------
 		
 		$scope.baseVolume = 30;
-		$scope.baseFrequency = 100;
+		$scope.baseFrequency = 200;
 		$scope.sets = [];
 		
 		var model = new SetModel($scope, {
@@ -22,31 +22,6 @@ angular
 			baseFrequency : 'baseFrequency',
 			baseVolume : 'baseVolume'
 		});
-		
-		/*
-		// My example scale:
-		var scale = [
-			[1, 1], // 1:1
-			400,    // 400 cent
-			[3, 2], // 3:2
-			[2, 1]  // 2:1
-		];
-		
-		setTimeout(function(){
-			scale.forEach(function(element){
-				var setId = model.sets.add(100, false);
-				if(Array.isArray(element)){
-					element.forEach(function(ratio, index){
-						model.strings.add(setId, ratio, 100, index !== 0);
-					});
-				}else{
-					model.cents.add(setId, element, 100, false);
-				}
-			});
-			
-			model.commit();
-		}, 100);
-		*/
 		
 		// --------------
 		
@@ -72,11 +47,15 @@ angular
 		
 		/*
 		example retuning definition:
-			"retune the current SET's lowest string to the previous SET's highest"
+			"retune the current SET's lowest string to the previous SET's highest ..."
+			"... if there is no previous, then use baseFrequency"
 				subject = sets.filter(id == CURRENT).get(0);
 				subject.string = subject.strings.sort(by multiplier, asc).get(0);
-				target = sets.filter(id < subject.id).get(-1);
-				target.string = target.strings.sort(by multiplier, desc).get(0);
+				
+				_previousSets = sets.filter(id < subject.id);
+				if(_previousSets.length){
+					target = _previousSets.get(_previousSets.length - 1);
+					target.string = target.strings.sort(by multiplier, desc).get(0);
 		*/
 	}])
 ;
