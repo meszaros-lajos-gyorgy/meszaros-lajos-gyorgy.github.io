@@ -29,8 +29,10 @@ angular
 		//   default: off
 		//   default for new: inherit(from default)
 		
+		var setId;
+		
 		setTimeout(function(){
-			var setId = model.sets.add();
+			setId = model.sets.add();
 			
 			model.strings.add(setId, 2);
 			model.strings.add(setId, 3);
