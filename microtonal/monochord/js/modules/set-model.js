@@ -17,12 +17,12 @@ $scope.sets = [{
 		volume : 0..100,
 		type : <string>
 	}, ...],
-	retune : {}
+	retune : <string>
 }, ...];
 */
 angular
-	.module('SetModel', ['Math', 'AudioModel'])
-	.factory('SetModel', ['math', 'audioModel', function(math, audioModel){
+	.module('SetModel', ['Math', 'AudioModel', 'Retune'])
+	.factory('SetModel', ['math', 'audioModel', 'retune', function(math, audioModel, retune){
 		'use strict';
 		
 		return function($scope, models){

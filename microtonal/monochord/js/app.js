@@ -57,5 +57,13 @@ angular
 					target = _previousSets.get(_previousSets.length - 1);
 					target.string = target.strings.sort(by multiplier, desc).get(0);
 		*/
+		
+		setTimeout(function(){
+			model.sets.findById(setId, function(set){
+				set.retune = 'lowestToBaseFreq';
+			});
+			
+			model.commit();
+		}, 1000);
 	}])
 ;
