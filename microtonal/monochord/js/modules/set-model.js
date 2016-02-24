@@ -157,6 +157,7 @@ angular
 				}
 			};
 			
+			/*
 			this.harmonics = {
 				getMultipliers : function(set){
 					var multipliers = [];
@@ -255,6 +256,7 @@ angular
 					});
 				}
 			};
+			*/
 			
 			this.calculate = {
 				baseFrequency : function(id, type, set, stack){

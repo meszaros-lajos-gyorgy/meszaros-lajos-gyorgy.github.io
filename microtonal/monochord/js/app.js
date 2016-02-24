@@ -6,6 +6,7 @@ angular
 			.load()
 			.then(function(data){
 				$scope.presets = data;
+				$scope.$apply();
 			})
 		;
 		*/
@@ -21,20 +22,6 @@ angular
 			baseFrequency : 'baseFrequency',
 			baseVolume : 'baseVolume'
 		});
-		
-		/*
-		setTimeout(function(){
-			// JI:
-			var setId = model.sets.add(100, false, true);
-			model.strings.add(setId, 9, 100, false);
-			
-			// cents:
-			var setId = model.sets.add(100, false, false);
-			model.cents.add(setId, 3600 + 200, 100, false);
-			
-			model.commit();
-		}, 100);
-		*/
 		
 		// My example scale:
 		var scale = [
