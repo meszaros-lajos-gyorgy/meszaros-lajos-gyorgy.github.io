@@ -14,7 +14,7 @@ angular
 		// --------------
 		
 		$scope.baseVolume = 30;
-		$scope.baseFrequency = 400;
+		$scope.baseFrequency = 200;
 		$scope.sets = [];
 		
 		var model = new SetModel($scope, {
@@ -30,12 +30,13 @@ angular
 		setTimeout(function(){
 			setId = model.sets.add();
 			
-			/*
 			model.strings.add(setId, 2);
 			model.strings.add(setId, 3);
-			*/
 			
-			model.cents.add(setId, 702);
+			/*
+			model.cents.add(setId, 400);
+			model.cents.add(setId, 700);
+			*/
 			
 			model.commit();
 		}, 0);
@@ -88,10 +89,26 @@ set2:500Hz, 750Hz
 
 [Cents]
 
-set:{400, 700}  // retune:off
+set:{400¢, 700¢}  // retune:off; could be converted to ratio: {1.2599, 1.4983}
 ---------------
 set:125.99Hz, 149.83Hz
 
-The above set of cents could be defined as a ratio:
-set:{100, 125.99, 149.83}  // retune:lowest to base frequency; mute:1st
+
+set:{400¢, 700¢}  // retune:lowest to base frequency
+---------------
+set:100Hz, 118.92Hz
+
+
+set:{400¢, 700¢}  // retune:highest to base frequency
+---------------
+set:84.08Hz, 100Hz
+
+==================================
+
+String multipliers actually indicate ratios on their own:
+3, 4, 5 are actually three ratios, namingly 1:3, 1:4 and 1:5
+
+Cents' being ratios are more straightforward:
+400¢, 700¢ are actually 1:1.2599, 1:1.4983
+
 */
