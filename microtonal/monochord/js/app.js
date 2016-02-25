@@ -88,5 +88,10 @@ set2:500Hz, 750Hz
 
 [Cents]
 
+set:{400, 700}  // retune:off
+---------------
+set:125.99Hz, 149.83Hz
 
+The above set of cents could be defined as a ratio:
+set:{100, 125.99, 149.83}  // retune:lowest to base frequency; mute:1st
 */
