@@ -25,27 +25,20 @@ angular
 		
 		// --------------
 		
-		// retuning:
-		//   default: off
-		//   default for new: inherit(from default)
-		
 		var setId;
 		
 		setTimeout(function(){
 			setId = model.sets.add();
 			
+			/*
 			model.strings.add(setId, 2);
 			model.strings.add(setId, 3);
+			*/
+			
+			model.cents.add(setId, 702);
 			
 			model.commit();
 		}, 0);
-		
-		// retuning:
-		//   chaning 'default for new' now will not affect current sets, just future ones
-		
-		// returning:
-		//   set#1: will inherit from 'default for new'
-		//          since it's inherit by default, it will inherit from 'default'
 		
 		setTimeout(function(){
 			model.sets.findById(setId, function(set){
@@ -63,3 +56,37 @@ angular
 		}, 1000);
 	}])
 ;
+
+/*
+## About retuning
+
+base frequency:100Hz
+
+[Strings]
+
+set:{3, 4, 5}  // retune:off
+--------------
+set:300Hz, 400Hz, 500Hz
+
+
+set:{3, 4, 5}  // retune:lowest to base frequency
+--------------
+set:100Hz, 133.3Hz, 166.6Hz
+
+
+set:{3, 4, 5}  // retune:highest to base frequency
+--------------
+set:60Hz, 80Hz, 100Hz
+
+
+set1:{3, 4, 5}  // retune:off
+set2:{2, 3}     // retune:lowest to previous' highest
+--------------
+set1:300Hz, 400Hz, 500Hz
+set2:500Hz, 750Hz
+
+
+[Cents]
+
+
+*/

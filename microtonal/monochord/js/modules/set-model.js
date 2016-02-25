@@ -42,7 +42,7 @@ angular
 				add : function(volume, muted){
 					sets.push({
 						id : ++lastSetId,
-						retune : 'inherit',
+						retune : defaultForNewRetuneMethod,
 						strings : [],
 						cents : [],
 						volume : typeof volume !== 'undefined' ? volume : 100,
@@ -126,7 +126,7 @@ angular
 					self.sets.findById(setId, function(set){
 						set.cents.push({
 							id : ++lastStringId,
-							cents : cents || 0,
+							cents : cents || 0.0,
 							volume : typeof volume !== 'undefined' ? volume : 100,
 							muted : typeof muted !== 'undefined' ? muted : false,
 							type : 'sine'
@@ -156,25 +156,24 @@ angular
 			};
 			
 			this.harmonics = {
-				// todo!!! Update these to cent values too!!!!!
-				getMultipliers : function(set, type){
+				getMultipliers : function(set){
 					var multipliers = [];
-					set[type + 's'].forEach(function(element){
-						multipliers.push(element.multiplier); // no multiplier for cents
+					set.strings.forEach(function(string){
+						multipliers.push(string.multiplier);
 					});
 					return multipliers;
 				},
 				findInSet : function(set, harmonic, run){
-					set[type + 's'].some(function(element, index, array){
-						if(element.multiplier === harmonic){
+					set.strings.some(function(string, index, array){
+						if(string.multiplier === harmonic){
 							run(string, index, array, set);
 							return true;
 						}
 					});
 				},
 				
-				getLowest : function(set, type){
-					return self.harmonics.getMultipliers(set, type).sort(function(a, b){
+				getLowest : function(set){
+					return self.harmonics.getMultipliers(set).sort(function(a, b){
 						return a - b;
 					})[0];
 				},
@@ -205,8 +204,8 @@ angular
 					});
 				},
 				
-				getHighest : function(set, type){
-					return self.harmonics.getMultipliers(set, type).sort(function(a, b){
+				getHighest : function(set){
+					return self.harmonics.getMultipliers(set).sort(function(a, b){
 						return b - a;
 					})[0];
 				},
@@ -272,14 +271,23 @@ angular
 					return to;
 				},
 				lowestToBaseFreq : function(set, type, to){
-					return to / self.harmonics.getLowest(set, type);
+					if(type === 'string'){
+						return to / self.harmonics.getLowest(set);
+					}else if(type === 'cent'){
+						return to;
+					}
 				},
 				highestToBaseFreq : function(set, type, to){
-					return to / self.harmonics.getHighest(set, type);
+					if(type === 'string'){
+						return to / self.harmonics.getHighest(set);
+					}else if(type === 'cent'){
+						return to;
+					}
 				}
 			};
 			
 			var defaultRetuneMethod = 'off';
+			var defaultForNewRetuneMethod = 'inherit';
 			
 			this.calculate = {
 				baseFrequency : function(set, type){
