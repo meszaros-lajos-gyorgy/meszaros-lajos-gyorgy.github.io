@@ -21,8 +21,8 @@ $scope.sets = [{
 }, ...];
 */
 angular
-	.module('SetModel', ['Math', 'AudioModel', 'Retune'])
-	.factory('SetModel', ['math', 'audioModel', 'retune', function(math, audioModel, retune){
+	.module('SetModel', ['Math', 'AudioModel'])
+	.factory('SetModel', ['math', 'audioModel', function(math, audioModel){
 		'use strict';
 		
 		return function($scope, models){
@@ -42,7 +42,7 @@ angular
 				add : function(volume, muted){
 					sets.push({
 						id : ++lastSetId,
-						retune : {},
+						retune : 'inherit',
 						strings : [],
 						cents : [],
 						volume : typeof volume !== 'undefined' ? volume : 100,
@@ -155,26 +155,26 @@ angular
 				}
 			};
 			
-			/*
 			this.harmonics = {
-				getMultipliers : function(set){
+				// todo!!! Update these to cent values too!!!!!
+				getMultipliers : function(set, type){
 					var multipliers = [];
-					set.strings.forEach(function(string){
-						multipliers.push(string.multiplier);
+					set[type + 's'].forEach(function(element){
+						multipliers.push(element.multiplier); // no multiplier for cents
 					});
 					return multipliers;
 				},
 				findInSet : function(set, harmonic, run){
-					set.strings.some(function(string, index, array){
-						if(string.multiplier === harmonic){
+					set[type + 's'].some(function(element, index, array){
+						if(element.multiplier === harmonic){
 							run(string, index, array, set);
 							return true;
 						}
 					});
 				},
 				
-				getLowest : function(set){
-					return self.harmonics.getMultipliers(set).sort(function(a, b){
+				getLowest : function(set, type){
+					return self.harmonics.getMultipliers(set, type).sort(function(a, b){
 						return a - b;
 					})[0];
 				},
@@ -205,8 +205,8 @@ angular
 					});
 				},
 				
-				getHighest : function(set){
-					return self.harmonics.getMultipliers(set).sort(function(a, b){
+				getHighest : function(set, type){
+					return self.harmonics.getMultipliers(set, type).sort(function(a, b){
 						return b - a;
 					})[0];
 				},
@@ -254,11 +254,46 @@ angular
 					});
 				}
 			};
+			
+			/*
+			example retuning definition:
+				"retune the current SET's lowest string to the previous SET's highest ..."
+				"... if there is no previous, then use baseFrequency"
+					subject = sets.filter(id == CURRENT).get(0);
+					subject.string = subject.strings.sort(by multiplier, asc).get(0);
+					
+					_previousSets = sets.filter(id < subject.id);
+					if(_previousSets.length){
+						target = _previousSets.get(_previousSets.length - 1);
+						target.string = target.strings.sort(by multiplier, desc).get(0);
 			*/
+			var retune = {
+				off : function(set, type, to){
+					return to;
+				},
+				lowestToBaseFreq : function(set, type, to){
+					return to / self.harmonics.getLowest(set, type);
+				},
+				highestToBaseFreq : function(set, type, to){
+					return to / self.harmonics.getHighest(set, type);
+				}
+			};
+			
+			var defaultRetuneMethod = 'off';
 			
 			this.calculate = {
-				baseFrequency : function(id, type, set, stack){
-					var baseFreq;
+				baseFrequency : function(set, type){
+					var method = set.retune;
+					if(method === 'inherit'){
+						method = defaultRetuneMethod;
+					}
+					if(!retune[method]){
+						method = 'off';
+					}
+					
+					var to = $scope[models.baseFrequency];
+					
+					return retune[method](set, type, to);
 					
 					// if(set.retune.target > 0){
 						// stack = stack || [];
@@ -270,35 +305,13 @@ angular
 							// baseFreq = calculateFrequency(set.retune.target, stack);
 						// }
 					// }else{
-						baseFreq = $scope[models.baseFrequency];
+						// baseFreq = $scope[models.baseFrequency];
 					// }
 					
 					// if(set.retune.type !== 'off'){
 						// var retunedBaseFreq;
 						
 						// switch(set.retune.type){
-							// case 'lowest' : {
-								// var ratios = [];
-								// set.strings.forEach(function(string){
-									// ratios.push(string.multiplier);
-								// });
-								// ratios = ratios.sort(function(a, b){
-									// return a - b;
-								// });
-								// retunedBaseFreq = baseFreq / ratios[0];
-								// break;
-							// }
-							// case 'highest' : {
-								// var ratios = [];
-								// set.strings.forEach(function(string){
-									// ratios.push(string.multiplier);
-								// });
-								// ratios = ratios.sort(function(a, b){
-									// return b - a;
-								// });
-								// retunedBaseFreq = baseFreq / ratios[0];
-								// break;
-							// }
 							// case 'manual' : {
 								// if(set.retune.subject > 0){
 									// findStringById(set.retune.subject, function(string){
@@ -313,10 +326,8 @@ angular
 						
 						// baseFreq = retunedBaseFreq;
 					// }
-					
-					return baseFreq;
 				},
-				frequency : function(id, type, stack){
+				frequency : function(id, type){
 					if(type !== 'string' && type !== 'cent'){
 						return 0;
 					}
@@ -324,7 +335,7 @@ angular
 					var freq;
 					
 					self[type + 's'].findById(id, function(element, index, array, set){
-						freq = self.calculate.baseFrequency(id, type, set, stack)
+						freq = self.calculate.baseFrequency(set, type)
 						if(type === 'string'){
 							freq *= element.multiplier;
 						}else if(type === 'cent'){

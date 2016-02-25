@@ -14,7 +14,7 @@ angular
 		// --------------
 		
 		$scope.baseVolume = 30;
-		$scope.baseFrequency = 200;
+		$scope.baseFrequency = 400;
 		$scope.sets = [];
 		
 		var model = new SetModel($scope, {
@@ -47,25 +47,19 @@ angular
 		//   set#1: will inherit from 'default for new'
 		//          since it's inherit by default, it will inherit from 'default'
 		
-		/*
-		example retuning definition:
-			"retune the current SET's lowest string to the previous SET's highest ..."
-			"... if there is no previous, then use baseFrequency"
-				subject = sets.filter(id == CURRENT).get(0);
-				subject.string = subject.strings.sort(by multiplier, asc).get(0);
-				
-				_previousSets = sets.filter(id < subject.id);
-				if(_previousSets.length){
-					target = _previousSets.get(_previousSets.length - 1);
-					target.string = target.strings.sort(by multiplier, desc).get(0);
-		*/
-		
 		setTimeout(function(){
 			model.sets.findById(setId, function(set){
 				set.retune = 'lowestToBaseFreq';
 			});
 			
 			model.commit();
+			setTimeout(function(){
+				model.sets.findById(setId, function(set){
+					set.retune = 'highestToBaseFreq';
+				});
+				
+				model.commit();
+			}, 1000);
 		}, 1000);
 	}])
 ;
