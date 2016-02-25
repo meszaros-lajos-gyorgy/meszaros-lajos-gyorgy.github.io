@@ -156,11 +156,17 @@ angular
 			};
 			
 			this.harmonics = {
-				getMultipliers : function(set){
+				getMultipliers : function(set, type){
 					var multipliers = [];
-					set.strings.forEach(function(string){
-						multipliers.push(string.multiplier);
-					});
+					if(type === 'string'){
+						set.strings.foreach(function(string){
+							multipliers.push(string.multiplier);
+						});
+					}else if(type === 'cent'){
+						set.cents.forEach(function(cent){
+							multipliers.push(cent.cents);
+						});
+					}
 					return multipliers;
 				},
 				findInSet : function(set, harmonic, run){
@@ -172,8 +178,8 @@ angular
 					});
 				},
 				
-				getLowest : function(set){
-					return self.harmonics.getMultipliers(set).sort(function(a, b){
+				getLowest : function(set, type){
+					return self.harmonics.getMultipliers(set, type).sort(function(a, b){
 						return a - b;
 					})[0];
 				},
@@ -204,8 +210,8 @@ angular
 					});
 				},
 				
-				getHighest : function(set){
-					return self.harmonics.getMultipliers(set).sort(function(a, b){
+				getHighest : function(set, type){
+					return self.harmonics.getMultipliers(set, type).sort(function(a, b){
 						return b - a;
 					})[0];
 				},
@@ -271,18 +277,18 @@ angular
 					return to;
 				},
 				lowestToBaseFreq : function(set, type, to){
-					if(type === 'string'){
-						return to / self.harmonics.getLowest(set);
-					}else if(type === 'cent'){
-						return to;
+					var divisor = self.harmonics.getLowest(set, type);
+					if(type === 'cent'){
+						divisor = math.centsToFraction(divisor);
 					}
+					return to / divisor;
 				},
 				highestToBaseFreq : function(set, type, to){
-					if(type === 'string'){
-						return to / self.harmonics.getHighest(set);
-					}else if(type === 'cent'){
-						return to;
+					var divisor = self.harmonics.getHighest(set, type);
+					if(type === 'cent'){
+						divisor = math.centsToFraction(divisor);
 					}
+					return to / divisor;
 				}
 			};
 			
@@ -350,6 +356,8 @@ angular
 							freq *= math.centsToFraction(element.cents);
 						}
 					});
+					
+					console.log(id, type, freq); /**//**/
 					
 					return freq;
 				},

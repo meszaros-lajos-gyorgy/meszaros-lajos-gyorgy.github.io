@@ -14,7 +14,7 @@ angular
 		// --------------
 		
 		$scope.baseVolume = 30;
-		$scope.baseFrequency = 200;
+		$scope.baseFrequency = 300;
 		$scope.sets = [];
 		
 		var model = new SetModel($scope, {
@@ -30,13 +30,11 @@ angular
 		setTimeout(function(){
 			setId = model.sets.add();
 			
-			model.strings.add(setId, 2);
-			model.strings.add(setId, 3);
+			// model.strings.add(setId, 2);
+			// model.strings.add(setId, 3);
 			
-			/*
 			model.cents.add(setId, 400);
 			model.cents.add(setId, 700);
-			*/
 			
 			model.commit();
 		}, 0);
@@ -110,5 +108,4 @@ String multipliers actually indicate ratios on their own:
 
 Cents' being ratios are more straightforward:
 400¢, 700¢ are actually 1:1.2599, 1:1.4983
-
 */
