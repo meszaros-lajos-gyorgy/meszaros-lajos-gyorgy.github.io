@@ -5,7 +5,7 @@ $scope.sets = [{
 	volume : 0..100,
 	cents : [{
 		id : <int>, // centId
-		cents : <float>,
+		multiplier : <float>,
 		muted : <bool>,
 		volume : 0..100,
 		type : <string>
@@ -126,7 +126,7 @@ angular
 					self.sets.findById(setId, function(set){
 						set.cents.push({
 							id : ++lastStringId,
-							cents : cents || 0.0,
+							multiplier : cents || 0.0,
 							volume : typeof volume !== 'undefined' ? volume : 100,
 							muted : typeof muted !== 'undefined' ? muted : false,
 							type : 'sine'
@@ -158,24 +158,26 @@ angular
 			this.harmonics = {
 				getMultipliers : function(set, type){
 					var multipliers = [];
-					if(type === 'string'){
-						set.strings.foreach(function(string){
-							multipliers.push(string.multiplier);
-						});
-					}else if(type === 'cent'){
-						set.cents.forEach(function(cent){
-							multipliers.push(cent.cents);
-						});
-					}
+					set[type + 's'].forEach(function(element){
+						multipliers.push(element.multiplier);
+					});
 					return multipliers;
 				},
 				findInSet : function(set, harmonic, run){
-					set.strings.some(function(string, index, array){
+					var found = set.strings.some(function(string, index, array){
 						if(string.multiplier === harmonic){
 							run(string, index, array, set);
 							return true;
 						}
 					});
+					if(!found){
+						set.cents.some(function(cent, index, array){
+							if(cent.multiplier === harmonic){
+								run(cent, index, array, set);
+								return true;
+							}
+						});
+					}
 				},
 				
 				getLowest : function(set, type){
@@ -353,7 +355,7 @@ angular
 						if(type === 'string'){
 							freq *= element.multiplier;
 						}else if(type === 'cent'){
-							freq *= math.centsToFraction(element.cents);
+							freq *= math.centsToFraction(element.multiplier);
 						}
 					});
 					
