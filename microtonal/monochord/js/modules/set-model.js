@@ -294,10 +294,6 @@ angular
 						|| (canRaiseString && canRaiseCent)
 					);
 				},
-				
-				
-				
-				
 				raise : function(setId, by){
 					if(!Number.isInteger(by) || by <= 0){
 						by = 1;
@@ -364,22 +360,22 @@ angular
 			*/
 			// todo: safety checks
 			var retune = {
-				off : function(set, type, to){
-					return to;
+				off : function(set, type){
+					return $scope[models.baseFrequency];
 				},
-				lowestToBaseFreq : function(set, type, to){
+				lowestToBaseFreq : function(set, type){
 					var divisor = self.harmonics.getLowest(set, type);
 					if(type === 'cent'){
 						divisor = math.centsToFraction(divisor);
 					}
-					return to / divisor;
+					return $scope[models.baseFrequency] / divisor;
 				},
-				highestToBaseFreq : function(set, type, to){
+				highestToBaseFreq : function(set, type){
 					var divisor = self.harmonics.getHighest(set, type);
 					if(type === 'cent'){
 						divisor = math.centsToFraction(divisor);
 					}
-					return to / divisor;
+					return $scope[models.baseFrequency] / divisor;
 				}
 			};
 			
@@ -396,9 +392,7 @@ angular
 						method = 'off';
 					}
 					
-					var to = $scope[models.baseFrequency];
-					
-					return retune[method](set, type, to);
+					return retune[method](set, type);
 					
 					// if(set.retune.target > 0){
 						// stack = stack || [];
