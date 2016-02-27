@@ -257,7 +257,7 @@ angular
 				
 				getHighest : function(set, type){
 					var multipliers = self.harmonics.getMultipliers(set, type);
-					if(multipliers.length){
+					if(!multipliers.length){
 						return null;
 					}
 					return multipliers.sort(function(a, b){
