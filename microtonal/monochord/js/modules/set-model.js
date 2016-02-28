@@ -346,18 +346,7 @@ angular
 				*/
 			};
 			
-			/*
-			example retuning definition:
-				"retune the current SET's lowest string to the previous SET's highest ..."
-				"... if there is no previous, then use baseFrequency"
-					subject = sets.filter(id == CURRENT).get(0);
-					subject.string = subject.strings.sort(by multiplier, asc).get(0);
-					
-					_previousSets = sets.filter(id < subject.id);
-					if(_previousSets.length){
-						target = _previousSets.get(_previousSets.length - 1);
-						target.string = target.strings.sort(by multiplier, desc).get(0);
-			*/
+			// todo: these are only relative tunings, do we need absolute ones?
 			var retune = {
 				off : function(){
 					return $scope[models.baseFrequency];
@@ -391,6 +380,10 @@ angular
 				lowestToPrevHighest : function(set, type){
 					var to = $scope[models.baseFrequency];
 					
+					// todo:
+					// this is extremely slow here, might need to make the methods below a bit smarter
+					// so they can take both ID-s and actual set/string/cent datas
+					// also need to make some documentation on the methods soon, gonna get a bit clunky
 					self.sets.findPrevious(set.id, function(prevSet){
 						var divisor = self.harmonics.getHighest(prevSet, type);
 						if(divisor === null){
