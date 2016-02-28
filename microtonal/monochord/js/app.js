@@ -25,32 +25,21 @@ angular
 		
 		// --------------
 		
-		var setId;
-		
 		setTimeout(function(){
-			setId = model.sets.add();
-			
-			// model.strings.add(setId, 2);
-			// model.strings.add(setId, 3);
-			
-			model.cents.add(setId, 400);
-			model.cents.add(setId, 700);
-			
+			model.cents.add(model.sets.add(), 70);
 			model.commit();
 		}, 0);
 		
 		setTimeout(function(){
-			model.sets.findById(setId, function(set){
-				set.retune = 'lowestToBaseFreq';
-			});
-			
+			model.cents.add(model.sets.add(), 70);
 			model.commit();
 			setTimeout(function(){
-				model.sets.findById(setId, function(set){
-					set.retune = 'highestToBaseFreq';
-				});
-				
+				model.cents.add(model.sets.add(), 70);
 				model.commit();
+				setTimeout(function(){
+					model.cents.add(model.sets.add(), 70);
+					model.commit();
+				}, 1000);
 			}, 1000);
 		}, 1000);
 	}])

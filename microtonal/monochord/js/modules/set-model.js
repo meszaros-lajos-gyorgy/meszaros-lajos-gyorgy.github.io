@@ -358,28 +358,72 @@ angular
 						target = _previousSets.get(_previousSets.length - 1);
 						target.string = target.strings.sort(by multiplier, desc).get(0);
 			*/
-			// todo: safety checks
 			var retune = {
-				off : function(set, type){
+				off : function(){
 					return $scope[models.baseFrequency];
 				},
 				lowestToBaseFreq : function(set, type){
 					var divisor = self.harmonics.getLowest(set, type);
+					if(divisor === null){
+						return 0;
+					}
 					if(type === 'cent'){
 						divisor = math.centsToFraction(divisor);
+					}
+					if(divisor === 0){
+						return 0;
 					}
 					return $scope[models.baseFrequency] / divisor;
 				},
 				highestToBaseFreq : function(set, type){
 					var divisor = self.harmonics.getHighest(set, type);
+					if(divisor === null){
+						return 0;
+					}
 					if(type === 'cent'){
 						divisor = math.centsToFraction(divisor);
 					}
+					if(divisor === 0){
+						return 0;
+					}
 					return $scope[models.baseFrequency] / divisor;
+				},
+				lowestToPrevHighest : function(set, type){
+					var to = $scope[models.baseFrequency];
+					
+					self.sets.findPrevious(set.id, function(prevSet){
+						// ...
+					});
+					
+					// if(set.retune.target > 0){
+						// stack = stack || [];
+						// if(stack.indexOf(stringId) !== -1){
+							// alert('Infinite normalization target loop! There are no sets, that retune to the default baseFrequency!');
+							// return 0;
+						// }else{
+							// stack.push(stringId);
+							// to = calculateFrequency(set.retune.target, stack);
+						// }
+					// }else{
+						// to = $scope[models.baseFrequency];
+					// }
+					
+					var divisor = self.harmonics.getLowest(set, type);
+					if(divisor === null){
+						return 0;
+					}
+					if(type === 'cent'){
+						divisor = math.centsToFraction(divisor);
+					}
+					if(divisor === 0){
+						return 0;
+					}
+					
+					return to / divisor;
 				}
 			};
 			
-			var defaultRetuneMethod = 'off';
+			var defaultRetuneMethod = 'lowestToPrevHighest';
 			var defaultForNewRetuneMethod = 'inherit';
 			
 			this.calculate = {
@@ -393,38 +437,6 @@ angular
 					}
 					
 					return retune[method](set, type);
-					
-					// if(set.retune.target > 0){
-						// stack = stack || [];
-						// if(stack.indexOf(stringId) !== -1){
-							// alert('Infinite normalization target loop! There are no sets, that retune to the default baseFrequency!');
-							// return 0;
-						// }else{
-							// stack.push(stringId);
-							// baseFreq = calculateFrequency(set.retune.target, stack);
-						// }
-					// }else{
-						// baseFreq = $scope[models.baseFrequency];
-					// }
-					
-					// if(set.retune.type !== 'off'){
-						// var retunedBaseFreq;
-						
-						// switch(set.retune.type){
-							// case 'manual' : {
-								// if(set.retune.subject > 0){
-									// findStringById(set.retune.subject, function(string){
-										// retunedBaseFreq = baseFreq / string.multiplier;
-									// })
-								// }else{
-									// retunedBaseFreq = baseFreq;
-								// }
-								// break;
-							// }
-						// }
-						
-						// baseFreq = retunedBaseFreq;
-					// }
 				},
 				frequency : function(id, type){
 					if(type !== 'string' && type !== 'cent'){
