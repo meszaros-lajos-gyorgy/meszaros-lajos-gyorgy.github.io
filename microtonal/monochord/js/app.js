@@ -14,34 +14,68 @@ angular
 		// --------------
 		
 		$scope.baseVolume = 30;
-		$scope.baseFrequency = 300;
+		$scope.baseFrequency = 100;
 		$scope.sets = [];
+		$scope.retune = {
+			default : 'lowestToPrevHighest',
+			defaultForNew : 'inherit'
+		};
 		
 		var model = new SetModel($scope, {
 			sets : 'sets',
 			baseFrequency : 'baseFrequency',
-			baseVolume : 'baseVolume'
+			baseVolume : 'baseVolume',
+			retune : 'retune'
 		});
 		
 		// --------------
 		
-		setTimeout(function(){
-			model.cents.add(model.sets.add(), 70);
-			model.commit();
-		}, 0);
+		var step = 700;
 		
 		setTimeout(function(){
-			model.cents.add(model.sets.add(), 70);
+			var setId = model.sets.add();
+			model.cents.add(setId, 0, 100, true);
+			model.cents.add(setId, step);
+			
 			model.commit();
 			setTimeout(function(){
-				model.cents.add(model.sets.add(), 70);
+				var setId = model.sets.add();
+				model.cents.add(setId, 0, 100, true);
+				model.cents.add(setId, step);
 				model.commit();
 				setTimeout(function(){
-					model.cents.add(model.sets.add(), 70);
+					var setId = model.sets.add();
+					model.cents.add(setId, 0, 100, true);
+					model.cents.add(setId, step);
 					model.commit();
+					setTimeout(function(){
+						var setId = model.sets.add();
+						model.cents.add(setId, 0, 100, true);
+						model.cents.add(setId, step);
+						model.commit();
+					}, 1000);
 				}, 1000);
 			}, 1000);
-		}, 1000);
+		}, 0);
+		
+		/*
+		setTimeout(function(){
+			var setId = model.sets.add();
+			
+			model.cents.add(setId, 400);
+			model.cents.add(setId, 700);
+			
+			model.commit();
+			setInterval(function(){
+				if($scope.retune.default === 'lowestToBaseFreq'){
+					$scope.retune.default = 'highestToBaseFreq';
+				}else{
+					$scope.retune.default = 'lowestToBaseFreq';
+				}
+				$scope.$apply();
+			}, 1000);
+		}, 0);
+		*/
 	}])
 ;
 

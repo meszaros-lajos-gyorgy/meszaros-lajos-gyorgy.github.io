@@ -44,7 +44,7 @@ angular
 				add : function(volume, muted){
 					sets.push({
 						id : ++lastSetId,
-						retune : defaultForNewRetuneMethod,
+						retune : $scope[models.retune].defaultForNew,
 						strings : [],
 						cents : [],
 						volume : typeof volume !== 'undefined' ? volume : 100,
@@ -161,14 +161,14 @@ angular
 				findInSet : function(set, harmonic, run){
 					var found = set.strings.some(function(string, index, array){
 						if(string.multiplier === harmonic){
-							run(string, index, array, set);
+							run(string, 'string', index, array, set);
 							return true;
 						}
 					});
 					if(!found){
 						set.cents.some(function(cent, index, array){
 							if(cent.multiplier === harmonic){
-								run(cent, index, array, set);
+								run(cent, 'cent', index, array, set);
 								return true;
 							}
 						});
@@ -392,21 +392,14 @@ angular
 					var to = $scope[models.baseFrequency];
 					
 					self.sets.findPrevious(set.id, function(prevSet){
-						// ...
+						var divisor = self.harmonics.getHighest(prevSet, type);
+						if(divisor === null){
+							return ;
+						}
+						self.harmonics.findInSet(prevSet, divisor, function(element, elementType){
+							to = self.calculate.frequency(element.id, elementType);
+						});
 					});
-					
-					// if(set.retune.target > 0){
-						// stack = stack || [];
-						// if(stack.indexOf(stringId) !== -1){
-							// alert('Infinite normalization target loop! There are no sets, that retune to the default baseFrequency!');
-							// return 0;
-						// }else{
-							// stack.push(stringId);
-							// to = calculateFrequency(set.retune.target, stack);
-						// }
-					// }else{
-						// to = $scope[models.baseFrequency];
-					// }
 					
 					var divisor = self.harmonics.getLowest(set, type);
 					if(divisor === null){
@@ -423,14 +416,11 @@ angular
 				}
 			};
 			
-			var defaultRetuneMethod = 'lowestToPrevHighest';
-			var defaultForNewRetuneMethod = 'inherit';
-			
 			this.calculate = {
 				baseFrequency : function(set, type){
 					var method = set.retune;
 					if(method === 'inherit'){
-						method = defaultRetuneMethod;
+						method = $scope[models.retune].default;
 					}
 					if(!retune[method]){
 						method = 'off';
@@ -445,16 +435,15 @@ angular
 					
 					var freq;
 					
+					
 					self[type + 's'].findById(id, function(element, index, array, set){
-						freq = self.calculate.baseFrequency(set, type)
+						freq = self.calculate.baseFrequency(set, type);
 						if(type === 'string'){
 							freq *= element.multiplier;
 						}else if(type === 'cent'){
 							freq *= math.centsToFraction(element.multiplier);
 						}
 					});
-					
-					console.log(id, type, freq); /**//**/
 					
 					return freq;
 				},
@@ -673,6 +662,38 @@ angular
 					.commit()
 				;
 			});
+			
+			$scope.$watch(models.retune, function(newValue, oldValue){
+				if(newValue.default === oldValue.default){
+					return ;
+				}
+				
+				var dirty = false;
+				
+				sets.forEach(function(set){
+					if(set.retune !== 'inherit'){
+						return ;
+					}
+					
+					set.strings.forEach(function(string){
+						dirty = true;
+						audioModel.setString(string.id, {
+							frequency : self.calculate.frequency(string.id, 'string')
+						});
+					});
+					
+					set.cents.forEach(function(cent){
+						dirty = true;
+						audioModel.setCent(cent.id, {
+							frequency : self.calculate.frequency(cent.id, 'cent')
+						});
+					});
+				});
+				
+				if(dirty){
+					audioModel.commit();
+				}
+			}, true)
 		};
 	}])
 ;
