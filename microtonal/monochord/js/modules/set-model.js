@@ -633,20 +633,27 @@ angular
 			}, true);
 			
 			$scope.$watch(models.baseFrequency, function(newValue, oldValue){
+				var dirty = false;
+				
 				sets.forEach(function(set){
 					set.strings.forEach(function(string){
+						dirty = true;
 						audioModel.setString(string.id, {
 							frequency : self.calculate.frequency(string.id, 'string')
 						});
 					});
 					
 					set.cents.forEach(function(cent){
+						dirty = true;
 						audioModel.setCent(cent.id, {
 							frequency : self.calculate.frequency(cent.id, 'cent')
 						});
 					});
 				});
-				audioModel.commit();
+				
+				if(dirty){
+					audioModel.commit();
+				}
 			});
 			
 			$scope.$watch(models.baseVolume, function(newValue, oldValue){
@@ -663,6 +670,7 @@ angular
 				
 				var dirty = false;
 				
+				// todo: can we extract this and the above copy into an "update frequencies" method?
 				sets.forEach(function(set){
 					if(set.retune !== 'inherit'){
 						return ;
