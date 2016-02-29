@@ -428,7 +428,6 @@ angular
 					
 					var freq;
 					
-					
 					self[type + 's'].findById(id, function(element, index, array, set){
 						freq = self.calculate.baseFrequency(set, type);
 						if(type === 'string'){

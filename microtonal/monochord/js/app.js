@@ -57,25 +57,6 @@ angular
 				}, 1000);
 			}, 1000);
 		}, 0);
-		
-		/*
-		setTimeout(function(){
-			var setId = model.sets.add();
-			
-			model.cents.add(setId, 400);
-			model.cents.add(setId, 700);
-			
-			model.commit();
-			setInterval(function(){
-				if($scope.retune.default === 'lowestToBaseFreq'){
-					$scope.retune.default = 'highestToBaseFreq';
-				}else{
-					$scope.retune.default = 'lowestToBaseFreq';
-				}
-				$scope.$apply();
-			}, 1000);
-		}, 0);
-		*/
 	}])
 ;
 
