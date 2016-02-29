@@ -1,6 +1,6 @@
 angular
 	.module('Monochord', ['Presets', 'SetModel', 'Math'])
-	.controller('MonochordCtrl', ['$scope', 'presets', 'SetModel', 'math', function($scope, presets, SetModel, math){
+	.controller('MonochordCtrl', ['$scope', 'presets', 'SetModel', '$http', function($scope, presets, SetModel, $http){
 		/*
 		presets
 			.load()
@@ -30,6 +30,13 @@ angular
 		});
 		*/
 		
-		
+		$http
+			.get('resources/scala-scales/carlos_alpha.scl', {
+				responseType : 'text'
+			})
+			.then(function(response){
+				console.log(response.data);
+			})
+		;
 	}])
 ;
