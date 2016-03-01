@@ -53,8 +53,8 @@ angular
 				var pointer = POINTER_START;
 				var lineCounter = 0;
 				
-				lines.some(function(line, index, array){
-					lineCounter = index;
+				lines.some(function(line){
+					lineCounter++;
 					switch(pointer){
 						case POINTER_START :
 							if(line[0] === '!'){
@@ -101,7 +101,7 @@ angular
 							}
 							break;
 						case POINTER_NOTES :
-							if(line === '' && index === array.length - 1){
+							if(line === '' && lineCounter === lines.length){
 								pointer = POINTER_END;
 							}else if(line[0] !== '!'){
 								return true;
