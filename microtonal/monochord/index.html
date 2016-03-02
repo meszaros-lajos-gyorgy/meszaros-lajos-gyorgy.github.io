@@ -1,11 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Monochord | Experiment with microtonal sounds!</title>
+	<title>The Monochord | Experiment with microtonal sounds!</title>
 	
 	<meta charset="utf-8" />
 	<meta name="description" content="Monochord is an app, where you can experiment with xenharmonic scales, microtonal ratios and tunings. Train your ear, or create your own scale and export it to several formats." />
 	<meta name="viewport" content="width=device-width, user-scalable=no" />
+	
+	<!--
+	<meta property="og:url"           content="http://www.your-domain.com/your-page.html" />
+	<meta property="og:type"          content="website" />
+	<meta property="og:title"         content="Your Website Title" />
+	<meta property="og:description"   content="Your description" />
+	
+	
+	<meta property="og:image" content="http://example.com/ogp.jpg" />
+	<meta property="og:image:secure_url" content="https://secure.example.com/ogp.jpg" />
+	<meta property="og:image:type" content="image/jpeg" />
+	<meta property="og:image:width" content="400" />
+	<meta property="og:image:height" content="300" />
+	-->
 	
 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
 	
@@ -24,7 +38,15 @@
 	<script src="js/modules/presets.js"></script>
 	
 	<script src="js/app.js"></script>
+	
+	<script id="facebook-jssdk" src="//connect.facebook.net/hu_HU/sdk.js#xfbml=1&version=v2.5"></script>
 </head>
-<body ng-app="Monochord" ng-controller="MonochordCtrl as mctrl">
+<body>
+	<div ng-app="Monochord" ng-controller="MonochordCtrl as mctrl">
+	</div>
+	
+	<div class="fb-like" data-href="http://meszaros-lajos-gyorgy.github.io/microtonal/monochord/" data-layout="standard" data-action="like" data-show-faces="false" data-share="false"></div>
+	
+	<div id="fb-root"></div>
 </body>
 </html>
