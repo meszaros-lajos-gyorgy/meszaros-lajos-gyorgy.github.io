@@ -53,16 +53,31 @@ angular
 						break;
 					case POINTER_NOTE_COUNT :
 						if(line[0] !== '!'){
-							// The pitch values:
-							//   each on a separate line, either as a ratio or as a value in cents
-							//   if the value contains a period, it is a cents value, otherwise a ratio
-							//   ratios are written with a slash, and only one
-							//   integer values with no period or slash should be regarded as such, for example "2" should be taken as "2/1"
-							//   numerators and denominators should be supported to at least 2^31-1 = 2147483647
-							//   anything after a valid pitch value should be ignored
-							//   space or horizontal tab characters are allowed and should be ignored
-							//   negative ratios are meaningless and should give a read error
-							data.notes.push(line);
+							var match = line.match(/^\d+[ \t]*(?:\.[ \t]*\d*|\/[ \t]*\d+)?/)
+							
+							if(match === null){
+								return true;
+							}
+							
+							match = match[0];
+							
+							var d = {};
+							
+							if(match.indexOf('.') !== -1){
+								d.type = 'cent';
+								d.multipliers = [0, parseFloat(match)];
+							}else{
+								d.type = 'ratio';
+								d.multipliers = match.split('/');
+								d.multipliers[0] = parseInt(d.multipliers[0]);
+								if(d.multipliers.length === 1){
+									d.multipliers.push(1);
+								}else{
+									d.multipliers[1] = parseInt(d.multipliers[1]);
+								}
+							}
+							
+							data.notes.push(d);
 							
 							if(data.notes.length === data.noteCount){
 								pointer = POINTER_NOTES;
@@ -91,7 +106,10 @@ angular
 					reject(Error('Parse error of the SCL file at line ' + lineCounter + '! Last successfully parsed element was: ' + lastParsedPart[pointer]));
 				}else{
 					data.noteCount++;
-					data.notes.unshift('1/1');
+					data.notes.unshift({
+						type : 'ratio',
+						multipliers : [1, 1]
+					});
 					resolve(data);
 				}
 			});
