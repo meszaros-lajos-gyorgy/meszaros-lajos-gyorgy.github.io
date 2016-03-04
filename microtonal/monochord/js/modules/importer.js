@@ -105,11 +105,13 @@ angular
 					
 					reject(Error('Parse error of the SCL file at line ' + lineCounter + '! Last successfully parsed element was: ' + lastParsedPart[pointer]));
 				}else{
-					data.noteCount++;
-					data.notes.unshift({
-						type : 'ratio',
-						multipliers : [1, 1]
-					});
+					if(!(data.notes[0].type === 'ratio' && data.notes[0].multipliers[0] === 1 && data.notes[0].multipliers[1] === 1)){
+						data.noteCount++;
+						data.notes.unshift({
+							type : 'ratio',
+							multipliers : [1, 1]
+						});
+					}
 					resolve(data);
 				}
 			});
