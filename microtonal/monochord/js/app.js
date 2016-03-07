@@ -1,6 +1,6 @@
 angular
-	.module('Monochord', [/*'Presets',*/ 'SetModel', 'Importer'])
-	.controller('MonochordCtrl', ['$scope', /*'presets',*/ 'SetModel', 'importer', function($scope, /*presets,*/ SetModel, importer){
+	.module('Monochord', ['SetModel', 'Importer'])
+	.controller('MonochordCtrl', ['$scope', 'SetModel', 'importer', function($scope, SetModel, importer){
 		/*
 		presets
 			.load()
