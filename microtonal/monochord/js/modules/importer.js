@@ -53,13 +53,13 @@ angular
 						break;
 					case POINTER_NOTE_COUNT :
 						if(line[0] !== '!'){
-							var match = line.match(/^\d+[ \t]*(?:\.[ \t]*\d*|\/[ \t]*\d+)?/)
+							var match = line.match(/^(\d+[ \t]*(?:\.[ \t]*\d*|\/[ \t]*\d+)?|-\d+\.\d*)(?:[ \t].*)?$/);
 							
 							if(match === null){
 								return true;
 							}
 							
-							match = match[0];
+							match = match[1];
 							
 							var d = {};
 							
