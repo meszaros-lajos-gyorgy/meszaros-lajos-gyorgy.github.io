@@ -26,7 +26,6 @@ angular
 		'use strict';
 		
 		return function($scope, models){
-			var sets = $scope[models.sets];
 			var self = this;
 			
 			var lastSetId = 0;
@@ -41,33 +40,58 @@ angular
 			};
 			
 			this.sets = {
-				add : function(volume, muted){
-					sets.push({
+				// adds a set with given params
+				// @param params : (optional) <object>
+				//   volume : <int:0..100> | 100
+				//   muted : <bool> | false
+				// @returns <int> : id of the created set
+				add : function(params){
+					params = params || {};
+					$scope[models.sets].push({
 						id : ++lastSetId,
 						retune : $scope[models.retune].defaultForNew,
 						strings : [],
 						cents : [],
-						volume : typeof volume !== 'undefined' ? volume : 100,
-						muted : typeof muted !== 'undefined' ? muted : false
+						volume : params.hasOwnProperty('volume') ? params.volume : 100,
+						muted : params.hasOwnProperty('muted') ? params.muted : false
 					});
 					return lastSetId;
 				},
-				remove : function(setId){
-					self.sets.findById(setId, function(set, index, array){
-						array.splice(index, 1);
-					});
+				// removes a set, specified by target
+				// @param target : <object> | <int>
+				//   object should be a valid set from the $scope.sets
+				//   int should be a valid id of a set from $scope.sets
+				remove : function(target){
+					var index;
+					if(Number.isInteger(target)){
+						self.sets.findById(target, function(set, _index){
+							index = _index;
+						});
+					}else{
+						index = $scope[models.sets].indexOf(target);
+					}
+					if(index !== -1){
+						$scope[models.sets].splice(index, 1);
+					}
 				},
+				// finds a set by ID; if found, then calls run
+				// @param setId : <int>
+				// @param run : <function>(set, index, array)
+				//   where set is the found set's data object
+				//   index is the index of set in $scope.sets
+				//   array is $scope.sets
 				findById : function(setId, run){
-					sets.some(function(set, index, array){
+					$scope[models.sets].some(function(set, index, array){
 						if(set.id === setId){
 							run(set, index, array);
 							return true;
 						}
 					});
 				},
-				findPrevious : function(setId, run){
+				findPrevious : function(target, run){
+					var setId = (Number.isInteger(target) ? target : target.id);
 					var prevSet = null;
-					sets.some(function(set){
+					$scope[models.sets].some(function(set){
 						if(set.id === setId && prevSet !== null){
 							run(prevSet);
 							return true;
@@ -76,9 +100,10 @@ angular
 						}
 					});
 				},
-				findNext : function(setId, run){
+				findNext : function(target, run){
+					var setId = (Number.isInteger(target) ? target : target.id);
 					var prevSet = null;
-					sets.some(function(set){
+					$scope[models.sets].some(function(set){
 						if(prevSet !== null && prevSet.id === setId){
 							run(set);
 							return true;
@@ -112,7 +137,7 @@ angular
 					});
 				},
 				findById : function(stringId, run){
-					sets.some(function(set){
+					$scope[models.sets].some(function(set){
 						return set.strings.some(function(string, index, array){
 							if(string.id === stringId){
 								run(string, index, array, set);
@@ -146,7 +171,7 @@ angular
 					});
 				},
 				findById : function(centId, run){
-					sets.some(function(set){
+					$scope[models.sets].some(function(set){
 						return set.cents.some(function(cent, index, array){
 							if(cent.id === centId){
 								run(cent, index, array, set);
@@ -634,7 +659,7 @@ angular
 			$scope.$watch(models.baseFrequency, function(newValue, oldValue){
 				var dirty = false;
 				
-				sets.forEach(function(set){
+				$scope[models.sets].forEach(function(set){
 					set.strings.forEach(function(string){
 						dirty = true;
 						audioModel.setString(string.id, {
@@ -670,7 +695,7 @@ angular
 				var dirty = false;
 				
 				// todo: can we extract this and the above copy into an "update frequencies" method?
-				sets.forEach(function(set){
+				$scope[models.sets].forEach(function(set){
 					if(set.retune !== 'inherit'){
 						return ;
 					}

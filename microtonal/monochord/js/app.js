@@ -1,18 +1,6 @@
 angular
 	.module('Monochord', ['SetModel', 'Importer'])
 	.controller('MonochordCtrl', ['$scope', 'SetModel', 'importer', function($scope, SetModel, importer){
-		/*
-		presets
-			.load()
-			.then(function(data){
-				$scope.presets = data;
-				$scope.$apply();
-			})
-		;
-		*/
-		
-		// --------------
-		
 		$scope.baseVolume = 30;
 		$scope.baseFrequency = 200;
 		$scope.sets = [];
@@ -30,6 +18,7 @@ angular
 		
 		// --------------
 		
+		/*
 		importer
 			.load('resources/scala-scales/carlos_alpha.scl', importer.types.SCALA)
 			.then(function(data){
@@ -52,5 +41,6 @@ angular
 				console.error(error);
 			})
 		;
+		*/
 	}])
 ;
