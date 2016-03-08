@@ -44,25 +44,26 @@ angular
 				// @param params : (optional) <object>
 				//   volume : <int:0..100> | 100
 				//   muted : <bool> | false
-				// @returns <int> : id of the created set
+				// @returns <object> : the created set
 				add : function(params){
 					params = params || {};
-					$scope[models.sets].push({
+					var data = {
 						id : ++lastSetId,
 						retune : $scope[models.retune].defaultForNew,
 						strings : [],
 						cents : [],
 						volume : params.hasOwnProperty('volume') ? params.volume : 100,
 						muted : params.hasOwnProperty('muted') ? params.muted : false
-					});
-					return lastSetId;
+					};
+					$scope[models.sets].push(data);
+					return data;
 				},
 				// removes a set, specified by target
 				// @param target : <object> | <int>
 				//   object should be a valid set from the $scope.sets
 				//   int should be a valid id of a set from $scope.sets
 				remove : function(target){
-					var index;
+					var index = -1;
 					if(Number.isInteger(target)){
 						self.sets.findById(target, function(set, _index){
 							index = _index;
@@ -88,6 +89,12 @@ angular
 						}
 					});
 				},
+				// find the set, that comes before the target in the list of sets
+				// @param target : <object> | <int>
+				//   object should be a valid set from the $scope.sets
+				//   int should be a valid id of a set from $scope.sets
+				// @param run : <function>(set)
+				//   where set is the found set's data object
 				findPrevious : function(target, run){
 					var setId = (Number.isInteger(target) ? target : target.id);
 					var prevSet = null;
@@ -100,6 +107,12 @@ angular
 						}
 					});
 				},
+				// find the set, that comes after the target in the list of sets
+				// @param target : <object> | <int>
+				//   object should be a valid set from the $scope.sets
+				//   int should be a valid id of a set from $scope.sets
+				// @param run : <function>(set)
+				//   where set is the found set's data object
 				findNext : function(target, run){
 					var setId = (Number.isInteger(target) ? target : target.id);
 					var prevSet = null;
@@ -115,26 +128,57 @@ angular
 			};
 			
 			this.strings = {
-				add : function(setId, multiplier, volume, muted){
-					self.sets.findById(setId, function(set){
-						set.strings.push({
-							id : ++lastStringId,
-							multiplier : typeof multiplier !== 'undefined' ? multiplier : 1,
-							volume : typeof volume !== 'undefined' ? volume : 100,
-							muted : typeof muted !== 'undefined' ? muted : false,
-							type : 'sine'
+				// params : multiplier, volume, muted
+				add : function(target, params){
+					params = params || {};
+					var set = -1;
+					if(Number.isInteger(target)){
+						self.sets.findById(target, function(_set){
+							set = _set;
 						});
-					});
-					return lastStringId;
+					}else{
+						set = target;
+					}
+					var data = {};
+					if(set !== -1 && set.hasOwnProperty('strings')){
+						data = {
+							id : ++lastStringId,
+							multiplier : params.hasOwnProperty('multiplier') ? params.multiplier : 1,
+							volume : params.hasOwnProperty('volume') ? params.volume : 100,
+							muted : params.hasOwnProperty('muted') ? params.muted : false,
+							type : 'sine'
+						};
+						set.strings.push(data);
+					}
+					return data;
 				},
-				remove : function(stringId){
-					self.strings.findById(stringId, function(string, index, array, set){
+				// target: string object | stringId
+				remove : function(target){
+					var index = -1;
+					var set;
+					
+					if(Number.isInteger(target)){
+						self.strings.findById(target, function(string, _index, array, _set){
+							set = _set;
+							index = _index;
+						});
+					}else{
+						$scope[models.sets].some(function(_set){
+							index = _set.strings.indexOf(target);
+							if(index !== -1){
+								set = _set;
+								return true;
+							}
+						});
+					}
+					
+					if(index !== -1){
 						if(set.strings.length === 1){
 							self.sets.remove(set.id);
 						}else{
-							array.splice(index, 1);
+							$scope[models.sets].splice(index, 1);
 						}
-					});
+					}
 				},
 				findById : function(stringId, run){
 					$scope[models.sets].some(function(set){

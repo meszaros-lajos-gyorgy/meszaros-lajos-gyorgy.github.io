@@ -18,20 +18,19 @@ angular
 		
 		// --------------
 		
-		/*
 		importer
 			.load('resources/scala-scales/carlos_alpha.scl', importer.types.SCALA)
 			.then(function(data){
 				console.log('Successfully parsed SCL file!');
 				
 				setTimeout(function(){
-					var setId, type;
+					var set, type;
 					
 					data.notes.some(function(note){
-						setId = model.sets.add();
+						set = model.sets.add();
 						type = (note.type === 'ratio' ? 'strings' : 'cents');
 						note.multipliers.forEach(function(multiplier){
-							model[type].add(setId, multiplier);
+							model[type].add(set.id, multiplier);
 						});
 					});
 					
@@ -41,6 +40,5 @@ angular
 				console.error(error);
 			})
 		;
-		*/
 	}])
 ;
