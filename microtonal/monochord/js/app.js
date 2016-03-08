@@ -24,13 +24,17 @@ angular
 				console.log('Successfully parsed SCL file!');
 				
 				setTimeout(function(){
-					var set, type;
+					var set, type, min;
 					
 					data.notes.some(function(note){
 						set = model.sets.add();
 						type = (note.type === 'ratio' ? 'strings' : 'cents');
-						note.multipliers.forEach(function(multiplier){
-							model[type].add(set.id, multiplier);
+						min = note.multipliers.sort()[0];
+						note.multipliers.forEach(function(multiplier, index){
+							model[type].add(set, {
+								multiplier : multiplier,
+								muted : min === multiplier
+							});
 						});
 					});
 					

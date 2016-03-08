@@ -127,9 +127,9 @@ angular
 				}
 			};
 			
-			this.strings = {
+			var _stringcent = {
 				// params : multiplier, volume, muted
-				add : function(target, params){
+				add : function(type, target, params){
 					params = params || {};
 					var set = -1;
 					if(Number.isInteger(target)){
@@ -140,7 +140,7 @@ angular
 						set = target;
 					}
 					var data = {};
-					if(set !== -1 && set.hasOwnProperty('strings')){
+					if(set !== -1 && set.hasOwnProperty(type)){
 						data = {
 							id : ++lastStringId,
 							multiplier : params.hasOwnProperty('multiplier') ? params.multiplier : 1,
@@ -148,23 +148,23 @@ angular
 							muted : params.hasOwnProperty('muted') ? params.muted : false,
 							type : 'sine'
 						};
-						set.strings.push(data);
+						set[type].push(data);
 					}
 					return data;
 				},
 				// target: string object | stringId
-				remove : function(target){
+				remove : function(type, target){
 					var index = -1;
 					var set;
 					
 					if(Number.isInteger(target)){
-						self.strings.findById(target, function(string, _index, array, _set){
+						self[type].findById(target, function(string, _index, array, _set){
 							set = _set;
 							index = _index;
 						});
 					}else{
 						$scope[models.sets].some(function(_set){
-							index = _set.strings.indexOf(target);
+							index = _set[type].indexOf(target);
 							if(index !== -1){
 								set = _set;
 								return true;
@@ -180,11 +180,11 @@ angular
 						}
 					}
 				},
-				findById : function(stringId, run){
+				findById : function(type, id, run){
 					$scope[models.sets].some(function(set){
-						return set.strings.some(function(string, index, array){
-							if(string.id === stringId){
-								run(string, index, array, set);
+						return set[type].some(function(element, index, array){
+							if(element.id === id){
+								run(element, index, array, set, type);
 								return true;
 							}
 						});
@@ -192,38 +192,16 @@ angular
 				}
 			};
 			
+			this.strings = {
+				add : _stringcent.add.bind(this, 'strings'),
+				remove : _stringcent.remove.bind(this, 'strings'),
+				findById : _stringcent.findById.bind(this, 'strings')
+			};
+			
 			this.cents = {
-				add : function(setId, cents, volume, muted){
-					self.sets.findById(setId, function(set){
-						set.cents.push({
-							id : ++lastStringId,
-							multiplier : cents || 0.0,
-							volume : typeof volume !== 'undefined' ? volume : 100,
-							muted : typeof muted !== 'undefined' ? muted : false,
-							type : 'sine'
-						});
-					});
-					return lastStringId;
-				},
-				remove : function(centId){
-					self.cents.findById(centId, function(cent, index, array, set){
-						if(set.cents.length === 1){
-							self.sets.remove(set.id);
-						}else{
-							array.splice(index, 1);
-						}
-					});
-				},
-				findById : function(centId, run){
-					$scope[models.sets].some(function(set){
-						return set.cents.some(function(cent, index, array){
-							if(cent.id === centId){
-								run(cent, index, array, set);
-								return true;
-							}
-						})
-					});
-				}
+				add : _stringcent.add.bind(this, 'cents'),
+				remove : _stringcent.remove.bind(this, 'cents'),
+				findById : _stringcent.findById.bind(this, 'cents')
 			};
 			
 			this.harmonics = {
