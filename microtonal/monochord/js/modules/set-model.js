@@ -8,14 +8,14 @@ $scope.sets = [{
 		multiplier : <float>,
 		muted : <bool>,
 		volume : 0..100,
-		type : <string>
+		type : <string:sine|square|sawtooth|triangle>
 	}, ...],
 	strings : [{
 		id : <int>, // stringId
 		multiplier : lowestHarmonic..highestHarmonic,
 		muted : <bool>,
 		volume : 0..100,
-		type : <string>
+		type : <string:sine|square|sawtooth|triangle>
 	}, ...],
 	retune : <string>
 }, ...];
@@ -37,6 +37,11 @@ angular
 			
 			this.commit = function(){
 				$scope.$apply();
+			};
+			
+			this.TYPE = {
+				STRING : 0x01,
+				CENT : 0x02
 			};
 			
 			this.sets = {
@@ -140,7 +145,8 @@ angular
 						set = target;
 					}
 					var data = {};
-					if(set !== -1 && set.hasOwnProperty(type)){
+					var property = (type === self.TYPE.STRING ? 'strings' : 'cents');
+					if(set !== -1 && set.hasOwnProperty(property)){
 						data = {
 							id : ++lastStringId,
 							multiplier : params.hasOwnProperty('multiplier') ? params.multiplier : 1,
@@ -148,7 +154,7 @@ angular
 							muted : params.hasOwnProperty('muted') ? params.muted : false,
 							type : 'sine'
 						};
-						set[type].push(data);
+						set[property].push(data);
 					}
 					return data;
 				},
@@ -156,15 +162,16 @@ angular
 				remove : function(type, target){
 					var index = -1;
 					var set;
+					var property = (type === self.TYPE.STRING ? 'strings' : 'cents');
 					
 					if(Number.isInteger(target)){
-						self[type].findById(target, function(string, _index, array, _set){
+						self[property].findById(target, function(string, _index, array, _set){
 							set = _set;
 							index = _index;
 						});
 					}else{
 						$scope[models.sets].some(function(_set){
-							index = _set[type].indexOf(target);
+							index = _set[property].indexOf(target);
 							if(index !== -1){
 								set = _set;
 								return true;
@@ -181,10 +188,11 @@ angular
 					}
 				},
 				findById : function(type, id, run){
+					var property = (type === self.TYPE.STRING ? 'strings' : 'cents');
 					$scope[models.sets].some(function(set){
-						return set[type].some(function(element, index, array){
+						return set[property].some(function(element, index, array){
 							if(element.id === id){
-								run(element, index, array, set, type);
+								run(element, index, array, set);
 								return true;
 							}
 						});
@@ -193,49 +201,66 @@ angular
 			};
 			
 			this.strings = {
-				add : _stringcent.add.bind(this, 'strings'),
-				remove : _stringcent.remove.bind(this, 'strings'),
-				findById : _stringcent.findById.bind(this, 'strings')
+				add : _stringcent.add.bind(this, self.TYPE.STRING),
+				remove : _stringcent.remove.bind(this, self.TYPE.STRING),
+				findById : _stringcent.findById.bind(this, self.TYPE.STRING)
 			};
 			
 			this.cents = {
-				add : _stringcent.add.bind(this, 'cents'),
-				remove : _stringcent.remove.bind(this, 'cents'),
-				findById : _stringcent.findById.bind(this, 'cents')
+				add : _stringcent.add.bind(this, self.TYPE.CENT),
+				remove : _stringcent.remove.bind(this, self.TYPE.CENT),
+				findById : _stringcent.findById.bind(this, self.TYPE.CENT)
 			};
 			
 			this.harmonics = {
-				findInSet : function(set, harmonic, run){
-					var found = set.strings.some(function(string, index, array){
-						if(string.multiplier === harmonic){
-							run(string, 'string', index, array, set);
-							return true;
-						}
-					});
-					if(!found){
-						set.cents.some(function(cent, index, array){
-							if(cent.multiplier === harmonic){
-								run(cent, 'cent', index, array, set);
+				findInSet : function(target, harmonic, run){
+					var set = -1;
+					if(Number.isInteger(target)){
+						self.sets.findById(target, function(_set){
+							set = _set;
+						})
+					}else{
+						set = target;
+					}
+					if(set !== -1){
+						var found = set.strings.some(function(string, index, array){
+							if(string.multiplier === harmonic){
+								run(string, self.TYPE.STRING, index, array, set);
 								return true;
 							}
 						});
+						if(!found){
+							set.cents.some(function(cent, index, array){
+								if(cent.multiplier === harmonic){
+									run(cent, self.TYPE.CENT, index, array, set);
+									return true;
+								}
+							});
+						}
 					}
 				},
 				
-				getMultipliers : function(set, type){
+				getMultipliers : function(target, type){
 					var multipliers = [];
-					
-					if(set[type + 's']){
-						set[type + 's'].forEach(function(element){
+					var set = -1;
+					if(Number.isInteger(target)){
+						self.sets.findById(target, function(_set){
+							set = _set;
+						})
+					}else{
+						set = target;
+					}
+					var property = (type === self.TYPE.STRING ? 'strings' : 'cents');
+					if(set !== -1 && set[property]){
+						set[property].forEach(function(element){
 							multipliers.push(element.multiplier);
 						});
 					}
-					
 					return multipliers;
 				},
 				
-				getLowest : function(set, type){
-					var multipliers = self.harmonics.getMultipliers(set, type);
+				getLowest : function(target, type){
+					var multipliers = self.harmonics.getMultipliers(target, type);
 					if(!multipliers.length){
 						return null;
 					}
@@ -243,13 +268,13 @@ angular
 						return a - b;
 					})[0];
 				},
-				canLower : function(set, by){
+				canLower : function(target, by){
 					if(!Number.isInteger(by) || by <= 0){
 						by = 1;
 					}
 					
-					var lString = self.harmonics.getLowest(set, 'string');
-					var lCent = self.harmonics.getLowest(set, 'cent');
+					var lString = self.harmonics.getLowest(target, self.TYPE.STRING);
+					var lCent = self.harmonics.getLowest(target, self.TYPE.CENT);
 					
 					var canLowerString = lString !== null && lString - by >= lowestHarmonic;
 					var canLowerCent = lCent !== null && lCent - by >= lowestCent;
@@ -260,9 +285,9 @@ angular
 						|| (canLowerString && canLowerCent)
 					);
 				},
-				canHalve : function(set, type){
-					var lString = self.harmonics.getLowest(set, 'string');
-					var lCent = self.harmonics.getLowest(set, 'cent');
+				canHalve : function(target, type){
+					var lString = self.harmonics.getLowest(target, self.TYPE.STRING);
+					var lCent = self.harmonics.getLowest(target, self.TYPE.CENT);
 					
 					var canLowerString = lString !== null && lString / 2 >= lowestHarmonic;
 					var canLowerCent = lCent !== null && lCent / 2 >= lowestCent;
@@ -273,37 +298,48 @@ angular
 						|| (canLowerString && canLowerCent)
 					);
 				},
-				lower : function(setId, by){
+				lower : function(target, by){
 					if(!Number.isInteger(by) || by <= 0){
 						by = 1;
 					}
-					
-					self.sets.findById(setId, function(set){
-						if(self.harmonics.canLower(set, by)){
-							set.strings.forEach(function(string){
-								string.multiplier -= by;
-							});
-							set.cents.forEach(function(cent){
-								cent.multiplier -= by;
-							});
-						}
-					});
+					var set = -1;
+					if(Number.isInteger(target)){
+						self.sets.findById(target, function(_set){
+							set = _set;
+						})
+					}else{
+						set = target;
+					}
+					if(set !== -1 && self.harmonics.canLower(set, by)){
+						set.strings.forEach(function(string){
+							string.multiplier -= by;
+						});
+						set.cents.forEach(function(cent){
+							cent.multiplier -= by;
+						});
+					}
 				},
-				halve : function(setId){
-					self.sets.findById(setId, function(set){
-						if(self.harmonics.canHalve(set)){
-							set.strings.forEach(function(string){
-								string.multiplier /= 2;
-							});
-							set.cents.forEach(function(cent){
-								cent.multiplier /= 2;
-							});
-						}
-					});
+				halve : function(target){
+					var set = -1;
+					if(Number.isInteger(target)){
+						self.sets.findById(target, function(_set){
+							set = _set;
+						})
+					}else{
+						set = target;
+					}
+					if(set !== -1 && self.harmonics.canHalve(set)){
+						set.strings.forEach(function(string){
+							string.multiplier /= 2;
+						});
+						set.cents.forEach(function(cent){
+							cent.multiplier /= 2;
+						});
+					}
 				},
 				
-				getHighest : function(set, type){
-					var multipliers = self.harmonics.getMultipliers(set, type);
+				getHighest : function(target, type){
+					var multipliers = self.harmonics.getMultipliers(target, type);
 					if(!multipliers.length){
 						return null;
 					}
@@ -311,13 +347,13 @@ angular
 						return b - a;
 					})[0];
 				},
-				canRaise : function(set, by){
+				canRaise : function(target, by){
 					if(!Number.isInteger(by) || by <= 0){
 						by = 1;
 					}
 					
-					var hString = self.harmonics.getHighest(set, 'string');
-					var hCent = self.harmonics.getHighest(set, 'cent');
+					var hString = self.harmonics.getHighest(target, self.TYPE.STRING);
+					var hCent = self.harmonics.getHighest(target, self.TYPE.CENT);
 					
 					var canRaiseString = hString !== null && hString + by <= highestHarmonic;
 					var canRaiseCent = hCent !== null && hCent + by <= highestCent;
@@ -328,9 +364,9 @@ angular
 						|| (canRaiseString && canRaiseCent)
 					);
 				},
-				canDouble : function(set){
-					var hString = self.harmonics.getLowest(set, 'string');
-					var hCent = self.harmonics.getLowest(set, 'cent');
+				canDouble : function(target){
+					var hString = self.harmonics.getHighest(target, self.TYPE.STRING);
+					var hCent = self.harmonics.getHighest(target, self.TYPE.CENT);
 					
 					var canRaiseString = hString !== null && hString * 2 <= highestHarmonic;
 					var canRaiseCent = hCent !== null && hCent * 2 <= highestCent;
@@ -341,33 +377,44 @@ angular
 						|| (canRaiseString && canRaiseCent)
 					);
 				},
-				raise : function(setId, by){
+				raise : function(target, by){
 					if(!Number.isInteger(by) || by <= 0){
 						by = 1;
 					}
-					
-					self.sets.findById(setId, function(set){
-						if(self.harmonics.canRaise(set, by)){
-							set.strings.forEach(function(string){
-								string.multiplier += by;
-							});
-							set.cents.forEach(function(cent){
-								cent.multiplier += by;
-							});
-						}
-					});
+					var set = -1;
+					if(Number.isInteger(target)){
+						self.sets.findById(target, function(_set){
+							set = _set;
+						})
+					}else{
+						set = target;
+					}
+					if(set !== -1 && self.harmonics.canRaise(set, by)){
+						set.strings.forEach(function(string){
+							string.multiplier += by;
+						});
+						set.cents.forEach(function(cent){
+							cent.multiplier += by;
+						});
+					}
 				},
-				double : function(setId){
-					self.sets.findById(setId, function(set){
-						if(self.harmonics.canDouble(set)){
-							set.strings.forEach(function(string){
-								string.multiplier *= 2;
-							});
-							set.cents.forEach(function(cent){
-								cent.multiplier *= 2;
-							});
-						}
-					});
+				double : function(target){
+					var set = -1;
+					if(Number.isInteger(target)){
+						self.sets.findById(target, function(_set){
+							set = _set;
+						})
+					}else{
+						set = target;
+					}
+					if(set !== -1 && self.harmonics.canDouble(set)){
+						set.strings.forEach(function(string){
+							string.multiplier *= 2;
+						});
+						set.cents.forEach(function(cent){
+							cent.multiplier *= 2;
+						});
+					}
 				},
 				
 				// todo: safety checks + cents support
@@ -393,17 +440,18 @@ angular
 				*/
 			};
 			
+			
 			// todo: these are only relative tunings, do we need absolute ones?
 			var retune = {
 				off : function(){
 					return $scope[models.baseFrequency];
 				},
-				lowestToBaseFreq : function(set, type){
-					var divisor = self.harmonics.getLowest(set, type);
+				lowestToBaseFreq : function(target, type){
+					var divisor = self.harmonics.getLowest(target, type);
 					if(divisor === null){
 						return 0;
 					}
-					if(type === 'cent'){
+					if(type === self.TYPE.CENT){
 						divisor = math.centsToFraction(divisor);
 					}
 					if(divisor === 0){
@@ -411,12 +459,12 @@ angular
 					}
 					return $scope[models.baseFrequency] / divisor;
 				},
-				highestToBaseFreq : function(set, type){
-					var divisor = self.harmonics.getHighest(set, type);
+				highestToBaseFreq : function(target, type){
+					var divisor = self.harmonics.getHighest(target, type);
 					if(divisor === null){
 						return 0;
 					}
-					if(type === 'cent'){
+					if(type === self.TYPE.CENT){
 						divisor = math.centsToFraction(divisor);
 					}
 					if(divisor === 0){
@@ -424,6 +472,7 @@ angular
 					}
 					return $scope[models.baseFrequency] / divisor;
 				},
+				/* =======| EDDIG OKÉ |======= */
 				lowestToPrevHighest : function(set, type){
 					var to = $scope[models.baseFrequency];
 					
