@@ -86,13 +86,19 @@ angular
 				//   where set is the found set's data object
 				//   index is the index of set in $scope.sets
 				//   array is $scope.sets
+				// @return the set, that has been found or null
 				findById : function(setId, run){
-					$scope[models.sets].some(function(set, index, array){
-						if(set.id === setId){
-							run(set, index, array);
+					var set = null;
+					$scope[models.sets].some(function(_set, index, array){
+						if(_set.id === setId){
+							if(run){
+								run(_set, index, array);
+							}
+							set = _set;
 							return true;
 						}
 					});
+					return set;
 				},
 				// find the set, that comes before the target in the list of sets
 				// @param target : <object> | <int>
@@ -100,17 +106,21 @@ angular
 				//   int should be a valid id of a set from $scope.sets
 				// @param run : <function>(set)
 				//   where set is the found set's data object
+				// @return the set, that has been found or null
 				findPrevious : function(target, run){
 					var setId = (Number.isInteger(target) ? target : target.id);
 					var prevSet = null;
-					$scope[models.sets].some(function(set){
+					var found = $scope[models.sets].some(function(set){
 						if(set.id === setId && prevSet !== null){
-							run(prevSet);
+							if(run){
+								run(prevSet);
+							}
 							return true;
 						}else{
 							prevSet = set;
 						}
 					});
+					return (found ? prevSet : null);
 				},
 				// find the set, that comes after the target in the list of sets
 				// @param target : <object> | <int>
@@ -118,17 +128,23 @@ angular
 				//   int should be a valid id of a set from $scope.sets
 				// @param run : <function>(set)
 				//   where set is the found set's data object
+				// @return the set, that has been found or null
 				findNext : function(target, run){
 					var setId = (Number.isInteger(target) ? target : target.id);
 					var prevSet = null;
-					$scope[models.sets].some(function(set){
+					var set;
+					var found = $scope[models.sets].some(function(_set){
 						if(prevSet !== null && prevSet.id === setId){
-							run(set);
+							if(run){
+								run(_set);
+							}
+							set = _set;
 							return true;
 						}else{
-							prevSet = set;
+							prevSet = _set;
 						}
 					});
+					return (found ? set : null);
 				}
 			};
 			
@@ -136,17 +152,10 @@ angular
 				// params : multiplier, volume, muted
 				add : function(type, target, params){
 					params = params || {};
-					var set = -1;
-					if(Number.isInteger(target)){
-						self.sets.findById(target, function(_set){
-							set = _set;
-						});
-					}else{
-						set = target;
-					}
+					var set = (Number.isInteger(target) ? self.sets.findById(target) : target);
 					var data = {};
 					var property = (type === self.TYPE.STRING ? 'strings' : 'cents');
-					if(set !== -1 && set.hasOwnProperty(property)){
+					if(set && set.hasOwnProperty(property)){
 						data = {
 							id : ++lastStringId,
 							multiplier : params.hasOwnProperty('multiplier') ? params.multiplier : 1,
@@ -189,14 +198,19 @@ angular
 				},
 				findById : function(type, id, run){
 					var property = (type === self.TYPE.STRING ? 'strings' : 'cents');
-					$scope[models.sets].some(function(set){
-						return set[property].some(function(element, index, array){
-							if(element.id === id){
-								run(element, index, array, set);
+					var element;
+					var found = $scope[models.sets].some(function(set){
+						return set[property].some(function(_element, index, array){
+							if(_element.id === id){
+								if(run){
+									run(_element, index, array, set);
+								}
+								element = _element;
 								return true;
 							}
 						});
 					});
+					return (found ? element : null);
 				}
 			};
 			
@@ -214,59 +228,39 @@ angular
 			
 			this.harmonics = {
 				findInSet : function(target, harmonic, run){
-					var set = -1;
-					if(Number.isInteger(target)){
-						self.sets.findById(target, function(_set){
-							set = _set;
-						})
-					}else{
-						set = target;
-					}
-					if(set !== -1){
-						var found = set.strings.some(function(string, index, array){
+					var set = (Number.isInteger(target) ? self.sets.findById(target) : target);
+					if(set){
+						set.strings.some(function(string, index, array){
 							if(string.multiplier === harmonic){
 								run(string, self.TYPE.STRING, index, array, set);
 								return true;
 							}
+						})
+						|| set.cents.some(function(cent, index, array){
+							if(cent.multiplier === harmonic){
+								run(cent, self.TYPE.CENT, index, array, set);
+								return true;
+							}
 						});
-						if(!found){
-							set.cents.some(function(cent, index, array){
-								if(cent.multiplier === harmonic){
-									run(cent, self.TYPE.CENT, index, array, set);
-									return true;
-								}
-							});
-						}
 					}
 				},
 				
 				getMultipliers : function(target, type){
 					var multipliers = [];
-					var set = -1;
-					if(Number.isInteger(target)){
-						self.sets.findById(target, function(_set){
-							set = _set;
-						})
-					}else{
-						set = target;
-					}
+					var set = (Number.isInteger(target) ? self.sets.findById(target) : target);
 					var property = (type === self.TYPE.STRING ? 'strings' : 'cents');
-					if(set !== -1 && set[property]){
-						set[property].forEach(function(element){
-							multipliers.push(element.multiplier);
-						});
+					if(set && set[property]){
+						var i = set[property].length;
+						while(i--){
+							multipliers.push(set[property][i].multiplier);
+						}
 					}
 					return multipliers;
 				},
 				
 				getLowest : function(target, type){
 					var multipliers = self.harmonics.getMultipliers(target, type);
-					if(!multipliers.length){
-						return null;
-					}
-					return multipliers.sort(function(a, b){
-						return a - b;
-					})[0];
+					return (multipliers.length ? Math.min.apply(null, multipliers) : null);
 				},
 				canLower : function(target, by){
 					if(!Number.isInteger(by) || by <= 0){
@@ -302,15 +296,8 @@ angular
 					if(!Number.isInteger(by) || by <= 0){
 						by = 1;
 					}
-					var set = -1;
-					if(Number.isInteger(target)){
-						self.sets.findById(target, function(_set){
-							set = _set;
-						})
-					}else{
-						set = target;
-					}
-					if(set !== -1 && self.harmonics.canLower(set, by)){
+					var set = (Number.isInteger(target) ? self.sets.findById(target) : target);
+					if(set && self.harmonics.canLower(set, by)){
 						set.strings.forEach(function(string){
 							string.multiplier -= by;
 						});
@@ -320,15 +307,8 @@ angular
 					}
 				},
 				halve : function(target){
-					var set = -1;
-					if(Number.isInteger(target)){
-						self.sets.findById(target, function(_set){
-							set = _set;
-						})
-					}else{
-						set = target;
-					}
-					if(set !== -1 && self.harmonics.canHalve(set)){
+					var set = (Number.isInteger(target) ? self.sets.findById(target) : target);
+					if(set && self.harmonics.canHalve(set)){
 						set.strings.forEach(function(string){
 							string.multiplier /= 2;
 						});
@@ -340,12 +320,7 @@ angular
 				
 				getHighest : function(target, type){
 					var multipliers = self.harmonics.getMultipliers(target, type);
-					if(!multipliers.length){
-						return null;
-					}
-					return multipliers.sort(function(a, b){
-						return b - a;
-					})[0];
+					return (multipliers.length ? Math.max.apply(null, multipliers) : null);
 				},
 				canRaise : function(target, by){
 					if(!Number.isInteger(by) || by <= 0){
@@ -381,15 +356,8 @@ angular
 					if(!Number.isInteger(by) || by <= 0){
 						by = 1;
 					}
-					var set = -1;
-					if(Number.isInteger(target)){
-						self.sets.findById(target, function(_set){
-							set = _set;
-						})
-					}else{
-						set = target;
-					}
-					if(set !== -1 && self.harmonics.canRaise(set, by)){
+					var set = (Number.isInteger(target) ? self.sets.findById(target) : target);
+					if(set && self.harmonics.canRaise(set, by)){
 						set.strings.forEach(function(string){
 							string.multiplier += by;
 						});
@@ -399,15 +367,8 @@ angular
 					}
 				},
 				double : function(target){
-					var set = -1;
-					if(Number.isInteger(target)){
-						self.sets.findById(target, function(_set){
-							set = _set;
-						})
-					}else{
-						set = target;
-					}
-					if(set !== -1 && self.harmonics.canDouble(set)){
+					var set = (Number.isInteger(target) ? self.sets.findById(target) : target);
+					if(set && self.harmonics.canDouble(set)){
 						set.strings.forEach(function(string){
 							string.multiplier *= 2;
 						});
@@ -472,29 +433,24 @@ angular
 					}
 					return $scope[models.baseFrequency] / divisor;
 				},
-				/* =======| EDDIG OKÉ |======= */
-				lowestToPrevHighest : function(set, type){
+				lowestToPrevHighest : function(target, type){
 					var to = $scope[models.baseFrequency];
 					
-					// todo:
-					// this is extremely slow here, might need to make the methods below a bit smarter
-					// so they can take both ID-s and actual set/string/cent datas
-					// also need to make some documentation on the methods soon, gonna get a bit clunky
-					self.sets.findPrevious(set.id, function(prevSet){
+					var prevSet = self.sets.findPrevious(target);
+					if(prevSet){
 						var divisor = self.harmonics.getHighest(prevSet, type);
-						if(divisor === null){
-							return ;
+						if(divisor !== null){
+							self.harmonics.findInSet(prevSet, divisor, function(element, elementType){
+								to = self.calculate.frequency(element, elementType);
+							});
 						}
-						self.harmonics.findInSet(prevSet, divisor, function(element, elementType){
-							to = self.calculate.frequency(element.id, elementType);
-						});
-					});
+					}
 					
-					var divisor = self.harmonics.getLowest(set, type);
+					var divisor = self.harmonics.getLowest(target, type);
 					if(divisor === null){
 						return 0;
 					}
-					if(type === 'cent'){
+					if(type === self.TYPE.CENT){
 						divisor = math.centsToFraction(divisor);
 					}
 					if(divisor === 0){
@@ -517,24 +473,18 @@ angular
 					
 					return retune[method](set, type);
 				},
-				frequency : function(id, type){
-					if(type !== 'string' && type !== 'cent'){
-						return 0;
-					}
-					
+				frequency : function(target, type){
 					var freq;
-					
-					self[type + 's'].findById(id, function(element, index, array, set){
-						freq = self.calculate.baseFrequency(set, type);
-						if(type === 'string'){
-							freq *= element.multiplier;
-						}else if(type === 'cent'){
-							freq *= math.centsToFraction(element.multiplier);
-						}
+					var id = (Number.isInteger(target) ? target : target.id);
+					self[type === self.TYPE.STRING ? 'strings' : 'cents'].findById(id, function(element, index, array, set){
+						freq =
+							self.calculate.baseFrequency(set, type)
+							* (type === self.TYPE.CENT ? math.centsToFraction(element.multiplier) : element.multiplier)
+						;
 					});
-					
 					return freq;
 				},
+				
 				/*
 				frequencies : function(set){
 					var arr = [];
@@ -631,7 +581,7 @@ angular
 						oldSet.strings.forEach(function(oldString){
 							strings.removed.push(oldString.id);
 						});
-						oldSet.cents.push(function(oldCent){
+						oldSet.cents.forEach(function(oldCent){
 							cents.removed.push(oldCent.id);
 						})
 					}else{
@@ -706,20 +656,20 @@ angular
 				diff.cents.removed.forEach(audioModel.removeCent);
 				
 				diff.cents.added.forEach(function(centId){
-					self.cents.findById(centId, function(string, index, array, set){
+					self.cents.findById(centId, function(cent, index, array, set){
 						audioModel.addCent(centId, set.id, {
 							frequency : self.calculate.frequency(centId, 'cent'),
-							volume : (string.muted ? 0 : string.volume / 100),
-							type : string.type
+							volume : (cent.muted ? 0 : cent.volume / 100),
+							type : cent.type
 						});
 					});
 				});
 				diff.cents.changed.forEach(function(centId){
-					self.cents.findById(centId, function(string){
+					self.cents.findById(centId, function(cent){
 						audioModel.setCent(centId, {
 							frequency : self.calculate.frequency(centId, 'cent'),
-							volume : (string.muted ? 0 : string.volume / 100),
-							type : string.type
+							volume : (cent.muted ? 0 : cent.volume / 100),
+							type : cent.type
 						});
 					});
 				});
@@ -727,7 +677,7 @@ angular
 				audioModel.commit();
 			}, true);
 			
-			$scope.$watch(models.baseFrequency, function(newValue, oldValue){
+			$scope.$watch(models.baseFrequency, function(newValue){
 				var dirty = false;
 				
 				$scope[models.sets].forEach(function(set){
@@ -751,7 +701,7 @@ angular
 				}
 			});
 			
-			$scope.$watch(models.baseVolume, function(newValue, oldValue){
+			$scope.$watch(models.baseVolume, function(newValue){
 				audioModel
 					.setMainVolume(newValue / 100)
 					.commit()
