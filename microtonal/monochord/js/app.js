@@ -5,7 +5,7 @@ angular
 		$scope.baseFrequency = 200;
 		$scope.sets = [];
 		$scope.retune = {
-			default : 'lowestToBaseFreq',
+			default : 'off',
 			defaultForNew : 'inherit'
 		};
 		
@@ -18,6 +18,7 @@ angular
 		
 		// --------------
 		
+		/*
 		importer
 			.load('resources/scala-scales/carlos_alpha.scl', importer.types.SCALA)
 			.then(function(data){
@@ -25,6 +26,8 @@ angular
 				
 				setTimeout(function(){
 					var set, type, min;
+					
+					$scope.retune = 'lowestToBaseFreq';
 					
 					data.notes.some(function(note){
 						set = model.sets.add();
@@ -44,5 +47,22 @@ angular
 				console.error(error);
 			})
 		;
+		*/
+		
+		setTimeout(function(){
+			var set = model.sets.add();
+			model.strings.add(set, {multiplier:30});
+			model.strings.add(set, {multiplier:40});
+			
+			console.log('strings: ', model.calculate.frequencies(set, model.TYPE.STRING));
+			console.log('cents: ', model.calculate.frequencies(set, model.TYPE.CENT));
+			
+			model.harmonics.normalize(set, model.TYPE.STRING);
+			
+			console.log('strings: ', model.calculate.frequencies(set, model.TYPE.STRING));
+			console.log('cents: ', model.calculate.frequencies(set, model.TYPE.CENT));
+			
+			model.commit();
+		}, 100);
 	}])
 ;

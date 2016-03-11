@@ -378,27 +378,29 @@ angular
 					}
 				},
 				
-				// todo: safety checks + cents support
-				/*
-				canBeNormalized : function(set){
-					return (
-						set.strings.length > 1
-						&& math.greatestCommonDivisor.apply(null, self.harmonics.getMultipliers(set)) > 1
-					);
+				canBeNormalized : function(target, type){
+					var set = (Number.isInteger(target) ? self.sets.findById(target) : target);
+					if(!set || set[type === self.TYPE.CENT ? 'cents' : 'strings'].length <= 1){
+						return false;
+					}
+					
+					return math.greatestCommonDivisor.apply(null, self.harmonics.getMultipliers(set, type)) > 1;
 				},
-				normalize : function(setId){
-					self.sets.findById(setId, function(set){
-						if(set.strings.length > 1){
-							var gcd = math.greatestCommonDivisor.apply(null, self.harmonics.getMultipliers(set));
+				normalize : function(target, type){
+					var set = (Number.isInteger(target) ? self.sets.findById(target) : target);
+					if(set){
+						var elements = set[type === self.TYPE.CENT ? 'cents' : 'strings'];
+						var i = elements.length;
+						if(i > 1){
+							var gcd = math.greatestCommonDivisor.apply(null, self.harmonics.getMultipliers(set, type));
 							if(gcd > 1){
-								set.strings.forEach(function(string){
-									string.multiplier = string.multiplier / gcd;
-								});
+								while(i--){
+									elements[i].multiplier /= gcd;
+								}
 							}
 						}
-					});
+					}
 				}
-				*/
 			};
 			
 			
@@ -462,7 +464,11 @@ angular
 			};
 			
 			this.calculate = {
-				baseFrequency : function(set, type){
+				baseFrequency : function(target, type){
+					var set = (Number.isInteger(target) ? self.sets.findById(target) : target);
+					if(!set){
+						return 0;
+					}
 					var method = set.retune;
 					if(method === 'inherit'){
 						method = $scope[models.retune].default;
@@ -476,25 +482,33 @@ angular
 				frequency : function(target, type){
 					var freq;
 					var id = (Number.isInteger(target) ? target : target.id);
-					self[type === self.TYPE.STRING ? 'strings' : 'cents'].findById(id, function(element, index, array, set){
+					var isCentType = type === self.TYPE.CENT;
+					self[isCentType ? 'cents' : 'strings'].findById(id, function(element, index, array, set){
 						freq =
 							self.calculate.baseFrequency(set, type)
-							* (type === self.TYPE.CENT ? math.centsToFraction(element.multiplier) : element.multiplier)
+							* (isCentType ? math.centsToFraction(element.multiplier) : element.multiplier)
 						;
 					});
 					return freq;
 				},
-				
-				/*
-				frequencies : function(set){
+				frequencies : function(target, type){
 					var arr = [];
+					var set = (Number.isInteger(target) ? self.sets.findById(target) : target);
 					
-					set.strings.forEach(function(string){
-						arr.push(self.calculate.frequency(string.id, 'string'));
-					});
+					if(set){
+						var baseFreq = self.calculate.baseFrequency(set, type);
+						var isCentType = type === self.TYPE.CENT;
+						var elements = set[isCentType ? 'cents' : 'strings'];
+						var iSize = elements.length;
+						for(var i = 0; i < iSize; i++){
+							arr.push(baseFreq * (isCentType ? math.centsToFraction(elements[i].multiplier) : elements[i].multiplier));
+						}
+					}
 					
 					return arr;
 				},
+				
+				/*
 				cent : function(stringId){
 					var cents;
 					
