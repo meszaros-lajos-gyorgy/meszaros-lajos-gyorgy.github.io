@@ -21,8 +21,8 @@ $scope.sets = [{
 }, ...];
 */
 angular
-	.module('SetModel', ['Math', 'AudioModel'])
-	.factory('SetModel', ['math', 'audioModel', function(math, audioModel){
+	.module('SetModel', ['Math', 'AudioModel', 'Retune'])
+	.factory('SetModel', ['math', 'audioModel', 'Retune', function(math, audioModel, Retune){
 		'use strict';
 		
 		return function($scope, models){
@@ -34,6 +34,9 @@ angular
 			var highestHarmonic = 1e6;
 			var lowestCent = 0;
 			var highestCent = Infinity;
+			var retune = new Retune(this, $scope, {
+				baseFrequency : models.baseFrequency
+			});
 			
 			this.commit = function(){
 				$scope.$apply();
@@ -400,66 +403,6 @@ angular
 							}
 						}
 					}
-				}
-			};
-			
-			
-			// todo: these are only relative tunings, do we need absolute ones?
-			var retune = {
-				off : function(){
-					return $scope[models.baseFrequency];
-				},
-				lowestToBaseFreq : function(target, type){
-					var divisor = self.harmonics.getLowest(target, type);
-					if(divisor === null){
-						return 0;
-					}
-					if(type === self.TYPE.CENT){
-						divisor = math.centsToFraction(divisor);
-					}
-					if(divisor === 0){
-						return 0;
-					}
-					return $scope[models.baseFrequency] / divisor;
-				},
-				highestToBaseFreq : function(target, type){
-					var divisor = self.harmonics.getHighest(target, type);
-					if(divisor === null){
-						return 0;
-					}
-					if(type === self.TYPE.CENT){
-						divisor = math.centsToFraction(divisor);
-					}
-					if(divisor === 0){
-						return 0;
-					}
-					return $scope[models.baseFrequency] / divisor;
-				},
-				lowestToPrevHighest : function(target, type){
-					var to = $scope[models.baseFrequency];
-					
-					var prevSet = self.sets.findPrevious(target);
-					if(prevSet){
-						var divisor = self.harmonics.getHighest(prevSet, type);
-						if(divisor !== null){
-							self.harmonics.findInSet(prevSet, divisor, function(element, elementType){
-								to = self.calculate.frequency(element, elementType);
-							});
-						}
-					}
-					
-					var divisor = self.harmonics.getLowest(target, type);
-					if(divisor === null){
-						return 0;
-					}
-					if(type === self.TYPE.CENT){
-						divisor = math.centsToFraction(divisor);
-					}
-					if(divisor === 0){
-						return 0;
-					}
-					
-					return to / divisor;
 				}
 			};
 			
