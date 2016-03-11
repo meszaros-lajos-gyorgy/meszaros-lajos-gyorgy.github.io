@@ -1,6 +1,6 @@
 angular
-	.module('Monochord', ['SetModel', 'Importer'])
-	.controller('MonochordCtrl', ['$scope', 'SetModel', 'importer', function($scope, SetModel, importer){
+	.module('Monochord', ['Model', 'Importer'])
+	.controller('MonochordCtrl', ['$scope', 'Model', 'importer', function($scope, Model, importer){
 		$scope.baseVolume = 30;
 		$scope.baseFrequency = 200;
 		$scope.sets = [];
@@ -9,7 +9,7 @@ angular
 			defaultForNew : 'inherit'
 		};
 		
-		var model = new SetModel($scope, {
+		var model = new Model($scope, {
 			sets : 'sets',
 			baseFrequency : 'baseFrequency',
 			baseVolume : 'baseVolume',

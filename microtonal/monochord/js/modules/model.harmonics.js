@@ -3,20 +3,21 @@ angular
 	.factory('Harmonics', ['math', function(math){
 		'use strict';
 		
-		return function(setModel){
+		return function(model){
 			var self = this;
+			
 			this.findInSet = function(target, harmonic, run){
-				var set = (Number.isInteger(target) ? setModel.sets.findById(target) : target);
+				var set = (Number.isInteger(target) ? model.sets.findById(target) : target);
 				if(set){
 					set.strings.some(function(string, index, array){
 						if(string.multiplier === harmonic){
-							run(string, setModel.TYPE.STRING, index, array, set);
+							run(string, model.TYPE.STRING, index, array, set);
 							return true;
 						}
 					})
 					|| set.cents.some(function(cent, index, array){
 						if(cent.multiplier === harmonic){
-							run(cent, setModel.TYPE.CENT, index, array, set);
+							run(cent, model.TYPE.CENT, index, array, set);
 							return true;
 						}
 					});
@@ -25,8 +26,8 @@ angular
 			
 			this.getMultipliers = function(target, type){
 				var multipliers = [];
-				var set = (Number.isInteger(target) ? setModel.sets.findById(target) : target);
-				var property = (type === setModel.TYPE.STRING ? 'strings' : 'cents');
+				var set = (Number.isInteger(target) ? model.sets.findById(target) : target);
+				var property = (type === model.TYPE.STRING ? 'strings' : 'cents');
 				if(set && set[property]){
 					var i = set[property].length;
 					while(i--){
@@ -45,8 +46,8 @@ angular
 					by = 1;
 				}
 				
-				var lString = self.getLowest(target, setModel.TYPE.STRING);
-				var lCent = self.getLowest(target, setModel.TYPE.CENT);
+				var lString = self.getLowest(target, model.TYPE.STRING);
+				var lCent = self.getLowest(target, model.TYPE.CENT);
 				
 				var canLowerString = lString !== null && lString - by >= lowestHarmonic;
 				var canLowerCent = lCent !== null && lCent - by >= lowestCent;
@@ -58,8 +59,8 @@ angular
 				);
 			};
 			this.canHalve = function(target, type){
-				var lString = self.getLowest(target, setModel.TYPE.STRING);
-				var lCent = self.getLowest(target, setModel.TYPE.CENT);
+				var lString = self.getLowest(target, model.TYPE.STRING);
+				var lCent = self.getLowest(target, model.TYPE.CENT);
 				
 				var canLowerString = lString !== null && lString / 2 >= lowestHarmonic;
 				var canLowerCent = lCent !== null && lCent / 2 >= lowestCent;
@@ -74,7 +75,7 @@ angular
 				if(!Number.isInteger(by) || by <= 0){
 					by = 1;
 				}
-				var set = (Number.isInteger(target) ? setModel.sets.findById(target) : target);
+				var set = (Number.isInteger(target) ? model.sets.findById(target) : target);
 				if(set && self.canLower(set, by)){
 					set.strings.forEach(function(string){
 						string.multiplier -= by;
@@ -85,7 +86,7 @@ angular
 				}
 			};
 			this.halve = function(target){
-				var set = (Number.isInteger(target) ? setModel.sets.findById(target) : target);
+				var set = (Number.isInteger(target) ? model.sets.findById(target) : target);
 				if(set && self.canHalve(set)){
 					set.strings.forEach(function(string){
 						string.multiplier /= 2;
@@ -105,8 +106,8 @@ angular
 					by = 1;
 				}
 				
-				var hString = self.getHighest(target, setModel.TYPE.STRING);
-				var hCent = self.getHighest(target, setModel.TYPE.CENT);
+				var hString = self.getHighest(target, model.TYPE.STRING);
+				var hCent = self.getHighest(target, model.TYPE.CENT);
 				
 				var canRaiseString = hString !== null && hString + by <= highestHarmonic;
 				var canRaiseCent = hCent !== null && hCent + by <= highestCent;
@@ -118,8 +119,8 @@ angular
 				);
 			};
 			this.canDouble = function(target){
-				var hString = self.getHighest(target, setModel.TYPE.STRING);
-				var hCent = self.getHighest(target, setModel.TYPE.CENT);
+				var hString = self.getHighest(target, model.TYPE.STRING);
+				var hCent = self.getHighest(target, model.TYPE.CENT);
 				
 				var canRaiseString = hString !== null && hString * 2 <= highestHarmonic;
 				var canRaiseCent = hCent !== null && hCent * 2 <= highestCent;
@@ -134,7 +135,7 @@ angular
 				if(!Number.isInteger(by) || by <= 0){
 					by = 1;
 				}
-				var set = (Number.isInteger(target) ? setModel.sets.findById(target) : target);
+				var set = (Number.isInteger(target) ? model.sets.findById(target) : target);
 				if(set && self.canRaise(set, by)){
 					set.strings.forEach(function(string){
 						string.multiplier += by;
@@ -145,7 +146,7 @@ angular
 				}
 			};
 			this.double = function(target){
-				var set = (Number.isInteger(target) ? setModel.sets.findById(target) : target);
+				var set = (Number.isInteger(target) ? model.sets.findById(target) : target);
 				if(set && self.canDouble(set)){
 					set.strings.forEach(function(string){
 						string.multiplier *= 2;
@@ -157,17 +158,17 @@ angular
 			};
 			
 			this.canBeNormalized = function(target, type){
-				var set = (Number.isInteger(target) ? setModel.sets.findById(target) : target);
-				if(!set || set[type === setModel.TYPE.CENT ? 'cents' : 'strings'].length <= 1){
+				var set = (Number.isInteger(target) ? model.sets.findById(target) : target);
+				if(!set || set[type === model.TYPE.CENT ? 'cents' : 'strings'].length <= 1){
 					return false;
 				}
 				
 				return math.greatestCommonDivisor.apply(null, self.getMultipliers(set, type)) > 1;
 			};
 			this.normalize = function(target, type){
-				var set = (Number.isInteger(target) ? setModel.sets.findById(target) : target);
+				var set = (Number.isInteger(target) ? model.sets.findById(target) : target);
 				if(set){
-					var elements = set[type === setModel.TYPE.CENT ? 'cents' : 'strings'];
+					var elements = set[type === model.TYPE.CENT ? 'cents' : 'strings'];
 					var i = elements.length;
 					if(i > 1){
 						var gcd = math.greatestCommonDivisor.apply(null, self.getMultipliers(set, type));

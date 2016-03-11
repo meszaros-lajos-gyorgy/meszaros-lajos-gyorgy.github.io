@@ -21,8 +21,8 @@ $scope.sets = [{
 }, ...];
 */
 angular
-	.module('SetModel', ['Math', 'AudioModel', 'Retune', 'Harmonics', 'Element'])
-	.factory('SetModel', ['math', 'audioModel', 'Retune', 'Harmonics', 'Element', function(math, audioModel, Retune, Harmonics, Element){
+	.module('Model', ['Math', 'AudioModel', 'Retune', 'Harmonics', 'Sets', 'Elements'])
+	.factory('Model', ['math', 'audioModel', 'Retune', 'Harmonics', 'Sets', 'Elements', function(math, audioModel, Retune, Harmonics, Sets, Element){
 		'use strict';
 		
 		return function($scope, models){
@@ -45,111 +45,8 @@ angular
 				CENT : 0x02
 			};
 			
-			this.sets = {
-				// adds a set with given params
-				// @param params : (optional) <object>
-				//   volume : <int:0..100> | 100
-				//   muted : <bool> | false
-				// @returns <object> : the created set
-				add : function(params){
-					params = params || {};
-					var data = {
-						id : ++self._lastSetId,
-						retune : $scope[models.retune].defaultForNew,
-						strings : [],
-						cents : [],
-						volume : params.hasOwnProperty('volume') ? params.volume : 100,
-						muted : params.hasOwnProperty('muted') ? params.muted : false
-					};
-					$scope[models.sets].push(data);
-					return data;
-				},
-				// removes a set, specified by target
-				// @param target : <object> | <int>
-				//   object should be a valid set from the $scope.sets
-				//   int should be a valid id of a set from $scope.sets
-				remove : function(target){
-					var index = -1;
-					if(Number.isInteger(target)){
-						self.sets.findById(target, function(set, _index){
-							index = _index;
-						});
-					}else{
-						index = $scope[models.sets].indexOf(target);
-					}
-					if(index !== -1){
-						$scope[models.sets].splice(index, 1);
-					}
-				},
-				// finds a set by ID; if found, then calls run
-				// @param setId : <int>
-				// @param run : <function>(set, index, array)
-				//   where set is the found set's data object
-				//   index is the index of set in $scope.sets
-				//   array is $scope.sets
-				// @return the set, that has been found or null
-				findById : function(setId, run){
-					var set = null;
-					$scope[models.sets].some(function(_set, index, array){
-						if(_set.id === setId){
-							if(run){
-								run(_set, index, array);
-							}
-							set = _set;
-							return true;
-						}
-					});
-					return set;
-				},
-				// find the set, that comes before the target in the list of sets
-				// @param target : <object> | <int>
-				//   object should be a valid set from the $scope.sets
-				//   int should be a valid id of a set from $scope.sets
-				// @param run : <function>(set)
-				//   where set is the found set's data object
-				// @return the set, that has been found or null
-				findPrevious : function(target, run){
-					var setId = (Number.isInteger(target) ? target : target.id);
-					var prevSet = null;
-					var found = $scope[models.sets].some(function(set){
-						if(set.id === setId && prevSet !== null){
-							if(run){
-								run(prevSet);
-							}
-							return true;
-						}else{
-							prevSet = set;
-						}
-					});
-					return (found ? prevSet : null);
-				},
-				// find the set, that comes after the target in the list of sets
-				// @param target : <object> | <int>
-				//   object should be a valid set from the $scope.sets
-				//   int should be a valid id of a set from $scope.sets
-				// @param run : <function>(set)
-				//   where set is the found set's data object
-				// @return the set, that has been found or null
-				findNext : function(target, run){
-					var setId = (Number.isInteger(target) ? target : target.id);
-					var prevSet = null;
-					var set;
-					var found = $scope[models.sets].some(function(_set){
-						if(prevSet !== null && prevSet.id === setId){
-							if(run){
-								run(_set);
-							}
-							set = _set;
-							return true;
-						}else{
-							prevSet = _set;
-						}
-					});
-					return (found ? set : null);
-				}
-			};
-			
 			var retune = new Retune(this, $scope, models);
+			this.sets = new Sets(this, $scope, models);
 			this.strings = new Element(this, this.TYPE.STRING, $scope, models);
 			this.cents = new Element(this, this.TYPE.CENT, $scope, models);
 			this.harmonics = new Harmonics(this);
