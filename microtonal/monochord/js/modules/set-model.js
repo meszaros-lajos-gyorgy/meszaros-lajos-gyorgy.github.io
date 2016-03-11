@@ -651,7 +651,7 @@ angular
 				diff.strings.added.forEach(function(stringId){
 					self.strings.findById(stringId, function(string, index, array, set){
 						audioModel.addString(stringId, set.id, {
-							frequency : self.calculate.frequency(stringId, 'string'),
+							frequency : self.calculate.frequency(stringId, self.TYPE.STRING),
 							volume : (string.muted ? 0 : string.volume / 100),
 							type : string.type
 						});
@@ -660,7 +660,7 @@ angular
 				diff.strings.changed.forEach(function(stringId){
 					self.strings.findById(stringId, function(string){
 						audioModel.setString(stringId, {
-							frequency : self.calculate.frequency(stringId, 'string'),
+							frequency : self.calculate.frequency(stringId, self.TYPE.STRING),
 							volume : (string.muted ? 0 : string.volume / 100),
 							type : string.type
 						});
@@ -672,7 +672,7 @@ angular
 				diff.cents.added.forEach(function(centId){
 					self.cents.findById(centId, function(cent, index, array, set){
 						audioModel.addCent(centId, set.id, {
-							frequency : self.calculate.frequency(centId, 'cent'),
+							frequency : self.calculate.frequency(centId, self.TYPE.CENT),
 							volume : (cent.muted ? 0 : cent.volume / 100),
 							type : cent.type
 						});
@@ -681,7 +681,7 @@ angular
 				diff.cents.changed.forEach(function(centId){
 					self.cents.findById(centId, function(cent){
 						audioModel.setCent(centId, {
-							frequency : self.calculate.frequency(centId, 'cent'),
+							frequency : self.calculate.frequency(centId, self.TYPE.CENT),
 							volume : (cent.muted ? 0 : cent.volume / 100),
 							type : cent.type
 						});
@@ -698,14 +698,14 @@ angular
 					set.strings.forEach(function(string){
 						dirty = true;
 						audioModel.setString(string.id, {
-							frequency : self.calculate.frequency(string.id, 'string')
+							frequency : self.calculate.frequency(string, self.TYPE.STRING)
 						});
 					});
 					
 					set.cents.forEach(function(cent){
 						dirty = true;
 						audioModel.setCent(cent.id, {
-							frequency : self.calculate.frequency(cent.id, 'cent')
+							frequency : self.calculate.frequency(cent, self.TYPE.CENT)
 						});
 					});
 				});
@@ -738,14 +738,14 @@ angular
 					set.strings.forEach(function(string){
 						dirty = true;
 						audioModel.setString(string.id, {
-							frequency : self.calculate.frequency(string.id, 'string')
+							frequency : self.calculate.frequency(string, self.TYPE.STRING)
 						});
 					});
 					
 					set.cents.forEach(function(cent){
 						dirty = true;
 						audioModel.setCent(cent.id, {
-							frequency : self.calculate.frequency(cent.id, 'cent')
+							frequency : self.calculate.frequency(cent, self.TYPE.CENT)
 						});
 					});
 				});
