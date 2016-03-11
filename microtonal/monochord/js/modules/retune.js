@@ -61,6 +61,6 @@ angular
 				
 				return to / divisor;
 			};
-		}
+		};
 	}])
 ;

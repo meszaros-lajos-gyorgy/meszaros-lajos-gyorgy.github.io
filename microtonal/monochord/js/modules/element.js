@@ -1,0 +1,72 @@
+angular
+	.module('Element', [])
+	.factory('Element', [function(){
+		'use strict';
+		
+		return function(setModel, type, $scope, models){
+			// params : multiplier, volume, muted
+			this.add = function(target, params){
+				params = params || {};
+				var set = (Number.isInteger(target) ? setModel.sets.findById(target) : target);
+				var data = {};
+				var property = (type === setModel.TYPE.STRING ? 'strings' : 'cents');
+				if(set && set.hasOwnProperty(property)){
+					data = {
+						id : ++setModel._lastStringId,
+						multiplier : params.hasOwnProperty('multiplier') ? params.multiplier : 1,
+						volume : params.hasOwnProperty('volume') ? params.volume : 100,
+						muted : params.hasOwnProperty('muted') ? params.muted : false,
+						type : 'sine'
+					};
+					set[property].push(data);
+				}
+				return data;
+			};
+			// target: string object | stringId
+			this.remove = function(target){
+				var index = -1;
+				var set;
+				var property = (type === setModel.TYPE.STRING ? 'strings' : 'cents');
+				
+				if(Number.isInteger(target)){
+					self[property].findById(target, function(string, _index, array, _set){
+						set = _set;
+						index = _index;
+					});
+				}else{
+					$scope[models.sets].some(function(_set){
+						index = _set[property].indexOf(target);
+						if(index !== -1){
+							set = _set;
+							return true;
+						}
+					});
+				}
+				
+				if(index !== -1){
+					if(set.strings.length === 1){
+						setModel.sets.remove(set.id);
+					}else{
+						$scope[models.sets].splice(index, 1);
+					}
+				}
+			};
+			this.findById = function(id, run){
+				var property = (type === setModel.TYPE.STRING ? 'strings' : 'cents');
+				var element;
+				var found = $scope[models.sets].some(function(set){
+					return set[property].some(function(_element, index, array){
+						if(_element.id === id){
+							if(run){
+								run(_element, index, array, set);
+							}
+							element = _element;
+							return true;
+						}
+					});
+				});
+				return (found ? element : null);
+			};
+		};
+	}])
+;

@@ -18,7 +18,6 @@ angular
 		
 		// --------------
 		
-		/*
 		importer
 			.load('resources/scala-scales/carlos_alpha.scl', importer.types.SCALA)
 			.then(function(data){
@@ -47,8 +46,8 @@ angular
 				console.error(error);
 			})
 		;
-		*/
 		
+		/*
 		setTimeout(function(){
 			var set = model.sets.add();
 			model.strings.add(set, {multiplier:30});
@@ -64,5 +63,6 @@ angular
 			
 			model.commit();
 		}, 100);
+		*/
 	}])
 ;
