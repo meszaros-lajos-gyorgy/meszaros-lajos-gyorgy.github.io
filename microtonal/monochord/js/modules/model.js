@@ -21,8 +21,8 @@ $scope.sets = [{
 }, ...];
 */
 angular
-	.module('Model', ['Math', 'AudioModel', 'Retune', 'Harmonics', 'Sets', 'Elements'])
-	.factory('Model', ['math', 'audioModel', 'Retune', 'Harmonics', 'Sets', 'Elements', function(math, audioModel, Retune, Harmonics, Sets, Element){
+	.module('Model', ['AudioModel', 'Retune', 'Harmonics', 'Calculate', 'Sets', 'Elements'])
+	.factory('Model', ['audioModel', 'Retune', 'Harmonics', 'Calculate', 'Sets', 'Elements', function(audioModel, Retune, Harmonics, Calculate, Sets, Element){
 		'use strict';
 		
 		return function($scope, models){
@@ -31,10 +31,10 @@ angular
 			this._lastSetId = 0;
 			this._lastStringId = 0;
 			
-			var lowestHarmonic = 1;
-			var highestHarmonic = 1e6;
-			var lowestCent = 0;
-			var highestCent = Infinity;
+			this._lowestHarmonic = 1;
+			this._highestHarmonic = 1e6;
+			this._lowestCent = 0;
+			this._highestCent = Infinity;
 			
 			this.commit = function(){
 				$scope.$apply();
@@ -45,79 +45,12 @@ angular
 				CENT : 0x02
 			};
 			
-			var retune = new Retune(this, $scope, models);
+			this.retune = new Retune(this, $scope, models);
 			this.sets = new Sets(this, $scope, models);
-			this.strings = new Element(this, this.TYPE.STRING, $scope, models);
-			this.cents = new Element(this, this.TYPE.CENT, $scope, models);
-			this.harmonics = new Harmonics(this);
-			
-			this.calculate = {
-				baseFrequency : function(target, type){
-					var set = (Number.isInteger(target) ? self.sets.findById(target) : target);
-					if(!set){
-						return 0;
-					}
-					var method = set.retune;
-					if(method === 'inherit'){
-						method = $scope[models.retune].default;
-					}
-					if(!retune[method]){
-						method = 'off';
-					}
-					
-					return retune[method](set, type);
-				},
-				frequency : function(target, type){
-					var freq;
-					var id = (Number.isInteger(target) ? target : target.id);
-					var isCentType = type === self.TYPE.CENT;
-					self[isCentType ? 'cents' : 'strings'].findById(id, function(element, index, array, set){
-						freq =
-							self.calculate.baseFrequency(set, type)
-							* (isCentType ? math.centsToFraction(element.multiplier) : element.multiplier)
-						;
-					});
-					return freq;
-				},
-				frequencies : function(target, type){
-					var arr = [];
-					var set = (Number.isInteger(target) ? self.sets.findById(target) : target);
-					
-					if(set){
-						var baseFreq = self.calculate.baseFrequency(set, type);
-						var isCentType = type === self.TYPE.CENT;
-						var elements = set[isCentType ? 'cents' : 'strings'];
-						var iSize = elements.length;
-						for(var i = 0; i < iSize; i++){
-							arr.push(baseFreq * (isCentType ? math.centsToFraction(elements[i].multiplier) : elements[i].multiplier));
-						}
-					}
-					
-					return arr;
-				},
-				
-				/*
-				cent : function(stringId){
-					var cents;
-					
-					self.strings.findById(stringId, function(string, index, array, set){
-						var baseFreq = self.calculate.baseFrequency(id, 'string', set);
-						cents = math.fractionToCents(math.ratioToFraction(baseFreq, baseFreq * string.multiplier));
-					});
-					
-					return cents;
-				},
-				cents : function(set){
-					var arr = [];
-					
-					set.strings.forEach(function(string){
-						arr.push(self.calculate.cent(string.id));
-					});
-					
-					return arr;
-				}
-				*/
-			};
+			this.strings = new Element(this, $scope, models, this.TYPE.STRING);
+			this.cents = new Element(this, $scope, models, this.TYPE.CENT);
+			this.harmonics = new Harmonics(this, $scope, models);
+			this.calculate = new Calculate(this, $scope, models);
 			
 			// -----------------
 			

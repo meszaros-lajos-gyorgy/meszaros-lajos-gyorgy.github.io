@@ -3,7 +3,7 @@ angular
 	.factory('Elements', [function(){
 		'use strict';
 		
-		return function(model, type, $scope, models){
+		return function(model, $scope, models, type){
 			var self = this;
 			
 			// params : multiplier, volume, muted

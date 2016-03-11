@@ -3,7 +3,7 @@ angular
 	.factory('Harmonics', ['math', function(math){
 		'use strict';
 		
-		return function(model){
+		return function(model, $scope, models){
 			var self = this;
 			
 			this.findInSet = function(target, harmonic, run){
@@ -49,8 +49,8 @@ angular
 				var lString = self.getLowest(target, model.TYPE.STRING);
 				var lCent = self.getLowest(target, model.TYPE.CENT);
 				
-				var canLowerString = lString !== null && lString - by >= lowestHarmonic;
-				var canLowerCent = lCent !== null && lCent - by >= lowestCent;
+				var canLowerString = lString !== null && lString - by >= model._lowestHarmonic;
+				var canLowerCent = lCent !== null && lCent - by >= model._lowestCent;
 				
 				return (
 					(lString === null && canLowerCent)
@@ -62,8 +62,8 @@ angular
 				var lString = self.getLowest(target, model.TYPE.STRING);
 				var lCent = self.getLowest(target, model.TYPE.CENT);
 				
-				var canLowerString = lString !== null && lString / 2 >= lowestHarmonic;
-				var canLowerCent = lCent !== null && lCent / 2 >= lowestCent;
+				var canLowerString = lString !== null && lString / 2 >= model._lowestHarmonic;
+				var canLowerCent = lCent !== null && lCent / 2 >= model._lowestCent;
 				
 				return (
 					(lString === null && canLowerCent)
@@ -109,8 +109,8 @@ angular
 				var hString = self.getHighest(target, model.TYPE.STRING);
 				var hCent = self.getHighest(target, model.TYPE.CENT);
 				
-				var canRaiseString = hString !== null && hString + by <= highestHarmonic;
-				var canRaiseCent = hCent !== null && hCent + by <= highestCent;
+				var canRaiseString = hString !== null && hString + by <= model._highestHarmonic;
+				var canRaiseCent = hCent !== null && hCent + by <= model._highestCent;
 				
 				return (
 					(hString === null && canRaiseCent)
@@ -122,8 +122,8 @@ angular
 				var hString = self.getHighest(target, model.TYPE.STRING);
 				var hCent = self.getHighest(target, model.TYPE.CENT);
 				
-				var canRaiseString = hString !== null && hString * 2 <= highestHarmonic;
-				var canRaiseCent = hCent !== null && hCent * 2 <= highestCent;
+				var canRaiseString = hString !== null && hString * 2 <= model._highestHarmonic;
+				var canRaiseCent = hCent !== null && hCent * 2 <= model._highestCent;
 				
 				return (
 					(hString === null && canRaiseCent)
