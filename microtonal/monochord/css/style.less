@@ -1,4 +1,3 @@
-/*
 @c1 : hsv(196, 93%, 34%); @c1-red : hsv(325, 93%, 34%); @c1-yellow : hsv(67, 93%, 34%); @c1-grey : hsv(196, 93% / 2, 34% * 1.3);
 @c2 : hsv(197, 40%, 46%); @c2-red : hsv(326, 40%, 46%); @c2-yellow : hsv(68, 40%, 46%); @c2-grey : hsv(197, 40% / 2, 46% * 1.3);
 @c3 : hsv(197, 65%, 76%); @c3-red : hsv(326, 65%, 76%); @c3-yellow : hsv(68, 65%, 76%); @c3-grey : hsv(197, 65% / 2, 76% * 1.3);
@@ -7,6 +6,7 @@
 
 @font : Tahoma, Geneva, sans-serif;
 
+/*
 @font-face {
 	font-family: 'monochord';
 	src: url('./font/monochord.eot?91905665');
@@ -17,6 +17,7 @@
 	font-weight: normal;
 	font-style: normal;
 }
+*/
 
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
 	display: none!important;
@@ -35,7 +36,6 @@ body{
 	font-family : @font;
 	background : @c5;
 }
-
 .hidden{
 	display : none;
 }
@@ -53,6 +53,15 @@ button{
 	-webkit-user-select : none;
 }
 
+.number-as-text{
+	-moz-appearance: textfield;
+	&::-webkit-outer-spin-button,
+	&::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+	}
+}
+
+/*
 // ----- build ----- //
 
 .dragnumber{
@@ -454,3 +463,53 @@ button{
 	}
 }
 */
+
+.input{
+	height : 48px;
+	line-height : 48px;
+	display : inline-block;
+	.unselectable;
+	box-shadow : 0 0 0 1px @c1;
+	border-radius : 9px;
+	overflow : hidden;
+	color : @c1;
+	&>span{
+		display : inline-block;
+		font-size : 18px;
+		font-family : Arial, sans-serif;
+		height : 48px;
+		line-height : 48px;
+	}
+	.left{
+		padding : 0 5px 0 10px;
+	}
+	.right{
+		border-left : 1px solid @c1;
+		padding : 0 10px 0 5px;
+	}
+	.editor{
+		transition : background .3s;
+		cursor : text;
+		input{
+			.number-as-text;
+			background : none;
+			border : 0;
+			font : inherit;
+			width : 80px;
+			text-align : right;
+			padding : 0;
+			margin : 0 .3em 0 0;
+			font-size : 26px;
+			vertical-align : top;
+			&:invalid{
+				box-shadow : none;
+			}
+		}
+		&.active{
+			background : #fff;
+		}
+		&.invalid{
+			background : @c5-red;
+		}
+	}
+}
