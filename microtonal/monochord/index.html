@@ -51,10 +51,12 @@
 		<br />
 		<br />
 		
-		<label class="input">
-			<span class="left">Base Frequency</span>
-			<span class="right editor"><input type="number" min="0" max="10000" ng-model="baseFrequency" onfocus="this.parentNode.classList.add('active');var val = parseInt(this.value);this.parentNode.classList[val > parseInt(this.getAttribute('max')) || val < parseInt(this.getAttribute('min')) ? 'add' : 'remove']('invalid')" onblur="this.parentNode.classList.remove('active')" oninput="var val = parseInt(this.value);this.parentNode.classList[val > parseInt(this.getAttribute('max')) || val < parseInt(this.getAttribute('min')) ? 'add' : 'remove']('invalid')" />Hz</span>
-		</label>
+		<form class="input" autocomplete="off" novalidate="novalidate">
+			<label>
+				<span class="left">Base Frequency</span>
+				<span class="right editor"><input type="number" min="0" max="10000" ng-model="baseFrequency" onfocus="this.parentNode.classList.add('active')" onblur="this.parentNode.classList.remove('active')" />Hz</span>
+			</label>
+		</form>
 	</div>
 	
 	<!--

@@ -473,7 +473,10 @@ button{
 	border-radius : 9px;
 	overflow : hidden;
 	color : @c1;
-	&>span{
+	label{
+		display : inline-block;
+	}
+	span{
 		display : inline-block;
 		font-size : 18px;
 		font-family : Arial, sans-serif;
@@ -508,8 +511,8 @@ button{
 		&.active{
 			background : #fff;
 		}
-		&.invalid{
-			background : @c5-red;
-		}
+	}
+	&.ng-invalid .editor{
+		background : @c5-red;
 	}
 }
