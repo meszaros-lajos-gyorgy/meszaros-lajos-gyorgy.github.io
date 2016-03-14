@@ -67,6 +67,7 @@ angular
 		}, 100);
 		*/
 		
+		/*
 		setTimeout(function(){
 			var set = model.sets.add();
 			model.strings.add(set, {multiplier:2});
@@ -74,5 +75,6 @@ angular
 			
 			model.commit();
 		});
+		*/
 	}])
 ;

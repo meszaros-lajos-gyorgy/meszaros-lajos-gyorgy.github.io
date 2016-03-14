@@ -46,20 +46,20 @@
 	-->
 </head>
 <body>
+	<!--
 	<div ng-app="Monochord" ng-controller="MonochordCtrl as mctrl">
-		<br />
-		<br />
-		<br />
+		<section class="right">
+			<form class="input" autocomplete="off" novalidate="novalidate">
+				<label class="element">
+					<span class="left">Base Frequency</span>
+					<span class="right editor"><input type="number" min="0" max="10000" ng-model="baseFrequency" onfocus="this.parentNode.classList.add('active')" onblur="this.parentNode.classList.remove('active')" />Hz</span>
+				</label>
+			</form>
+		</section>
 		
-		<form class="input" autocomplete="off" novalidate="novalidate">
-			<label>
-				<span class="left">Base Frequency</span>
-				<span class="right editor"><input type="number" min="0" max="10000" ng-model="baseFrequency" onfocus="this.parentNode.classList.add('active')" onblur="this.parentNode.classList.remove('active')" />Hz</span>
-			</label>
-		</form>
+		
 	</div>
 	
-	<!--
 	<div class="fb-like" data-href="http://meszaros-lajos-gyorgy.github.io/microtonal/monochord/" data-layout="standard" data-action="like" data-show-faces="false" data-share="true"></div>
 	
 	<div>If you have any questions, want to request a feature or report a bug, then feel free to contact me at: <a href="mailto:m_lajos@hotmail.com">m_lajos@hotmail</a>.</div>
@@ -71,5 +71,15 @@
 	Credits:
 		scala - format of the de-facto microtonal tuning software, created by Manuel Op de Coul, http://www.huygens-fokker.org/scala/
 	-->
+	
+	<div class="wrapper">
+		<section class="properties-wrapper">left</section>
+		<section class="editor-wrapper">
+			left left left left left left left left
+			left left left left left left left left
+			left left left left left left left left
+			left left left left left left left left
+		</section>
+	</div>
 </body>
 </html>
