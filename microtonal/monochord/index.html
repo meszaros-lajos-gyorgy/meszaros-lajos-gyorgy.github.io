@@ -37,6 +37,9 @@
 	<script src="js/modules/model.elements.js"></script>
 	<script src="js/modules/model.js"></script>
 	
+	<script src="js/modules/ui.texted-input.js"></script>
+	<script src="js/modules/ui.js"></script>
+	
 	<script src="js/modules/importer.js"></script>
 	
 	<script src="js/app.js"></script>
@@ -47,19 +50,6 @@
 </head>
 <body>
 	<!--
-	<div ng-app="Monochord" ng-controller="MonochordCtrl as mctrl">
-		<section class="right">
-			<form class="input" autocomplete="off" novalidate="novalidate">
-				<label class="element">
-					<span class="left">Base Frequency</span>
-					<span class="right editor"><input type="number" min="0" max="10000" ng-model="baseFrequency" onfocus="this.parentNode.classList.add('active')" onblur="this.parentNode.classList.remove('active')" />Hz</span>
-				</label>
-			</form>
-		</section>
-		
-		
-	</div>
-	
 	<div class="fb-like" data-href="http://meszaros-lajos-gyorgy.github.io/microtonal/monochord/" data-layout="standard" data-action="like" data-show-faces="false" data-share="true"></div>
 	
 	<div>If you have any questions, want to request a feature or report a bug, then feel free to contact me at: <a href="mailto:m_lajos@hotmail.com">m_lajos@hotmail</a>.</div>
@@ -72,12 +62,12 @@
 		scala - format of the de-facto microtonal tuning software, created by Manuel Op de Coul, http://www.huygens-fokker.org/scala/
 	-->
 	
-	<div class="wrapper">
+	<div class="wrapper" ng-app="Monochord" ng-controller="MonochordCtrl as mctrl">
 		<section class="properties-wrapper">
+			<texted-input label="'Base Frequency'"><input type="number" min="0" max="10000" ng-model="baseFrequency" />Hz</texted-input>
 			
 			<!--
 			main volume
-			baseFrequency
 			default retuning
 			default retuning for new sets
 			import
@@ -85,7 +75,16 @@
 			-->
 		</section>
 		<section class="editor-wrapper">
-			<button class="icon-add red">+++</button>
+			<button class="icon-add indicator-off"></button>
+			<button class="icon-add yellow indicator-off"></button>
+			<button class="icon-add red indicator-off"></button>
+			<button class="icon-add grey indicator-off"></button>
+			<br />
+			<br />
+			<button class="icon-add indicator-on"></button>
+			<button class="icon-add yellow indicator-on"></button>
+			<button class="icon-add red indicator-on"></button>
+			<button class="icon-add grey indicator-on"></button>
 		</section>
 	</div>
 </body>

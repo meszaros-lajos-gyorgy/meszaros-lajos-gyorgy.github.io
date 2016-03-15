@@ -1,5 +1,5 @@
 angular
-	.module('Monochord', ['Model', 'Importer'])
+	.module('Monochord', ['Model', 'Importer', 'UI'])
 	.controller('MonochordCtrl', ['$scope', 'Model', 'importer', function($scope, Model, importer){
 		$scope.baseVolume = 30;
 		$scope.baseFrequency = 200;
