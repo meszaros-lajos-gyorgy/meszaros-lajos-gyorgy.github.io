@@ -1,4 +1,4 @@
-@hues : 196, 325, 67;
+@hues : 196, 325, 67, 0;
 @saturations : 93%, 70%, 65%, 49%, 30%;
 @values : 34%, 50%, 76%, 88%, 93%;
 
@@ -20,11 +20,11 @@
 @c4-yellow : hsv(extract(@hues, 3), extract(@saturations, 4), extract(@values, 4));
 @c5-yellow : hsv(extract(@hues, 3), extract(@saturations, 5), extract(@values, 5));
 
-@c1-grey : hsv(extract(@hues, 1), extract(@saturations, 1) / 4, extract(@values, 1));
-@c2-grey : hsv(extract(@hues, 1), extract(@saturations, 2) / 4, extract(@values, 2));
-@c3-grey : hsv(extract(@hues, 1), extract(@saturations, 3) / 4, extract(@values, 3));
-@c4-grey : hsv(extract(@hues, 1), extract(@saturations, 4) / 4, extract(@values, 4));
-@c5-grey : hsv(extract(@hues, 1), extract(@saturations, 5) / 4, extract(@values, 5));
+@c1-grey : hsv(extract(@hues, 4), 0%, extract(@values, 1));
+@c2-grey : hsv(extract(@hues, 4), 0%, extract(@values, 2));
+@c3-grey : hsv(extract(@hues, 4), 0%, extract(@values, 3));
+@c4-grey : hsv(extract(@hues, 4), 0%, extract(@values, 4));
+@c5-grey : hsv(extract(@hues, 4), 0%, extract(@values, 5));
 
 .c1{background : @c1;}
 .c2{background : @c2;}
