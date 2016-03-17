@@ -298,7 +298,7 @@ body{
 
 .editor-wrapper{
 	display : table-cell;
-	background : @c4;
+	background : @c5;
 	height : 100%;
 	padding : 20px;
 	vertical-align : top;
@@ -306,7 +306,7 @@ body{
 }
 .properties-wrapper{
 	display : table-cell;
-	background : @c3;
+	background : @c4;
 	width : 400px;
 	height : 100%;
 	padding : 20px;
@@ -315,30 +315,40 @@ body{
 	text-align : center;
 }
 
-button{
+.button{
 	border : 0;
 	padding : 0;
-	width : 48px;
 	height : 48px;
 	line-height : 48px;
-	cursor : pointer;
 	border-radius : 5px;
 	font-size : 20px;
 	font-family : inherit;
+	cursor : pointer;
 	outline : none;
 	vertical-align : top;
+	display : inline-block;
 	position : relative;
+	padding : 0 10px;
+	.unselectable;
 	
 	&.smaller{
 		margin-top : 4px;
 		margin-bottom : 4px;
-		width : 40px;
 		height : 40px;
 		line-height : 40px;
 	}
+	&[class*=" icon-"],
+	&[class^="icon-"]{
+		width : 48px;
+		padding : 0;
+		&.smaller{
+			width : 40px;
+		}
+	}
 	
-	&:active:not(.grey){
-		box-shadow : none!important;
+	&:active:not(.disabled){
+		// box-shadow : none!important;
+		border-bottom : 0; /**//**/
 		margin-top : 2px;
 		height : 46px;
 		line-height : 46px;
@@ -355,6 +365,14 @@ button{
 			border-radius : 20px;
 		}
 	}
+	&.left{
+		border-top-right-radius : 0;
+		border-bottom-right-radius : 0;
+	}
+	&.right{
+		border-top-left-radius : 0;
+		border-bottom-left-radius : 0;
+	}
 	
 	color : @c1;
 	background : @c2;
@@ -362,7 +380,10 @@ button{
 		0 -1px 0 darken(@c2, 30%),
 		0 1px 0 lighten(@c2, 10%)
 	;
-	box-shadow : 0 -2px 0 0 @c1 inset;
+	// box-shadow : 0 -2px 0 0 @c1 inset;
+	border-bottom : 2px solid @c1; /**//**/
+	// todo!!!!!! change all box-shadows to border-bottom
+	// so that the texted version of the button can keep it's line height too, like the icon
 	
 	&.red{
 		color : @c1-red;
@@ -391,6 +412,7 @@ button{
 		;
 		box-shadow : 0 -2px 0 0 @c1-grey inset;
 	}
+	
 	&.indicator-on,
 	&.indicator-off{
 		&::after{
@@ -422,98 +444,62 @@ button{
 		&::after{
 			background : @c4-yellow;
 		}
-		&.yellow::after{
+		&.yellow::after,
+		&.grey::after{
 			background : @c5-yellow;
+		}
+	}
+}
+
+.buttongroup{
+	font-size : 0;
+	.button{
+		border-left : 1px solid @c1;
+		&.yellow{
+			border-color : @c1-yellow;
+		}
+		&.red{
+			border-color : @c1-red;
+		}
+		&.grey{
+			border-color : @c1-grey;
+		}
+		&:first-child{
+			border-left : 0;
+		}
+	}
+	
+	&:active .button:not(.disabled){
+		box-shadow : none!important;
+		margin-top : 2px;
+		height : 46px;
+		line-height : 46px;
+		&.smaller{
+			margin-top : 6px;
+			height : 38px;
+			line-height : 38px;
 		}
 	}
 }
 
 .ui{
 	&.texted-input{
-		display : inline-block;
-		
-		.left{
-			
+		input{
+			.number-as-text;
+			background : none;
+			border : 0;
+			font : inherit;
+			font-weight : bold;
+			width : 80px;
+			text-align : right;
 			padding : 0;
-			height : 48px;
+			margin : 0 6px 0 0;
+			font-size : 25px;
+			vertical-align : top;
 			line-height : 48px;
-			border-radius : 5px;
-			font-size : 20px;
-			font-family : inherit;
+			color : inherit;
+			text-shadow : inherit;
 			outline : none;
-			vertical-align : top;
-			
-			display : inline-block;
-			color : @c1;
-			background : @c2;
-			text-shadow :
-				0 -1px 0 darken(@c2, 30%),
-				0 1px 0 lighten(@c2, 10%)
-			;
-			box-shadow : 0 -2px 0 0 @c1 inset;
 		}
-		.right{
-			
-		}
-		
-		/*
-		label{
-			background : @c2;
-			height : 48px;
-			line-height : 48px;
-			display : inline-block;
-			.unselectable;
-			box-shadow : 0 -2px 0 0 @c1 inset;
-			border-radius : 9px;
-			overflow : hidden;
-			color : @c1;
-			display : inline-block;
-		}
-		span{
-			display : inline-block;
-			font-size : 18px;
-			font-family : Arial, sans-serif;
-			height : 46px;
-			line-height : 46px;
-			vertical-align : top;
-		}
-		.left{
-			padding : 0 10px 0 10px;
-		}
-		.right{
-			border-left : 1px solid @c1;
-			padding : 0 10px 0 10px;
-			
-			transition : background .3s;
-			cursor : text;
-			input{
-				.number-as-text;
-				background : none;
-				border : 0;
-				font : inherit;
-				width : 80px;
-				text-align : right;
-				padding : 0;
-				margin : 0 .3em 0 0;
-				font-size : 26px;
-				vertical-align : top;
-				color : @c1;
-				&:invalid{
-					box-shadow : none;
-				}
-			}
-			
-			&.active{
-				background : @c4;
-				border-left : 1px solid transparent;
-			}
-		}
-		&.ng-invalid  .right{
-			background : @c3-red;
-			&.active{
-				background : @c4-red;
-			}
-		}
-		*/
 	}
 }
