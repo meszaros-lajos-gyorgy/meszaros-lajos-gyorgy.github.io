@@ -17,8 +17,7 @@ angular
 						id : ++model._lastStringId,
 						multiplier : params.hasOwnProperty('multiplier') ? params.multiplier : 1,
 						volume : params.hasOwnProperty('volume') ? params.volume : 100,
-						muted : params.hasOwnProperty('muted') ? params.muted : false,
-						type : 'sine'
+						muted : params.hasOwnProperty('muted') ? params.muted : false
 					};
 					set[property].push(data);
 				}

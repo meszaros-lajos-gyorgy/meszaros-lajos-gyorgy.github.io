@@ -7,15 +7,13 @@ $scope.sets = [{
 		id : <int>, // centId
 		multiplier : <float>,
 		muted : <bool>,
-		volume : 0..100,
-		type : <string:sine|square|sawtooth|triangle>
+		volume : 0..100
 	}, ...],
 	strings : [{
 		id : <int>, // stringId
 		multiplier : lowestHarmonic..highestHarmonic,
 		muted : <bool>,
-		volume : 0..100,
-		type : <string:sine|square|sawtooth|triangle>
+		volume : 0..100
 	}, ...],
 	retune : <string>
 }, ...];
@@ -174,7 +172,7 @@ angular
 						audioModel.addString(stringId, set.id, {
 							frequency : self.calculate.frequency(stringId, self.TYPE.STRING),
 							volume : (string.muted ? 0 : string.volume / 100),
-							type : string.type
+							type : 'sine'
 						});
 					});
 				});
@@ -183,7 +181,7 @@ angular
 						audioModel.setString(stringId, {
 							frequency : self.calculate.frequency(stringId, self.TYPE.STRING),
 							volume : (string.muted ? 0 : string.volume / 100),
-							type : string.type
+							type : 'sine'
 						});
 					});
 				});
@@ -195,7 +193,7 @@ angular
 						audioModel.addCent(centId, set.id, {
 							frequency : self.calculate.frequency(centId, self.TYPE.CENT),
 							volume : (cent.muted ? 0 : cent.volume / 100),
-							type : cent.type
+							type : 'sine'
 						});
 					});
 				});
@@ -204,7 +202,7 @@ angular
 						audioModel.setCent(centId, {
 							frequency : self.calculate.frequency(centId, self.TYPE.CENT),
 							volume : (cent.muted ? 0 : cent.volume / 100),
-							type : cent.type
+							type : 'sine'
 						});
 					});
 				});
