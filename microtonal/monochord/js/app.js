@@ -18,59 +18,15 @@ angular
 		
 		// --------------
 		
-		/*
-		importer
-			.load('resources/scala-scales/carlos_alpha.scl', importer.types.SCALA)
-			.then(function(data){
-				console.log('Successfully parsed SCL file!');
-				
-				setTimeout(function(){
-					var set, type, min;
-					
-					$scope.retune = 'lowestToBaseFreq';
-					
-					data.notes.some(function(note){
-						set = model.sets.add();
-						type = (note.type === 'ratio' ? 'strings' : 'cents');
-						min = note.multipliers.sort()[0];
-						note.multipliers.forEach(function(multiplier, index){
-							model[type].add(set, {
-								multiplier : multiplier,
-								muted : min === multiplier
-							});
-						});
-					});
-					
-					model.commit();
-				}, 100);
-			}, function(error){
-				console.error(error);
-			})
-		;
-		*/
-		
-		/*
 		converter
-			.fromHTTP('resources/scala-scales/carlos_alpha.scl')
-			.then(function(data){
-				return converter.to(data, converter.types.SCALA)
-			})
-			.then(converter.toScala)
-			.then(function(data){
-				console.log(data);
-			}, function(error){
+			.bindModel(model)
+			.load('resources/scala-scales/carlos_alpha.scl', converter.types.SCALA)
+			.then(converter.injectIntoModel)
+			// .then(model.commit)
+			.catch(function(error){
 				console.error(error);
 			})
 		;
-		*/
-		
-		// http -> scala -> json -> injectIntoModel
-		/*
-		http->rawtext (loading it through http)
-		rawtext->scala (identifying it)
-		scala->json (converting it to json)
-		*/
-		
 		
 		/*
 		setTimeout(function(){

@@ -123,54 +123,49 @@ angular
 			HTTP : 0x04
 		};
 		
-		function isValidType(type){
-			return Object.keys(types).some(function(key){
-				return types[key] === type;
-			});
-		}
+		// should we bind the model or the $scope itself?
+		var bindedModel;
 		
 		return {
-			type : types
-		};
-		
-		/*
-		return {
-			from : function(source, sourceType){
-				return new Promise(function(resolve, reject){
-					if(!isValidType(sourceType)){
-						reject(Error('Unknown source type specified'));
-						return;
-					}
-					
-					resolve({
-						source : source,
-						type : sourceType
-					});
-				});
+			types : types,
+			bindModel : function(model){
+				bindedModel = model;
+				return this;
 			},
-			to : function(targetType, from){
-				return new Promise(function(resolve, reject){
-					if(!isValidType(targetType)){
-						reject(Error('Unknown target type specified'));
-						return;
-					}
-					
-				});
-			},
-			toScala : this.to.bind(null, types.SCALA),
 			load : function(url, type){
+				var ret = $http.get(url, {responseType : 'text'});
 				switch(type){
-					case this.types.SCALA :
-						return $http
-							.get(url, {responseType : 'text'})
-							.then(function(response){
-								return parseScalaLines(response.data);
-							})
-						;
+					case types.SCALA :
+						ret = ret.then(function(response){
+							return parseScalaLines(response.data);
+						});
 						break;
 				}
+				return ret;
+			},
+			injectIntoModel : function(data){
+				// inject data into bindedModel
+				/*
+				var set, type, min;
+				
+				$scope.retune = 'lowestToBaseFreq';
+				
+				data.notes.some(function(note){
+					set = model.sets.add();
+					type = (note.type === 'ratio' ? 'strings' : 'cents');
+					min = note.multipliers.sort()[0];
+					note.multipliers.forEach(function(multiplier, index){
+						model[type].add(set, {
+							multiplier : multiplier,
+							muted : min === multiplier
+						});
+					});
+				});
+				*/
+			},
+			extractFromModel : function(){
+				// angular.toJson(bindedModel.export)
 			}
 		};
-		*/
 	}])
 ;
