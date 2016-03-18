@@ -1,6 +1,6 @@
 angular
-	.module('Importer', [])
-	.factory('importer', ['$http', function($http){
+	.module('Converter', [])
+	.factory('converter', ['$http', function($http){
 		'use strict';
 		
 		function parseScalaLines(raw){
@@ -117,10 +117,47 @@ angular
 			});
 		}
 		
+		var types = {
+			SCALA : 0x01,
+			JSON : 0x02,
+			HTTP : 0x04
+		};
+		
+		function isValidType(type){
+			return Object.keys(types).some(function(key){
+				return types[key] === type;
+			});
+		}
+		
 		return {
-			types : {
-				SCALA : 'scl'
+			type : types
+		};
+		
+		/*
+		return {
+			from : function(source, sourceType){
+				return new Promise(function(resolve, reject){
+					if(!isValidType(sourceType)){
+						reject(Error('Unknown source type specified'));
+						return;
+					}
+					
+					resolve({
+						source : source,
+						type : sourceType
+					});
+				});
 			},
+			to : function(targetType, from){
+				return new Promise(function(resolve, reject){
+					if(!isValidType(targetType)){
+						reject(Error('Unknown target type specified'));
+						return;
+					}
+					
+				});
+			},
+			toScala : this.to.bind(null, types.SCALA),
 			load : function(url, type){
 				switch(type){
 					case this.types.SCALA :
@@ -134,5 +171,6 @@ angular
 				}
 			}
 		};
+		*/
 	}])
 ;

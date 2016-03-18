@@ -1,6 +1,6 @@
 angular
-	.module('Monochord', ['Model', 'Importer'])
-	.controller('MonochordCtrl', ['$scope', 'Model', 'importer', function($scope, Model, importer){
+	.module('Monochord', ['Model', 'Converter'])
+	.controller('MonochordCtrl', ['$scope', 'Model', 'converter', function($scope, Model, converter){
 		$scope.baseVolume = 30;
 		$scope.baseFrequency = 200;
 		$scope.sets = [];
@@ -18,6 +18,7 @@ angular
 		
 		// --------------
 		
+		/*
 		importer
 			.load('resources/scala-scales/carlos_alpha.scl', importer.types.SCALA)
 			.then(function(data){
@@ -46,6 +47,30 @@ angular
 				console.error(error);
 			})
 		;
+		*/
+		
+		/*
+		converter
+			.fromHTTP('resources/scala-scales/carlos_alpha.scl')
+			.then(function(data){
+				return converter.to(data, converter.types.SCALA)
+			})
+			.then(converter.toScala)
+			.then(function(data){
+				console.log(data);
+			}, function(error){
+				console.error(error);
+			})
+		;
+		*/
+		
+		// http -> scala -> json -> injectIntoModel
+		/*
+		http->rawtext (loading it through http)
+		rawtext->scala (identifying it)
+		scala->json (converting it to json)
+		*/
+		
 		
 		/*
 		setTimeout(function(){
