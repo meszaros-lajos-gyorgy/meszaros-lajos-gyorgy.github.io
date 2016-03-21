@@ -14,10 +14,12 @@ angular
 		// --------------
 		
 		converter
-			.bindModel($scope)
+			.bindModel($scope, model)
 			.load('resources/scala-scales/carlos_alpha.scl', converter.types.SCALA)
 			.then(converter.injectIntoModel)
-			// .then(model.commit)
+			.then(function(){
+				setTimeout(model.commit, 0);
+			})
 			.catch(function(error){
 				console.error(error);
 			})
