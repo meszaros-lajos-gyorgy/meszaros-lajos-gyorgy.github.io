@@ -47,7 +47,7 @@ angular
 				});
 			},
 			extractFromModel : function(){
-				// angular.toJson(bindedModel.export)
+				return angular.toJson($scope);
 			}
 		};
 	}])

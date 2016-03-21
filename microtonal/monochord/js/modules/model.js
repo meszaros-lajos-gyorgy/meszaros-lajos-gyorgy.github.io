@@ -35,7 +35,7 @@ angular
 			this._highestCent = Infinity;
 			
 			this.commit = function(){
-				$scope.$apply();
+				setTimeout($scope.$apply, 0);
 			};
 			
 			this.TYPE = {
