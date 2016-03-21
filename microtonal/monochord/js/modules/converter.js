@@ -123,13 +123,12 @@ angular
 			HTTP : 0x04
 		};
 		
-		// should we bind the model or the $scope itself?
-		var bindedModel;
+		var $scope;
 		
 		return {
 			types : types,
-			bindModel : function(model){
-				bindedModel = model;
+			bindModel : function(scope){
+				$scope = scope;
 				return this;
 			},
 			load : function(url, type){

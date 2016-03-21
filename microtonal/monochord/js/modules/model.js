@@ -23,7 +23,7 @@ angular
 	.factory('Model', ['audioModel', 'Retune', 'Harmonics', 'Calculate', 'Sets', 'Elements', function(audioModel, Retune, Harmonics, Calculate, Sets, Element){
 		'use strict';
 		
-		return function($scope, models){
+		return function($scope){
 			var self = this;
 			
 			this._lastSetId = 0;
@@ -43,12 +43,12 @@ angular
 				CENT : 0x02
 			};
 			
-			this.retune = new Retune(this, $scope, models);
-			this.sets = new Sets(this, $scope, models);
-			this.strings = new Element(this, $scope, models, this.TYPE.STRING);
-			this.cents = new Element(this, $scope, models, this.TYPE.CENT);
-			this.harmonics = new Harmonics(this, $scope, models);
-			this.calculate = new Calculate(this, $scope, models);
+			this.retune = new Retune(this, $scope);
+			this.sets = new Sets(this, $scope);
+			this.strings = new Element(this, $scope, this.TYPE.STRING);
+			this.cents = new Element(this, $scope, this.TYPE.CENT);
+			this.harmonics = new Harmonics(this, $scope);
+			this.calculate = new Calculate(this, $scope);
 			
 			// -----------------
 			
@@ -144,7 +144,7 @@ angular
 				};
 			}
 			
-			$scope.$watch(models.sets, function(newValue, oldValue){
+			$scope.$watch('sets', function(newValue, oldValue){
 				var diff = diffScopeChange(newValue, oldValue);
 				
 				diff.sets.removed.forEach(function(setId){
@@ -210,10 +210,10 @@ angular
 				audioModel.commit();
 			}, true);
 			
-			$scope.$watch(models.baseFrequency, function(newValue){
+			$scope.$watch('baseFrequency', function(newValue){
 				var dirty = false;
 				
-				$scope[models.sets].forEach(function(set){
+				$scope.sets.forEach(function(set){
 					set.strings.forEach(function(string){
 						dirty = true;
 						audioModel.setString(string.id, {
@@ -234,14 +234,14 @@ angular
 				}
 			});
 			
-			$scope.$watch(models.baseVolume, function(newValue){
+			$scope.$watch('baseVolume', function(newValue){
 				audioModel
 					.setMainVolume(newValue / 100)
 					.commit()
 				;
 			});
 			
-			$scope.$watch(models.retune, function(newValue, oldValue){
+			$scope.$watch('retune', function(newValue, oldValue){
 				if(newValue.default === oldValue.default){
 					return ;
 				}
@@ -249,7 +249,7 @@ angular
 				var dirty = false;
 				
 				// todo: can we extract this and the above copy into an "update frequencies" method?
-				$scope[models.sets].forEach(function(set){
+				$scope.sets.forEach(function(set){
 					if(set.retune !== 'inherit'){
 						return ;
 					}

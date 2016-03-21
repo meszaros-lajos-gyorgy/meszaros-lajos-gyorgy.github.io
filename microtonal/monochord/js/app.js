@@ -9,17 +9,12 @@ angular
 			defaultForNew : 'inherit'
 		};
 		
-		var model = new Model($scope, {
-			sets : 'sets',
-			baseFrequency : 'baseFrequency',
-			baseVolume : 'baseVolume',
-			retune : 'retune'
-		});
+		var model = new Model($scope);
 		
 		// --------------
 		
 		converter
-			.bindModel(model)
+			.bindModel($scope)
 			.load('resources/scala-scales/carlos_alpha.scl', converter.types.SCALA)
 			.then(converter.injectIntoModel)
 			// .then(model.commit)

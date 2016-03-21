@@ -3,7 +3,7 @@ angular
 	.factory('Harmonics', ['math', function(math){
 		'use strict';
 		
-		return function(model, $scope, models){
+		return function(model, $scope){
 			var self = this;
 			
 			this.findInSet = function(target, harmonic, run){
