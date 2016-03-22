@@ -318,8 +318,8 @@ body{
 .button{
 	border : 0;
 	padding : 0;
-	height : 48px;
-	line-height : 48px;
+	height : 46px;
+	line-height : 46px;
 	border-radius : 5px;
 	font-size : 20px;
 	font-family : inherit;
@@ -347,13 +347,10 @@ body{
 	}
 	
 	&:active:not(.disabled){
-		// box-shadow : none!important;
-		border-bottom : 0; /**//**/
+		border-bottom : 0;
 		margin-top : 2px;
-		height : 46px;
-		line-height : 46px;
 		&.smaller{
-			margin-top : 6px;
+			border-top-height : 6px;
 			height : 38px;
 			line-height : 38px;
 		}
@@ -380,10 +377,7 @@ body{
 		0 -1px 0 darken(@c2, 30%),
 		0 1px 0 lighten(@c2, 10%)
 	;
-	// box-shadow : 0 -2px 0 0 @c1 inset;
-	border-bottom : 2px solid @c1; /**//**/
-	// todo!!!!!! change all box-shadows to border-bottom
-	// so that the texted version of the button can keep it's line height too, like the icon
+	border-bottom : 2px solid @c1;
 	
 	&.red{
 		color : @c1-red;
@@ -392,7 +386,7 @@ body{
 			0 -1px 0 darken(@c2-red, 30%),
 			0 1px 0 lighten(@c2-red, 10%)
 		;
-		box-shadow : 0 -2px 0 0 @c1-red inset;
+		border-bottom-color : @c1-red;
 	}
 	&.yellow{
 		color : @c1-yellow;
@@ -401,7 +395,7 @@ body{
 			0 -1px 0 darken(@c2-yellow, 30%),
 			0 1px 0 lighten(@c2-yellow, 10%)
 		;
-		box-shadow : 0 -2px 0 0 @c1-yellow inset;
+		border-bottom-color : @c1-yellow;
 	}
 	&.grey{
 		color : @c1-grey;
@@ -410,7 +404,7 @@ body{
 			0 -1px 0 darken(@c2-grey, 30%),
 			0 1px 0 lighten(@c2-grey, 10%)
 		;
-		box-shadow : 0 -2px 0 0 @c1-grey inset;
+		border-bottom-color : @c1-grey;
 	}
 	
 	&.indicator-on,
@@ -470,14 +464,10 @@ body{
 	}
 	
 	&:active .button:not(.disabled){
-		box-shadow : none!important;
+		border-bottom : 0;
 		margin-top : 2px;
-		height : 46px;
-		line-height : 46px;
 		&.smaller{
 			margin-top : 6px;
-			height : 38px;
-			line-height : 38px;
 		}
 	}
 }
