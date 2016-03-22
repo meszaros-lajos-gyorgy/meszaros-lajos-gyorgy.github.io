@@ -248,14 +248,15 @@ button{
 		
 		display : inline-block;
 		width : 48px;
-		height : 46px;
-		line-height : 46px;
+		height : 48px;
+		line-height : 48px;
 		font-size : 24px;
 	}
 	&.smaller::before{
 		width : 40px;
-		height : 38px;
-		line-height : 38px;
+		height : 40px;
+		line-height : 40px;
+		font-size : 20px;
 	}
 }
 .icon-increase::before{ ._icon-increase; }
@@ -330,6 +331,7 @@ body{
 	position : relative;
 	padding : 0 10px;
 	.unselectable;
+	box-sizing : content-box;
 	
 	&.smaller{
 		margin-top : 4px;
@@ -351,8 +353,6 @@ body{
 		margin-top : 2px;
 		&.smaller{
 			margin-top : 6px;
-			height : 38px;
-			line-height : 38px;
 		}
 	}
 	
@@ -418,6 +418,11 @@ body{
 			position : absolute;
 			top : 5px;
 			right : 5px;
+		}
+		&.smaller::after{
+			width : 6px;
+			height : 6px;
+			border-radius : 3px;
 		}
 	}
 	&.indicator-off{
