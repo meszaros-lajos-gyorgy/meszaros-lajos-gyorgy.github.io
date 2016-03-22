@@ -67,22 +67,15 @@
 			<texted-input label="'Base Frequency'"><input type="number" min="0" max="10000" ng-model="baseFrequency" />Hz</texted-input>
 			
 			<!--
-			main volume
+			main volume | <input type="range" ng-model="baseVolume" min="0" max="100" />
 			default retuning
 			default retuning for new sets
 			import
 			export
 			-->
-			<br />
-			<br />
-			<br />
-			<br />
-			<label class="buttongroup">
-				<span class="button left icon-add"></span>
-				<span class="button right">add...</span>
-			</label>
 		</section>
 		<section class="editor-wrapper">
+			<!--
 			<button class="button icon-add indicator-off"></button>
 			<button class="button icon-add yellow indicator-off"></button>
 			<button class="button icon-add red indicator-off"></button>
@@ -105,6 +98,17 @@
 			<button class="button smaller icon-add yellow indicator-on"></button>
 			<button class="button smaller icon-add red indicator-on"></button>
 			<button class="button smaller icon-add grey indicator-on"></button>
+			-->
+			
+			<!--
+				add cents
+				add strings
+			-->
+			
+			<label class="buttongroup">
+				<span class="button left icon-add"></span>
+				<span class="button right">add...</span>
+			</label>
 		</section>
 	</div>
 </body>
