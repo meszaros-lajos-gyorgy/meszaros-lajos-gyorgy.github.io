@@ -67,47 +67,42 @@
 		<section class="properties-wrapper">
 			<texted-input label="'Base Frequency'"><input type="number" min="0" max="10000" ng-model="baseFrequency" />Hz</texted-input>
 			
-			<!--
 			main volume | <input type="range" ng-model="baseVolume" min="0" max="100" />
+			<!--
 			default retuning
 			default retuning for new sets
-			import
+			-->
+			<button class="button">import scala</button>
+			<!--
 			export
 			-->
 		</section>
 		<section class="editor-wrapper">
-			<button class="button icon-add indicator-off"></button>
-			<button class="button icon-add yellow indicator-off"></button>
-			<button class="button icon-add red indicator-off"></button>
-			<button class="button icon-add grey indicator-off"></button>
-			<br />
-			<br />
-			<button class="button icon-add indicator-on"></button>
-			<button class="button icon-add yellow indicator-on"></button>
-			<button class="button icon-add red indicator-on"></button>
-			<button class="button icon-add grey indicator-on"></button>
-			<br />
-			<br />
-			<button class="button smaller icon-add indicator-off"></button>
-			<button class="button smaller icon-add yellow indicator-off"></button>
-			<button class="button smaller icon-add red indicator-off"></button>
-			<button class="button smaller icon-add grey indicator-off"></button>
-			<br />
-			<br />
-			<button class="button smaller icon-add indicator-on"></button>
-			<button class="button smaller icon-add yellow indicator-on"></button>
-			<button class="button smaller icon-add red indicator-on"></button>
-			<button class="button smaller icon-add grey indicator-on"></button>
-			
-			<!--
-				add cents
-				add strings
-			-->
-			
 			<label class="buttongroup">
 				<span class="button left icon-add"></span>
-				<span class="button right">add...</span>
+				<button class="button right">add cents</button>
 			</label>
+			<label class="buttongroup">
+				<span class="button left icon-add"></span>
+				<button class="button right">add ratio</button>
+			</label>
+			
+			<hr />
+			
+			<ul>
+				<li ng-repeat="set in sets">
+					<ul class="strings">
+						<li ng-repeat="string in set.strings">
+							{{string|json}}
+						</li>
+					</ul>
+					<ul class="cents">
+						<li ng-repeat="cent in set.cents">
+							{{cent|json}}
+						</li>
+					</ul>
+				</li>
+			</ul>
 		</section>
 	</div>
 </body>

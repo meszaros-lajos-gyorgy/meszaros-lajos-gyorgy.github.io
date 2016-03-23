@@ -13,13 +13,11 @@ angular
 		
 		// --------------
 		
-		/*
 		converter
 			.bindModel($scope, model)
 			.load('resources/scala-scales/carlos_alpha.scl', converter.types.SCALA)
 			.then(converter.injectIntoModel)
-			.then(model.commit, console.error)
+			// .then(model.commit, console.error)
 		;
-		*/
 	}])
 ;
