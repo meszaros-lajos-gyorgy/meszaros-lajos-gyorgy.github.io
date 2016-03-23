@@ -3,7 +3,7 @@ angular
 	.factory('Calculate', ['math', function(math){
 		'use strict';
 		
-		return function(model, $scope, models){
+		return function(model, $scope){
 			var self = this;
 			
 			this.baseFrequency = function(target, type){
@@ -13,7 +13,7 @@ angular
 				}
 				var method = set.retune;
 				if(method === 'inherit'){
-					method = $scope[models.retune].default;
+					method = $scope.retune.default;
 				}
 				if(!model.retune[method]){
 					method = 'off';

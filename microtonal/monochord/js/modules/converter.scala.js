@@ -1,6 +1,6 @@
 angular
-	.module('Importer', [])
-	.factory('importer', ['$http', function($http){
+	.module('ScalaConverter', [])
+	.factory('scalaConverter', [function(){
 		'use strict';
 		
 		function parseScalaLines(raw){
@@ -118,20 +118,10 @@ angular
 		}
 		
 		return {
-			types : {
-				SCALA : 'scl'
-			},
-			load : function(url, type){
-				switch(type){
-					case this.types.SCALA :
-						return $http
-							.get(url, {responseType : 'text'})
-							.then(function(response){
-								return parseScalaLines(response.data);
-							})
-						;
-						break;
-				}
+			toJson : parseScalaLines,
+			fromJson : function(){
+				// todo
+				return '';
 			}
 		};
 	}])

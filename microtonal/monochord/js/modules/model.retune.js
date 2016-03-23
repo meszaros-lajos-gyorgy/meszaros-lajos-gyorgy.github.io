@@ -5,9 +5,9 @@ angular
 		
 		// todo: these are only relative tunings, do we need absolute ones?
 		
-		return function(model, $scope, models){
+		return function(model, $scope){
 			this.off = function(){
-				return $scope[models.baseFrequency];
+				return $scope.baseFrequency;
 			};
 			this.lowestToBaseFreq = function(target, type){
 				var divisor = model.harmonics.getLowest(target, type);
@@ -20,7 +20,7 @@ angular
 				if(divisor === 0){
 					return 0;
 				}
-				return $scope[models.baseFrequency] / divisor;
+				return $scope.baseFrequency / divisor;
 			};
 			this.highestToBaseFreq = function(target, type){
 				var divisor = model.harmonics.getHighest(target, type);
@@ -33,10 +33,10 @@ angular
 				if(divisor === 0){
 					return 0;
 				}
-				return $scope[models.baseFrequency] / divisor;
+				return $scope.baseFrequency / divisor;
 			};
 			this.lowestToPrevHighest = function(target, type){
-				var to = $scope[models.baseFrequency];
+				var to = $scope.baseFrequency;
 				
 				var prevSet = model.sets.findPrevious(target);
 				if(prevSet){

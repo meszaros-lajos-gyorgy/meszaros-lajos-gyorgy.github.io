@@ -3,7 +3,7 @@ angular
 	.factory('Elements', [function(){
 		'use strict';
 		
-		return function(model, $scope, models, type){
+		return function(model, $scope, type){
 			var self = this;
 			
 			// params : multiplier, volume, muted
@@ -17,8 +17,7 @@ angular
 						id : ++model._lastStringId,
 						multiplier : params.hasOwnProperty('multiplier') ? params.multiplier : 1,
 						volume : params.hasOwnProperty('volume') ? params.volume : 100,
-						muted : params.hasOwnProperty('muted') ? params.muted : false,
-						type : 'sine'
+						muted : params.hasOwnProperty('muted') ? params.muted : false
 					};
 					set[property].push(data);
 				}
@@ -36,7 +35,7 @@ angular
 						index = _index;
 					});
 				}else{
-					$scope[models.sets].some(function(_set){
+					$scope.sets.some(function(_set){
 						index = _set[property].indexOf(target);
 						if(index !== -1){
 							set = _set;
@@ -49,14 +48,14 @@ angular
 					if(set.strings.length === 1){
 						model.sets.remove(set.id);
 					}else{
-						$scope[models.sets].splice(index, 1);
+						$scope.sets.splice(index, 1);
 					}
 				}
 			};
 			this.findById = function(id, run){
 				var property = (type === model.TYPE.STRING ? 'strings' : 'cents');
 				var element;
-				var found = $scope[models.sets].some(function(set){
+				var found = $scope.sets.some(function(set){
 					return set[property].some(function(_element, index, array){
 						if(_element.id === id){
 							if(run){

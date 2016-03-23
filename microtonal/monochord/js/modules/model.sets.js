@@ -3,7 +3,7 @@ angular
 	.factory('Sets', [function(){
 		'use strict';
 		
-		return function(model, $scope, models){
+		return function(model, $scope){
 			var self = this;
 			
 			// adds a set with given params
@@ -15,13 +15,13 @@ angular
 				params = params || {};
 				var data = {
 					id : ++model._lastSetId,
-					retune : $scope[models.retune].defaultForNew,
+					retune : $scope.retune.defaultForNew,
 					strings : [],
 					cents : [],
 					volume : params.hasOwnProperty('volume') ? params.volume : 100,
 					muted : params.hasOwnProperty('muted') ? params.muted : false
 				};
-				$scope[models.sets].push(data);
+				$scope.sets.push(data);
 				return data;
 			},
 			// removes a set, specified by target
@@ -35,10 +35,10 @@ angular
 						index = _index;
 					});
 				}else{
-					index = $scope[models.sets].indexOf(target);
+					index = $scope.sets.indexOf(target);
 				}
 				if(index !== -1){
-					$scope[models.sets].splice(index, 1);
+					$scope.sets.splice(index, 1);
 				}
 			},
 			// finds a set by ID; if found, then calls run
@@ -50,7 +50,7 @@ angular
 			// @return the set, that has been found or null
 			this.findById = function(setId, run){
 				var set = null;
-				$scope[models.sets].some(function(_set, index, array){
+				$scope.sets.some(function(_set, index, array){
 					if(_set.id === setId){
 						if(run){
 							run(_set, index, array);
@@ -71,7 +71,7 @@ angular
 			this.findPrevious = function(target, run){
 				var setId = (Number.isInteger(target) ? target : target.id);
 				var prevSet = null;
-				var found = $scope[models.sets].some(function(set){
+				var found = $scope.sets.some(function(set){
 					if(set.id === setId && prevSet !== null){
 						if(run){
 							run(prevSet);
@@ -94,7 +94,7 @@ angular
 				var setId = (Number.isInteger(target) ? target : target.id);
 				var prevSet = null;
 				var set;
-				var found = $scope[models.sets].some(function(_set){
+				var found = $scope.sets.some(function(_set){
 					if(prevSet !== null && prevSet.id === setId){
 						if(run){
 							run(_set);
