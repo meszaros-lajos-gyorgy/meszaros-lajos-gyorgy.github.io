@@ -1,155 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<title>The Monochord | Experiment with microtonal sounds!</title>
+	
 	<meta charset="utf-8" />
-	<title>Monochord</title>
+	<meta name="description" content="Monochord is an app, where you can experiment with xenharmonic scales, microtonal ratios and tunings. Train your ear, or create your own scale and export it to several formats." />
 	
-	<meta name="viewport" content="width=device-width, user-scalable=no" />
-	
-	<link rel="stylesheet/less" href="css/style.less" />
 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
-	
-	<script src="js/lib/less-2.5.3.min.js"></script>
-	<script src="js/lib/angular-1.4.4.min.js"></script>
-	
-	<script src="js/webkit-audio-context-patch.js"></script>
-	<script src="js/audio-model.js"></script>
-	<script src="js/math.js"></script>
-	<script src="js/directives/dragnumber.js"></script>
-	<script src="js/directives/holdclick.js"></script>
-	<script src="js/directives/ui/volume.js"></script>
-	<script src="js/app.js"></script>
+	<style>
+html, body{
+	margin : 0;
+	padding : 0;
+	height : 100%;
+}
+body{
+	font-family : Tahoma, Geneva, sans-serif;
+	background : #141300;
+	background : linear-gradient(to bottom right, #333, #141300);
+	background-attachment : fixed;
+	color : #fffed8;
+	font-size : 18px;
+	min-width : 580px;
+}
+a{
+	color : inherit;
+	text-decoration : underline;
+	cursor : pointer;
+}
+a:hover,
+a.active{
+	color : orange;
+}
+h1, p{
+	text-align: center;
+}
+	</style>
 </head>
-<body ng-app="Microtonal">
-	<div ng-controller="MonochordCtrl as m" class="wrapper">
-		<div class="main">
-			<section class="base-controls">
-				<label>Fundamental frequency: <dragnumber min="1" ng-model="baseFrequency" width="5"></dragnumber> Hz</label>
-				<div>Master volume: <volume ng-model="baseVolume"></volume></div>
-			</section>
-			
-			<section ng-show="presets.tunings" class="presets">
-				<h2>Presets</h2>
-				
-				<label>Tuning: <select autocomplete="off" ng-model="activePresetTuning" ng-options="tuning.name for tuning in presets.tunings"></select></label><br />
-				<br />
-				<div ng-repeat="tuning in presets.tunings">
-					<div ng-show="tuning == activePresetTuning">
-						<ul>
-							<li ng-repeat="ratio in tuning.ratios"><button ng-click="addPreset(ratio.ratio, defaultVolume)">{{ratio.name + ' (' + ratio.ratio.join(':') + ')'}}</button></li>
-						</ul>
-					</div>
-				</div>
-			</section>
-			
-			<button ng-click="addSet()" class="icon-add" title="add a new set">add a new set</button>
-			<button ng-click="showKeyboard()" class="icon-piano" title="open keyboard">open keyboard</button>
-			<!-- <button ng-click="showImportExport()" class="icon-import-export" title="import/export">import/export</button> -->
-			
-			<ul class="sets">
-				<li ng-repeat="set in sets">
-					<!-- <div>Volume: <volume ng-model="set.volume"></volume></div> -->
-					
-					<!-- <span style="float:left;">Ratio known as: <i>{{ratioKnownAs(set)}}</i></span> -->
-					{{freqs = calculateFrequencies(set);cents = calculateCents(set);''}}
-					<ul class="strings">
-						<li ng-repeat="string in set.strings">
-							<span class="hertz">{{freqs[$index]|number:0}} Hz</span>
-							<button ng-click="setStringToEdit(string, set)" ng-class="[(stringToEdit.id === string.id ? 'active' : ''), (string.muted ? 'muted' : 'unmuted')]">{{string.multiplier}}</button>
-							<span class="cent" ng-show="$index > 0">
-								{{cents[$index] - cents[$index - 1] >= 0 ? '+' : ''}}{{cents[$index] - cents[$index - 1] | number:2}} &cent;
-							</span>
-						</li>
-						<li>
-							<button ng-click="addString(set.id)" class="icon-add" title="add string">add string</button>
-						</li>
-					</ul>
-					
-					<div class="string-edit" ng-show="$parent.stringToEdit.hasOwnProperty('id') && $parent.setOfStringToEdit.id === set.id">
-						<!-- <button hold-click ng-disabled="!canLowerString($parent.stringToEdit)" ng-click="lowerString($parent.stringToEdit)" class="icon-remove smaller" title="decrease">decrease</button> -->
-						<button ng-disabled="!canLowerString($parent.stringToEdit)" ng-click="lowerString($parent.stringToEdit)" class="icon-remove smaller" title="decrease">decrease</button>
-						<dragnumber ng-class="'smaller'" ng-model="$parent.stringToEdit.multiplier" min="1" max="highestHarmonic" weight="10"></dragnumber>
-						<!-- <button hold-click ng-disabled="!canRaiseString($parent.stringToEdit)" ng-click="raiseString($parent.stringToEdit)" class="icon-add smaller" title="increase">increase</button> -->
-						<button ng-disabled="!canRaiseString($parent.stringToEdit)" ng-click="raiseString($parent.stringToEdit)" class="icon-add smaller" title="increase">increase</button>
-						
-						<button ng-show="!$parent.stringToEdit.muted" ng-click="$parent.stringToEdit.muted = true" class="icon-speaker-on smaller">mute</button>
-						<button ng-show="$parent.stringToEdit.muted" ng-click="$parent.stringToEdit.muted = false" class="icon-speaker-off smaller">unmute</button>
-						<!-- <input ng-show="set.retune.type === 'manual'" type="radio" autocomplete="off" ng-value="$parent.stringToEdit.id" ng-model="set.retune.subject" /> -->
-						<button ng-click="removeString($parent.stringToEdit.id);$parent.stringToEdit={};$parent.setOfStringToEdit={}" class="icon-delete red smaller" title="delete string">delete string</button>
-					</div>
-					
-					<div class="set-controls">
-						<button hold-click ng-disabled="!canHalveHarmonics(set)" ng-click="halveHarmonics(set.id)" class="icon-halve smaller" title="halve all">halve all</button>
-						<button hold-click ng-disabled="!canLowerHarmonics(set)" ng-click="lowerHarmonics(set.id)" class="icon-decrease smaller" title="lower all">lower all</button>
-						<button hold-click ng-disabled="!canRaiseHarmonics(set)" ng-click="raiseHarmonics(set.id)" class="icon-increase smaller" title="raise all">raise all</button>
-						<button hold-click ng-disabled="!canDoubleHarmonics(set)" ng-click="doubleHarmonics(set.id)" class="icon-double smaller" title="double all">double all</button>
-						<button ng-disabled="!canBeNormalized(set)" ng-click="normalize(set.id)" class="icon-normalize smaller" title="normalize ratios by sorting and reducing them">normalize ratios</button>
-						<button ng-click="$parent.showRetune(set.id)" class="icon-tuning-fork smaller" title="retune this set">retune this set</button>
-						<button ng-click="removeSet(set.id)" class="icon-delete red smaller" title="delete this set">delete this set</button>
-						<button ng-show="!set.muted" ng-click="set.muted = true" class="icon-speaker-on smaller">mute</button>
-						<button ng-show="set.muted" ng-click="set.muted = false" class="icon-speaker-off smaller">unmute</button>
-					</div>
-					<!--
-					/*
-					<button ng-disabled="!set._.selectedKey" ng-show="!isSetAssignedToKey(set.id)" ng-click="assignSetToKey(set.id, set._.selectedKey)">assign to key:</button>
-					<select ng-class="isSetAssignedToKey(set.id) ? 'hidden' : ''" ng-model="set._.selectedKey" ng-options="key as data.label disable when data.setId > 0 for (key, data) in keyAssignments"></select>
-					<button ng-show="isSetAssignedToKey(set.id)" ng-click="unassignSetFromKeys(set.id)">unassign from key <b>{{keyAssignments[getAssignedKeyOfSet(set.id)].label}}</b></button>
-					*/
-					
-					Type: <select autocomplete="off" ng-model="set.retune.type">
-						<option value="off">none</option>
-						<option value="lowest">(auto) lowest harmony</option>
-						<option value="highest">(auto) highest harmony</option>
-						<option value="manual">(manual) user select</option>
-					</select><br />
-					Target: <select autocomplete="off" ng-model="set.retune.target" ng-options="value.value as value.label group by value.group for value in _retuneStringTargets[set.id]"></select>
-					-->
-				</li>
-			</ul>
-		</div>
-		<div class="dialog" ng-class="popup === '' ? 'hidden' : ''">
-			<div class="retune" ng-class="popup === 'retune' ? '' : 'hidden'">
-				<header>
-					<button class="close icon-delete red" ng-click="closePopup()">close popup</button>
-					<h2>Retune</h2>
-				</header>
-				<!--
-				target to givenSet.whichString
-				
-				target = none|baseFrequency|otherSet.whatSring
-				if(target === none) then we don't have to tune anything
-				otherSet = previous|next|manually selected set
-				whatString = lowest harmony|highest harmony|manually selected harmony
-				
-				givenSet = retuningSetId
-				whichString = lowest harmony|highest harmony|manually selected harmony
-				-->
-			</div>
-			<div class="keyboard" ng-class="popup === 'keyboard' ? '' : 'hidden'">
-				<header>
-					<button class="close icon-delete red" ng-click="closePopup()">close popup</button>
-					<h2>Keyboard</h2>
-					
-					<label>Fundamental frequency: <dragnumber min="1" ng-model="baseFrequency" width="5"></dragnumber> Hz</label>
-					<div>Master volume: <volume ng-model="baseVolume"></volume></div>
-				</header>
-				
-				<table>
-					<tr>
-						<td ng-repeat="set in sets" data-set="{{set.id}}">
-							<!-- <div>Volume: <volume ng-model="set.volume"></volume></div> -->
-							{{getMultipliers(set).join(':')}}
-						</td>
-					</tr>
-				</table>
-			</div>
-			<div class="keyboard" ng-class="popup === 'import-export' ? '' : 'hidden'">
-				<header>
-					<button class="close icon-delete red" ng-click="closePopup()">close popup</button>
-					<h2>Import/Export</h2>
-				</header>
-			</div>
-		</div>
-	</div>
+<body>
+	<h1>The Monochord</h1>
+	<p>The app has been moved to the following page: <a href="http://the-monochord.rhcloud.com">http://the-monochord.rhcloud.com</a></p>
 </body>
 </html>
