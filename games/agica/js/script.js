@@ -269,12 +269,12 @@
 		// --------
 		
 		function setStage(newStage){
-			console.log('stage changed: ' + stage + ' -> ' + newStage);
 			hide(normal[stage]);
 			hide(active[stage]);
 			
 			switch(newStage){
 				case 1:
+					setText(texts.warning1);
 					heartbeat[0].volume = .2;
 					heartbeat[0].play();
 					tention.volume = .2;
@@ -288,6 +288,7 @@
 					tention.volume = .5;
 					break;
 				case 3:
+					setText(texts.warning2);
 					heartbeat[1].currentTime = 0;
 					heartbeat[1].pause();
 					heartbeat[2].volume = .7;
@@ -295,6 +296,7 @@
 					tention.volume = .8;
 					break;
 				case 4:
+					setText(texts.doom);
 					show(active[4]);
 					growl.play();
 					setTimeout(function(){
