@@ -175,7 +175,10 @@
 	
 	var texts = {
 		loading : 'Loading resources, please wait...',
-		welcome : 'Press and hold <code>space</code> or hold down the mouse button/touch screen anywhere!'
+		welcome : 'Press and hold <code>space</code> or hold down the mouse button/touch screen anywhere!',
+		warning1 : 'Watch out, don\'t nag her for too long!',
+		warning2 : 'She\'s getting angrier, stop!',
+		doom : 'Look what you have done now! Run!'
 	};
 	
 	// ------------------
@@ -227,10 +230,8 @@
 	});
 	
 	finished.then(function(){
-		var stage = {
-			face: 0,
-			heartbeat: 0
-		};
+		var stage = 0;
+		var clickCounter = 0;
 		
 		var normal = [
 			document.querySelector('img[src$="normal.jpg"]'),
@@ -261,24 +262,65 @@
 		
 		// --------
 		
-		setText(texts.welcome);
-		show(normal[stage.face]);
+		function setStage(newStage){
+			console.log('stage changed: ' + stage + ' -> ' + newStage);
+			hide(normal[stage]);
+			hide(active[stage]);
+			
+			switch(newStage){
+				case 1:
+					heartbeat[0].volume = .2;
+					heartbeat[0].play();
+					tention.volume = .2;
+					tention.play();
+					break;
+				case 2:
+					heartbeat[0].currentTime = 0;
+					heartbeat[0].pause();
+					heartbeat[1].volume = .5;
+					heartbeat[1].play();
+					tention.volume = .5;
+					break;
+				case 3:
+					heartbeat[1].currentTime = 0;
+					heartbeat[1].pause();
+					heartbeat[2].volume = .7;
+					heartbeat[2].play();
+					tention.volume = .8;
+					break;
+				case 4:
+					show(active[4]);
+					growl.play();
+					break;
+			}
+			
+			stage = newStage;
+		}
 		
-		// heartbeat[stage.heartbeat].play();
-		// tention.play();
+		// --------
+		
+		setText(texts.welcome);
+		show(normal[0]);
 		
 		bindControls(function(){
-			if(stage.face < 4){
+			if(stage < 4){
+				if(++clickCounter > 10){
+					clickCounter = 0;
+					setStage(stage + 1);
+				}
+			}
+			
+			if(stage < 4){
 				meow.play();
-				hide(normal[stage.face]);
-				show(active[stage.face]);
+				hide(normal[stage]);
+				show(active[stage]);
 			}
 		}, function(){
-			if(stage.face < 4){
+			if(stage < 4){
 				meow.pause();
 				meow.currentTime = 0;
-				hide(active[stage.face]);
-				show(normal[stage.face]);
+				hide(active[stage]);
+				show(normal[stage]);
 			}
 		});
 	}, function(e){
