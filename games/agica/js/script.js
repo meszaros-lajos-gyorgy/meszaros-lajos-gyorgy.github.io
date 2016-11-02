@@ -146,6 +146,10 @@
 		what.classList.add('hidden');
 	}
 	
+	function toggle(what){
+		what.classList.toggle('hidden');
+	}
+	
 	// ------------------
 	
 	var SPACE = 32;
@@ -166,6 +170,7 @@
 		audio : [
 			'meow.mp3',
 			'meow-dark.mp3',
+			'growl.mp3',
 			'tension-loop.mp3',
 			'heartbeat-normal.mp3',
 			'heartbeat-faster.mp3',
@@ -249,7 +254,8 @@
 		];
 		
 		var meow = document.querySelector('audio[src$="meow.mp3"]');
-		var growl = document.querySelector('audio[src$="meow-dark.mp3"]');
+		var darkMeow = document.querySelector('audio[src$="meow-dark.mp3"]');
+		var growl = document.querySelector('audio[src$="growl.mp3"]');
 		var tention = document.querySelector('audio[src$="tension-loop.mp3"]');
 		var heartbeat = [
 			document.querySelector('audio[src$="heartbeat-normal.mp3"]'),
@@ -291,6 +297,23 @@
 				case 4:
 					show(active[4]);
 					growl.play();
+					setTimeout(function(){
+						toggle(normal[4]);
+						toggle(active[4]);
+						setInterval(function(){
+							if(Math.random() < 0.5){
+								toggle(normal[4]);
+								toggle(active[4]);
+								darkMeow.play();
+								setTimeout(function(){
+									toggle(normal[4]);
+									toggle(active[4]);
+									darkMeow.currentTime = 0;
+									darkMeow.pause();
+								}, Math.floor(Math.random() * 1000));
+							}
+						}, 5000);
+					}, 9000);
 					break;
 			}
 			
