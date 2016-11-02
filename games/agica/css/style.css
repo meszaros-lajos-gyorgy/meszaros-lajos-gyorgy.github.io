@@ -5,26 +5,28 @@ html{
 	height : 100%;
 	margin : 0;
 	padding : 0;
+	background : #ded;
 }
 body{
 	text-align : center;
-	height : 100%;
 	margin : 0;
 	padding : 0;
-	background : #ded;
 	font-family : Tahoma;
 	cursor : default;
+	min-height : 100%;
+	padding-top : 40px;
+	box-sizing : border-box;
 }
 div{
 	width : 600px;
 	background : #fff;
-	margin : 0 auto 40px auto;
+	margin : 0 auto;
 	border-radius : 0 0 10px 10px;
 	padding : 20px 0;
 }
 h1{
 	width : 600px;
-	margin : 40px auto 0 auto;
+	margin : 0 auto;
 	font-size : 16px;
 	border-radius : 10px 10px 0 0;
 	background : #878;
