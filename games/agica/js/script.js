@@ -108,35 +108,33 @@
 				}
 			}
 		});
-		if(window.TouchEvent){
-			document.body.addEventListener('touchstart', function(e){
-				e.preventDefault();
-				if(pressed === 0){
-					onPress();
-				}
-				pressed++;
-			});
-			document.body.addEventListener('touchend', function(){
-				pressed--;
-				if(pressed === 0){
-					onRelease()
-				}
-			});
-		}else{
-			document.body.addEventListener('mousedown', function(e){
-				e.preventDefault();
-				if(pressed === 0){
-					onPress();
-				}
-				pressed++;
-			});
-			document.body.addEventListener('mouseup', function(){
-				pressed--;
-				if(pressed === 0){
-					onRelease();
-				}
-			});
-		}
+		
+		document.body.addEventListener('touchstart', function(e){
+			e.preventDefault();
+			if(pressed === 0){
+				onPress();
+			}
+			pressed++;
+		});
+		document.body.addEventListener('touchend', function(){
+			pressed--;
+			if(pressed === 0){
+				onRelease()
+			}
+		});
+		document.body.addEventListener('mousedown', function(e){
+			e.preventDefault();
+			if(pressed === 0){
+				onPress();
+			}
+			pressed++;
+		});
+		document.body.addEventListener('mouseup', function(){
+			pressed--;
+			if(pressed === 0){
+				onRelease();
+			}
+		});
 	}
 	
 	function show(what){
