@@ -44,7 +44,9 @@
 				img.addEventListener('error', function(e){
 					reject(new Error('Could not load image: "' + src + '"'));
 				});
-				img.src = src;
+				setTimeout(function(){
+					img.src = src;
+				}, Math.round(Math.random() * 10) + 10);
 			});
 		},
 		audio : function(index){
@@ -59,8 +61,10 @@
 				audio.addEventListener('error', function(e){
 					reject(new Error('could not load audio: "' + src + '"'));
 				});
-				audio.src = src;
 				audio.controls = true;
+				setTimeout(function(){
+					audio.src = src;
+				}, Math.round(Math.random() * 10) + 10);
 			});
 		}
 	};
