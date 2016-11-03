@@ -90,7 +90,7 @@
 		var pressed = 0;
 		
 		document.body.addEventListener('keydown', function(e){
-			if(e.keyCode === 32 && !keyPressed){
+			if(e.keyCode === SPACE && !keyPressed){
 				keyPressed = true;
 				if(pressed === 0){
 					onPress();
@@ -99,7 +99,7 @@
 			}
 		});
 		document.body.addEventListener('keyup', function(e){
-			if(e.keyCode === 32 && keyPressed){
+			if(e.keyCode === SPACE && keyPressed){
 				keyPressed = false;
 				pressed--;
 				if(pressed === 0){
@@ -172,9 +172,7 @@
 			'meow-dark.mp3',
 			'growl.mp3',
 			'tension-loop.mp3',
-			'heartbeat-normal.mp3',
-			'heartbeat-faster.mp3',
-			'heartbeat-fast.mp3'
+			'heartbeat-loop.mp3'
 		]
 	};
 	
@@ -257,12 +255,9 @@
 		var darkMeow = document.querySelector('audio[src$="meow-dark.mp3"]');
 		var growl = document.querySelector('audio[src$="growl.mp3"]');
 		var tention = document.querySelector('audio[src$="tension-loop.mp3"]');
-		var heartbeat = [
-			document.querySelector('audio[src$="heartbeat-normal.mp3"]'),
-			document.querySelector('audio[src$="heartbeat-faster.mp3"]'),
-			document.querySelector('audio[src$="heartbeat-fast.mp3"]')
-		];
-		heartbeat.concat(tention).forEach(function(audio){
+		var heartbeat = document.querySelector('audio[src$="heartbeat-loop.mp3"]');
+		
+		Array.from(document.querySelectorAll('audio[src$="-loop.mp3"]')).forEach(function(audio){
 			audio.loop = true;
 		});
 		
@@ -275,24 +270,20 @@
 			switch(newStage){
 				case 1:
 					setText(texts.warning1);
-					heartbeat[0].volume = .2;
-					heartbeat[0].play();
+					heartbeat.volume = .2;
+					heartbeat.play();
 					tention.volume = .2;
 					tention.play();
 					break;
 				case 2:
-					heartbeat[0].currentTime = 0;
-					heartbeat[0].pause();
-					heartbeat[1].volume = .5;
-					heartbeat[1].play();
+					heartbeat.volume = .5;
+					heartbeat.playbackRate = 1.3;
 					tention.volume = .5;
 					break;
 				case 3:
 					setText(texts.warning2);
-					heartbeat[1].currentTime = 0;
-					heartbeat[1].pause();
-					heartbeat[2].volume = .7;
-					heartbeat[2].play();
+					heartbeat.volume = .7;
+					heartbeat.playbackRate = 1.7;
 					tention.volume = .8;
 					break;
 				case 4:
@@ -303,7 +294,7 @@
 						toggle(normal[4]);
 						toggle(active[4]);
 						setInterval(function(){
-							if(Math.random() < 0.5){
+							if(Math.random() < 0.75){
 								toggle(normal[4]);
 								toggle(active[4]);
 								darkMeow.play();
@@ -312,10 +303,10 @@
 									toggle(active[4]);
 									darkMeow.currentTime = 0;
 									darkMeow.pause();
-								}, Math.floor(Math.random() * 1000));
+								}, Math.floor(Math.random() * 800) + 200);
 							}
 						}, 5000);
-					}, 9000);
+					}, 10000);
 					break;
 			}
 			
