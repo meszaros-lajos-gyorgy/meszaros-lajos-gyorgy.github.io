@@ -52,7 +52,7 @@
 			var self = this;
 			return new Promise(function(resolve, reject){
 				var audio = document.createElement('audio');
-				audio.addEventListener('canplaythrough', function(){
+				audio.addEventListener('loadedmetadata', function(){
 					self._loads.audio[index] = this;
 					resolve(src);
 				});
