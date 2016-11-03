@@ -1,0 +1,66 @@
+.hidden{
+	display : none;
+}
+html{
+	height : 100%;
+	margin : 0;
+	padding : 0;
+	background : #ded;
+}
+body{
+	text-align : center;
+	margin : 0;
+	padding : 0;
+	font-family : Tahoma;
+	cursor : default;
+	min-height : 100%;
+	padding-top : 40px;
+	box-sizing : border-box;
+}
+div{
+	width : 600px;
+	background : #fff;
+	margin : 0 auto;
+	border-radius : 0 0 10px 10px;
+	padding : 20px 0;
+}
+h1{
+	width : 600px;
+	margin : 0 auto;
+	font-size : 16px;
+	border-radius : 10px 10px 0 0;
+	background : #878;
+	font-weight : normal;
+	color : #fff;
+	text-align : left;
+	box-sizing : border-box;
+	padding-left : 10px;
+	line-height : 30px;
+}
+h1 span{
+	float : right;
+	margin-right : 10px;
+	font-size : 10px;
+}
+img{
+	border-radius : 10px;
+	margin-top : 20px;
+}
+
+p{
+	margin : 0;
+	padding : 0;
+	line-height : 20px;
+	font-size : 14px;
+}
+p code{
+	background : #fff;
+	padding : 3px 10px;
+	border : 1px solid #333;
+	font-style : normal;
+	border-radius : 4px;
+	margin : 0 3px;
+	line-height : 20px;
+	vertical-align : top;
+	box-shadow : -2px 4px 0 0 #333;
+}
