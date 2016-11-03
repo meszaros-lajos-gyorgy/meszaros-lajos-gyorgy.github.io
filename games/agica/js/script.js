@@ -143,15 +143,15 @@
 	}
 	
 	function show(what){
-		what.classList.remove('hidden');
+		document.querySelector('.photo').classList.add(what);
 	}
 	
 	function hide(what){
-		what.classList.add('hidden');
+		document.querySelector('.photo').classList.remove(what);
 	}
 	
 	function toggle(what){
-		what.classList.toggle('hidden');
+		document.querySelector('.photo').classList.toggle(what);
 	}
 	
 	// ------------------
@@ -159,18 +159,6 @@
 	var SPACE = 32;
 	
 	var resources = {
-		image : [
-			'active.jpg',
-			'active-desat1.jpg',
-			'active-desat2.jpg',
-			'active-desat3.jpg',
-			'active-desat4.jpg',
-			'normal.jpg',
-			'normal-desat1.jpg',
-			'normal-desat2.jpg',
-			'normal-desat3.jpg',
-			'normal-desat4.jpg'
-		],
 		audio : [
 			'meow.mp3',
 			'meow-dark.mp3',
@@ -202,21 +190,6 @@
 	
 	load.from(resources);
 	
-	load.all.image().then(function(){
-		onReady(function(){
-			var elements = load.to();
-			Object.values(elements.image).forEach(function(imgTag){
-				document.querySelector('body>div').appendChild(imgTag);
-				imgTag.classList.add('hidden');
-			});
-			
-			finishedImage = true;
-			if(finishedImage && finishedAudio){
-				finishResolve();
-			}
-		});
-	}, finishReject);
-	
 	load.all.audio().then(function(){
 		onReady(function(){
 			var elements = load.to();
@@ -241,18 +214,18 @@
 		var clickCounter = 0;
 		
 		var normal = [
-			document.querySelector('img[src$="normal.jpg"]'),
-			document.querySelector('img[src$="normal-desat1.jpg"]'),
-			document.querySelector('img[src$="normal-desat2.jpg"]'),
-			document.querySelector('img[src$="normal-desat3.jpg"]'),
-			document.querySelector('img[src$="normal-desat4.jpg"]')
+			'normal',
+			'normal-desat1',
+			'normal-desat2',
+			'normal-desat3',
+			'normal-desat4'
 		];
 		var active = [
-			document.querySelector('img[src$="active.jpg"]'),
-			document.querySelector('img[src$="active-desat1.jpg"]'),
-			document.querySelector('img[src$="active-desat2.jpg"]'),
-			document.querySelector('img[src$="active-desat3.jpg"]'),
-			document.querySelector('img[src$="active-desat4.jpg"]')
+			'active',
+			'active-desat1',
+			'active-desat2',
+			'active-desat3',
+			'active-desat4'
 		];
 		
 		var meow = document.querySelector('audio[src$="meow.mp3"]');
