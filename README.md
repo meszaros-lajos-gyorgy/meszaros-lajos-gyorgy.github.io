@@ -1,4 +1,3 @@
-# meszaros-lajos-gyorgy.github.io
+# The Monochord
 
-https://meszaros-lajos-gyorgy.github.io/
-
+https://the-monochord.com/
