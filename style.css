@@ -16,6 +16,7 @@ body {
   color: var(--color-text);
   display: grid;
   place-items: center right;
+  user-select: none;
 }
 
 div {
