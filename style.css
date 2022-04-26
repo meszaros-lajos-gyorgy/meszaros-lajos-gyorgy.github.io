@@ -11,7 +11,7 @@ body {
 }
 
 body {
-  font-family: "Source Sans Pro", sans-serif;
+  font-family: sans-serif;
   background: var(--color-background);
   color: var(--color-text);
   display: grid;
