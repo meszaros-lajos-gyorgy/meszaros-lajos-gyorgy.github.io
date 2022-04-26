@@ -1,5 +1,6 @@
 {
-  "name": "App",
+  "name": "The Monochord",
+  "short_name": "The Monochord",
   "icons": [
     {
       "src": "/icons/android-icon-36x36.png",
@@ -37,5 +38,13 @@
       "type": "image/png",
       "density": "4.0"
     }
-  ]
+  ],
+  "start_url": "/",
+  "background_color": "#1E1E1B",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#1E1E1B",
+  "shortcuts": [],
+  "description": "Online microtonal synthesizer",
+  "screenshots": []
 }
