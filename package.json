@@ -4,7 +4,8 @@
   "description": "https://the-monochord.com/",
   "main": "index.js",
   "scripts": {
-    "build": "echo \"Hello, we're running some nodejs stuff here!\""
+    "build": "ts-node scripts/build.ts",
+    "build:watch": "nodemon scripts/build.ts --watch src -e css,scss,ts,tsx"
   },
   "repository": {
     "type": "git",
@@ -17,7 +18,23 @@
   },
   "homepage": "https://github.com/meszaros-lajos-gyorgy/meszaros-lajos-gyorgy.github.io#readme",
   "devDependencies": {
+    "@reduxjs/toolkit": "^1.9.5",
+    "@trivago/prettier-plugin-sort-imports": "^4.1.1",
     "@types/node": "^20.3.3",
+    "@types/react-dom": "^18.2.6",
+    "autoprefixer": "^10.4.14",
+    "classnames": "^2.3.2",
+    "esbuild": "^0.18.11",
+    "esbuild-sass-plugin": "^2.10.0",
+    "nodemon": "^2.0.22",
+    "postcss": "^8.4.24",
+    "postcss-modules": "^6.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-i18next": "^13.0.1",
+    "react-redux": "^8.1.1",
+    "sass": "^1.63.6",
+    "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   }
 }
