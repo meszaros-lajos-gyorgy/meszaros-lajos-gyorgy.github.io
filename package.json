@@ -1,0 +1,19 @@
+{
+  "name": "meszaros-lajos-gyorgy.github.io",
+  "version": "1.0.0",
+  "description": "https://the-monochord.com/",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo \"Hello, we're running some nodejs stuff here!\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meszaros-lajos-gyorgy/meszaros-lajos-gyorgy.github.io.git"
+  },
+  "author": "Lajos Mészáros<m_lajos@hotmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/meszaros-lajos-gyorgy/meszaros-lajos-gyorgy.github.io/issues"
+  },
+  "homepage": "https://github.com/meszaros-lajos-gyorgy/meszaros-lajos-gyorgy.github.io#readme"
+}
