@@ -1,25 +1,7 @@
-:root {
-  --golden-ratio: 1.61803;
-
-  --color-black: #020204;
-  --color-brown: #46413b;
-  --color-beige: #bebbb6;
-  --color-white: #f7f7f5;
-
-  --color-text: var(--color-brown);
-  --color-text-hover: var(--color-black);
-  --color-background: var(--color-beige);
-}
-
-html,
-body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
+@import url('variables.css');
+@import url('reset.css');
 
 body {
-  font-family: sans-serif;
   background: var(--color-background);
   color: var(--color-text);
   display: grid;
@@ -33,10 +15,9 @@ div {
 
 h1 {
   font-size: 7vw;
-  margin: 0;
-  padding: 0;
   border-bottom: 1px solid var(--color-text);
 }
+
 h1:hover {
   color: var(--color-text-hover);
 }

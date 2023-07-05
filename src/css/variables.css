@@ -1,0 +1,12 @@
+:root {
+  --golden-ratio: 1.61803;
+
+  --color-black: #020204;
+  --color-brown: #46413b;
+  --color-beige: #bebbb6;
+  --color-white: #f7f7f5;
+
+  --color-text: var(--color-brown);
+  --color-text-hover: var(--color-black);
+  --color-background: var(--color-beige);
+}
