@@ -1,6 +1,6 @@
-import React, { FC } from 'react'
+import React from 'react'
 import { createRoot } from 'react-dom/client'
-import { App } from '@src/components/App'
+import { App } from '@pages/App/App'
 import { onReady } from '@src/functions'
 import './style.scss'
 
@@ -9,8 +9,6 @@ onReady(async () => {
 
   if (wrapper !== null) {
     const root = createRoot(wrapper)
-    setTimeout(() => {
-      root.render(<App />)
-    }, 1000)
+    root.render(<App />)
   }
 })

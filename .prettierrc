@@ -13,6 +13,9 @@
     "^@(reduxjs)",
 
     "^@store/",
+    "^@services/",
+    "^@pages/",
+    "^@components/",
 
     "^@src/.*(?<!.s?css)$",
     "^@src/",
