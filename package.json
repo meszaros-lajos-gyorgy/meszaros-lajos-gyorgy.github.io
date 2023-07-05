@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/meszaros-lajos-gyorgy/meszaros-lajos-gyorgy.github.io/issues"
   },
-  "homepage": "https://github.com/meszaros-lajos-gyorgy/meszaros-lajos-gyorgy.github.io#readme"
+  "homepage": "https://github.com/meszaros-lajos-gyorgy/meszaros-lajos-gyorgy.github.io#readme",
+  "devDependencies": {
+    "@types/node": "^20.3.3",
+    "typescript": "^5.1.6"
+  }
 }
