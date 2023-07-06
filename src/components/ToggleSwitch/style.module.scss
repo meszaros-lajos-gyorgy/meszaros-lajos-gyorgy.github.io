@@ -1,0 +1,22 @@
+.ToggleSwitch {
+  border: 0;
+  cursor: pointer;
+  height: 24px;
+  width: 80px;
+  border-radius: 2px;
+
+  &.on {
+    background-color: var(--color-white);
+    color: var(--color-brown);
+  }
+
+  &.off {
+    background-color: var(--color-black);
+    color: var(--color-beige);
+  }
+
+  &.switching {
+    background-color: var(--color-brown);
+    color: var(--color-beige);
+  }
+}

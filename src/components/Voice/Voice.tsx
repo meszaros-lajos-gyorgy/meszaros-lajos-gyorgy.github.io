@@ -1,6 +1,7 @@
 import React, { ChangeEvent, FC, useState } from 'react'
-import cn from 'classnames'
 import { setFrequency, soundOff, soundOn } from '@services/Audio'
+import { ToggleSwitch } from '@components/ToggleSwitch/ToggleSwitch'
+import { clamp } from '@src/functions'
 import s from './style.module.scss'
 
 type VoiceProps = {
@@ -9,24 +10,16 @@ type VoiceProps = {
 
 export const Voice: FC<VoiceProps> = ({ idx }) => {
   // TODO: move this to redux
-  const [isSoundOn, setIsSoundOn] = useState(false)
-  const [isSoundSwitching, setIsSoundSwitching] = useState(false)
+
   const [harmonic, setHarmonic] = useState(2)
   const [isHarmonicSwitching, setIsHarmonicSwitching] = useState(false)
 
-  const toggleSoundOn = async () => {
-    if (isSoundSwitching) {
-      return
-    }
-
-    setIsSoundSwitching(true)
-    if (isSoundOn) {
+  const toggleSoundOn = async (isOn: boolean) => {
+    if (isOn) {
       await soundOff(idx)
     } else {
       await soundOn(idx)
     }
-    setIsSoundOn(!isSoundOn)
-    setIsSoundSwitching(false)
   }
 
   const changeHarmonic = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -35,10 +28,10 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
     }
 
     let newHarmonic = parseInt(e.target.value)
-    if (isNaN(newHarmonic) || newHarmonic < 1) {
+    if (isNaN(newHarmonic)) {
       newHarmonic = 1
-    } else if (newHarmonic > 16) {
-      newHarmonic = 16
+    } else {
+      newHarmonic = clamp(1, 16, newHarmonic)
     }
 
     if (newHarmonic != harmonic) {
@@ -53,18 +46,8 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
 
   return (
     <div className={s.Voice}>
-      <span>{idx + 1}</span>
       <span>
-        <button
-          onClick={toggleSoundOn}
-          className={cn({
-            [s.on]: isSoundOn,
-            [s.off]: !isSoundOn,
-            [s.changing]: isSoundSwitching
-          })}
-        >
-          {isSoundSwitching ? 'turning ' + (isSoundOn ? 'off' : 'on') : isSoundOn ? 'on' : 'off'}
-        </button>
+        <ToggleSwitch onClick={toggleSoundOn} />
       </span>
       <span>
         <input type="range" min={1} max={16} value={harmonic} onInput={changeHarmonic} />

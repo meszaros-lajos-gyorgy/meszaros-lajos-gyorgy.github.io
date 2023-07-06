@@ -13,3 +13,15 @@ export const wait = (delayInMs: number): Promise<void> => {
     }, delayInMs)
   })
 }
+
+export const clamp = (min: number, max: number, n: number) => {
+  if (n < min) {
+    return min
+  }
+
+  if (n > max) {
+    return max
+  }
+
+  return n
+}
