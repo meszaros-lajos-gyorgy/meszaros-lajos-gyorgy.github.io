@@ -1,5 +1,6 @@
 import React, { ChangeEvent, FC, useState } from 'react'
 import { clamp } from '@src/functions'
+import s from './style.module.scss'
 
 type SliderProps = {
   min: number
@@ -32,5 +33,7 @@ export const Slider: FC<SliderProps> = ({ min, max, step = 1, value, onChange })
     setIsChanging(false)
   }
 
-  return <input type="range" min={min} max={max} step={step} value={value} onInput={handleOnInput} />
+  return (
+    <input className={s.Slider} type="range" min={min} max={max} step={step} value={value} onInput={handleOnInput} />
+  )
 }

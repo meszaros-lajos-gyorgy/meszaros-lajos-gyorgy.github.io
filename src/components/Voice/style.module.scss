@@ -7,20 +7,20 @@
   border-radius: 2px;
   user-select: none;
 
-  span {
+  > * {
     padding-left: 10px;
     &:first-child {
       padding-left: 0;
     }
-    &:nth-child(3) {
+    &:nth-child(2) {
       flex: 1;
     }
   }
 
   .frequency {
     white-space: nowrap;
-    width: 100px;
+    width: 60px;
     text-align: right;
-    display: inline-block;
+    display: block;
   }
 }

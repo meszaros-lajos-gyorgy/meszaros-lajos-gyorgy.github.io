@@ -36,9 +36,7 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
       <span>
         <ToggleSwitch isOn={isSoundOn} onClick={toggleSoundOn} />
       </span>
-      <span>
-        <Slider min={1} max={16} value={harmonic} onChange={changeHarmonic} />
-      </span>
+      <Slider min={1} max={16} value={harmonic} onChange={changeHarmonic} />
       <span className={s.frequency}>{harmonic * 100} Hz</span>
     </div>
   )
