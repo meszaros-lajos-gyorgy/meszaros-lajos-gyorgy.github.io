@@ -3,24 +3,21 @@ import cn from 'classnames'
 import s from './style.module.scss'
 
 type ToggleSwitchProps = {
-  onClick: (isOn: boolean) => Promise<void>
+  isOn: boolean
+  onClick: () => Promise<void>
 }
 
-export const ToggleSwitch: FC<ToggleSwitchProps> = ({ onClick }) => {
-  const [isOn, setIsOn] = useState(false)
-  const [isSwitching, setIsSwitching] = useState(false)
+export const ToggleSwitch: FC<ToggleSwitchProps> = ({ isOn, onClick }) => {
+  const [isChanging, setIsChanging] = useState(false)
 
   const handleOnClick = async () => {
-    if (isSwitching) {
+    if (isChanging) {
       return
     }
 
-    setIsSwitching(true)
-
-    await onClick(isOn)
-
-    setIsOn(!isOn)
-    setIsSwitching(false)
+    setIsChanging(true)
+    await onClick()
+    setIsChanging(false)
   }
 
   return (
@@ -29,10 +26,10 @@ export const ToggleSwitch: FC<ToggleSwitchProps> = ({ onClick }) => {
       className={cn(s.ToggleSwitch, {
         [s.on]: isOn,
         [s.off]: !isOn,
-        [s.switching]: isSwitching
+        [s.changing]: isChanging
       })}
     >
-      {isSwitching ? 'turning ' + (isOn ? 'off' : 'on') : '' + (isOn ? 'on' : 'off')}
+      {isChanging ? 'turning ' + (isOn ? 'off' : 'on') : '' + (isOn ? 'on' : 'off')}
     </button>
   )
 }

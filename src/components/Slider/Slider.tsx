@@ -1,9 +1,36 @@
-import React, { FC } from 'react'
+import React, { ChangeEvent, FC, useState } from 'react'
+import { clamp } from '@src/functions'
 
-// TODO: https://css-tricks.com/styling-cross-browser-compatible-range-inputs-css/
+type SliderProps = {
+  min: number
+  max: number
+  /**
+   * Default value is 1
+   */
+  step?: number
+  value: number
+  onChange: (value: number) => Promise<void>
+}
 
-type SliderProps = {}
+export const Slider: FC<SliderProps> = ({ min, max, step = 1, value, onChange }) => {
+  const [isChanging, setIsChanging] = useState(false)
 
-export const Slider: FC<SliderProps> = () => {
-  return null
+  const handleOnInput = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (isChanging) {
+      return
+    }
+
+    let newValue = parseInt(e.target.value)
+    if (isNaN(newValue)) {
+      newValue = 1
+    } else {
+      newValue = clamp(1, 16, newValue)
+    }
+
+    setIsChanging(true)
+    await onChange(newValue)
+    setIsChanging(false)
+  }
+
+  return <input type="range" min={min} max={max} step={step} value={value} onInput={handleOnInput} />
 }

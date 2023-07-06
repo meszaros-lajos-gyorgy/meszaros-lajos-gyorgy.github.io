@@ -1,7 +1,7 @@
-import React, { ChangeEvent, FC, useState } from 'react'
+import React, { FC, useState } from 'react'
 import { setFrequency, soundOff, soundOn } from '@services/Audio'
+import { Slider } from '@components/Slider/Slider'
 import { ToggleSwitch } from '@components/ToggleSwitch/ToggleSwitch'
-import { clamp } from '@src/functions'
 import s from './style.module.scss'
 
 type VoiceProps = {
@@ -11,46 +11,33 @@ type VoiceProps = {
 export const Voice: FC<VoiceProps> = ({ idx }) => {
   // TODO: move this to redux
 
+  const [isSoundOn, setIsSoundOn] = useState(false)
   const [harmonic, setHarmonic] = useState(2)
-  const [isHarmonicSwitching, setIsHarmonicSwitching] = useState(false)
 
-  const toggleSoundOn = async (isOn: boolean) => {
-    if (isOn) {
+  const toggleSoundOn = async () => {
+    if (isSoundOn) {
       await soundOff(idx)
     } else {
       await soundOn(idx)
     }
+    setIsSoundOn(!isSoundOn)
   }
 
-  const changeHarmonic = async (e: ChangeEvent<HTMLInputElement>) => {
-    if (isHarmonicSwitching) {
-      return
-    }
-
-    let newHarmonic = parseInt(e.target.value)
-    if (isNaN(newHarmonic)) {
-      newHarmonic = 1
-    } else {
-      newHarmonic = clamp(1, 16, newHarmonic)
-    }
-
+  const changeHarmonic = async (newHarmonic: number) => {
     if (newHarmonic != harmonic) {
-      setIsHarmonicSwitching(true)
-
       const baseFrequency = 100
       await setFrequency(newHarmonic * baseFrequency, idx)
       setHarmonic(newHarmonic)
-      setIsHarmonicSwitching(false)
     }
   }
 
   return (
     <div className={s.Voice}>
       <span>
-        <ToggleSwitch onClick={toggleSoundOn} />
+        <ToggleSwitch isOn={isSoundOn} onClick={toggleSoundOn} />
       </span>
       <span>
-        <input type="range" min={1} max={16} value={harmonic} onInput={changeHarmonic} />
+        <Slider min={1} max={16} value={harmonic} onChange={changeHarmonic} />
       </span>
       <span className={s.frequency}>{harmonic * 100} Hz</span>
     </div>
