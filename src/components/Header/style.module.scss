@@ -1,8 +1,11 @@
 .Header {
-  border-bottom: 1px solid var(--color-brown);
+  background-color: var(--color-brown);
+  color: var(--color-beige);
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   height: 36px;
+  padding: 0 14px;
 
   h1 {
     margin: 0;

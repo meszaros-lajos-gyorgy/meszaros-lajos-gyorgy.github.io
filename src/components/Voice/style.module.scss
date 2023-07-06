@@ -8,9 +8,19 @@
   user-select: none;
 
   span {
-    padding: 0 10px;
+    padding-left: 10px;
+    &:first-child {
+      padding-left: 0;
+    }
     &:nth-child(3) {
       flex: 1;
     }
+  }
+
+  .frequency {
+    white-space: nowrap;
+    width: 100px;
+    text-align: right;
+    display: inline-block;
   }
 }

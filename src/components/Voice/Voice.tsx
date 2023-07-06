@@ -51,8 +51,8 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
       </span>
       <span>
         <input type="range" min={1} max={16} value={harmonic} onInput={changeHarmonic} />
-        {harmonic * 100}&nbsp;Hz
       </span>
+      <span className={s.frequency}>{harmonic * 100} Hz</span>
     </div>
   )
 }
