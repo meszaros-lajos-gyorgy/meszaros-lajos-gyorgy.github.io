@@ -1,16 +1,19 @@
 import { wait } from '@src/functions'
 
-let ctx: AudioContext
-
-// TODO: move this to redux
-const oscillators: OscillatorNode[] = []
-const gains: GainNode[] = []
-
-const voiceFrequencies: number[] = []
-const voiceGains: number[] = []
-
 export const NUMBER_OF_VOICES = 8
 const MAX_VOLUME = 0.8
+
+type Voice = {
+  nodes: {
+    oscillator: OscillatorNode
+    gain: GainNode
+  }
+  frequency: number
+  volume: number
+}
+
+let ctx: AudioContext
+const voices: Voice[] = []
 
 const initCtx = () => {
   if (typeof ctx !== 'undefined') {
@@ -20,17 +23,23 @@ const initCtx = () => {
   ctx = new AudioContext()
 
   for (let i = 0; i < NUMBER_OF_VOICES; i++) {
-    voiceFrequencies.push(200)
-    voiceGains.push(0)
+    const voice: Voice = {
+      nodes: {
+        oscillator: ctx.createOscillator(),
+        gain: ctx.createGain()
+      },
+      frequency: 200,
+      volume: 0
+    }
 
-    const oscillator = ctx.createOscillator()
-    oscillator.frequency.value = voiceFrequencies[i]
+    voices.push(voice)
+
+    const oscillator = voice.nodes.oscillator
+    oscillator.frequency.value = voice.frequency
     oscillator.type = 'sine'
-    oscillators.push(oscillator)
 
-    const gain = ctx.createGain()
-    gain.gain.value = voiceGains[i]
-    gains.push(gain)
+    const gain = voice.nodes.gain
+    gain.gain.value = voice.volume
 
     oscillator.connect(gain)
     gain.connect(ctx.destination)
@@ -47,12 +56,14 @@ export const soundOn = async (voiceIdx: number) => {
   const endTime = ctx.currentTime + transitionInMs / 1000
   const endVolume = MAX_VOLUME / NUMBER_OF_VOICES
 
-  gains[voiceIdx].gain.value = voiceGains[voiceIdx]
-  gains[voiceIdx].gain.linearRampToValueAtTime(endVolume, endTime)
+  const voice = voices[voiceIdx]
+
+  voice.nodes.gain.gain.value = voice.volume
+  voice.nodes.gain.gain.linearRampToValueAtTime(endVolume, endTime)
 
   await wait(transitionInMs)
-  gains[voiceIdx].gain.value = endVolume
-  voiceGains[voiceIdx] = endVolume
+  voice.nodes.gain.gain.value = endVolume
+  voice.volume = endVolume
 
   // TODO: adjust other voices too, so that the overall volume is the same
   // endVolume = MAX_VOLUME / numberOfActiveVoices
@@ -66,12 +77,14 @@ export const soundOff = async (voiceIdx: number) => {
   const endTime = ctx.currentTime + transitionInMs / 1000
   const endVolume = 0
 
-  gains[voiceIdx].gain.value = voiceGains[voiceIdx]
-  gains[voiceIdx].gain.linearRampToValueAtTime(endVolume, endTime)
+  const voice = voices[voiceIdx]
+
+  voice.nodes.gain.gain.value = voice.volume
+  voice.nodes.gain.gain.linearRampToValueAtTime(endVolume, endTime)
 
   await wait(transitionInMs)
-  gains[voiceIdx].gain.value = endVolume
-  voiceGains[voiceIdx] = endVolume
+  voice.nodes.gain.gain.value = endVolume
+  voice.volume = endVolume
 
   // TODO: adjust other voices too, so that the overall volume is the same
   // startVolume = MAX_VOLUME / numberOfActiveVoices
@@ -84,10 +97,12 @@ export const setFrequency = async (frequency: number, voiceIdx: number) => {
 
   const endTime = ctx.currentTime + transitionInMs / 1000
 
-  oscillators[voiceIdx].frequency.value = voiceFrequencies[voiceIdx]
-  oscillators[voiceIdx].frequency.linearRampToValueAtTime(frequency, endTime)
+  const voice = voices[voiceIdx]
+
+  voice.nodes.oscillator.frequency.value = voice.frequency
+  voice.nodes.oscillator.frequency.linearRampToValueAtTime(frequency, endTime)
 
   await wait(transitionInMs)
-  oscillators[voiceIdx].frequency.value = frequency
-  voiceFrequencies[voiceIdx] = frequency
+  voice.nodes.oscillator.frequency.value = frequency
+  voice.frequency = frequency
 }
