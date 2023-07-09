@@ -1,6 +1,6 @@
 import React, { ChangeEvent, FC, useState } from 'react'
 import { clamp } from '@src/functions'
-import s from './style.module.scss'
+import s from './Slider.module.scss'
 
 type SliderProps = {
   min: number

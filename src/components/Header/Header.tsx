@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import s from './style.module.scss'
+import s from './Header.module.scss'
 
 type HeaderProps = {}
 

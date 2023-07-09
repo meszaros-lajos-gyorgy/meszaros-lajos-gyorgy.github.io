@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react'
 import cn from 'classnames'
-import s from './style.module.scss'
+import s from './ToggleSwitch.module.scss'
 
 type ToggleSwitchProps = {
   isOn: boolean

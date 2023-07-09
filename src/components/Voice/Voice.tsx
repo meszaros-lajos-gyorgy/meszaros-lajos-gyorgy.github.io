@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react'
 import { setFrequency, soundOff, soundOn } from '@services/Audio'
 import { Slider } from '@components/Slider/Slider'
 import { ToggleSwitch } from '@components/ToggleSwitch/ToggleSwitch'
-import s from './style.module.scss'
+import s from './Voice.module.scss'
 
 type VoiceProps = {
   idx: number
