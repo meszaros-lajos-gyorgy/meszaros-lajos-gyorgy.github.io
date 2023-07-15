@@ -11,15 +11,18 @@ type VoiceProps = {
 export const Voice: FC<VoiceProps> = ({ idx }) => {
   // TODO: move this to redux
 
+  const [isSoundChanging, setIsSoundChanging] = useState(false)
   const [isSoundOn, setIsSoundOn] = useState(false)
   const [harmonic, setHarmonic] = useState(2)
 
   const toggleSoundOn = async () => {
+    setIsSoundChanging(true)
     if (isSoundOn) {
       await soundOff(idx)
     } else {
       await soundOn(idx)
     }
+    setIsSoundChanging(false)
     setIsSoundOn(!isSoundOn)
   }
 
@@ -36,7 +39,13 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
       <span>
         <ToggleSwitch isOn={isSoundOn} onClick={toggleSoundOn} />
       </span>
-      <Slider min={1} max={16} value={harmonic} onChange={changeHarmonic} />
+      <Slider
+        min={1}
+        max={16}
+        value={harmonic}
+        onChange={changeHarmonic}
+        isActive={(!isSoundOn && isSoundChanging) || (isSoundOn && !isSoundChanging)}
+      />
       <span className={s.frequency}>{harmonic * 100} Hz</span>
     </div>
   )

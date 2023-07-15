@@ -4,19 +4,12 @@
   height: 24px;
   width: 80px;
   border-radius: 2px;
+  background-color: var(--color-black);
+  color: var(--color-beige);
+  transition: color 0.5s ease-in-out, background-color 0.5s ease-in-out;
 
-  &.on {
+  &.isActive {
     background-color: var(--color-white);
     color: var(--color-brown);
-  }
-
-  &.off {
-    background-color: var(--color-black);
-    color: var(--color-beige);
-  }
-
-  &.changing {
-    background-color: var(--color-brown);
-    color: var(--color-beige);
   }
 }

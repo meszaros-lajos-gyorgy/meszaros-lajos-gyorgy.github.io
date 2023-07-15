@@ -5,8 +5,9 @@
   height: 16px;
   width: 16px;
   border-radius: 50%;
-  background: var(--color-white);
+  background: var(--color-beige);
   border: 1px solid var(--color-brown);
+  transition: background 0.5s ease-in-out;
 }
 
 @mixin track() {
@@ -48,6 +49,15 @@
     }
     &::-moz-range-track {
       background: var(--color-black);
+    }
+  }
+
+  &.active {
+    &::-webkit-slider-thumb {
+      background: var(--color-white);
+    }
+    &::-moz-range-thumb {
+      background: var(--color-white);
     }
   }
 }

@@ -1,4 +1,5 @@
 import React, { ChangeEvent, FC, useState } from 'react'
+import cn from 'classnames'
 import { clamp } from '@src/functions'
 import s from './Slider.module.scss'
 
@@ -11,9 +12,13 @@ type SliderProps = {
   step?: number
   value: number
   onChange: (value: number) => Promise<void>
+  /**
+   * Default value is true
+   */
+  isActive?: boolean
 }
 
-export const Slider: FC<SliderProps> = ({ min, max, step = 1, value, onChange }) => {
+export const Slider: FC<SliderProps> = ({ min, max, step = 1, value, onChange, isActive = true }) => {
   const [isChanging, setIsChanging] = useState(false)
 
   const handleOnInput = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -34,6 +39,14 @@ export const Slider: FC<SliderProps> = ({ min, max, step = 1, value, onChange })
   }
 
   return (
-    <input className={s.Slider} type="range" min={min} max={max} step={step} value={value} onInput={handleOnInput} />
+    <input
+      className={cn(s.Slider, { [s.active]: isActive })}
+      type="range"
+      min={min}
+      max={max}
+      step={step}
+      value={value}
+      onInput={handleOnInput}
+    />
   )
 }

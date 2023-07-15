@@ -24,9 +24,7 @@ export const ToggleSwitch: FC<ToggleSwitchProps> = ({ isOn, onClick }) => {
     <button
       onClick={handleOnClick}
       className={cn(s.ToggleSwitch, {
-        [s.on]: isOn,
-        [s.off]: !isOn,
-        [s.changing]: isChanging
+        [s.isActive]: (isOn && !isChanging) || (!isOn && isChanging)
       })}
     >
       {isChanging ? 'turning ' + (isOn ? 'off' : 'on') : '' + (isOn ? 'on' : 'off')}
