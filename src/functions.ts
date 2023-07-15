@@ -25,3 +25,7 @@ export const clamp = (min: number, max: number, n: number) => {
 
   return n
 }
+
+export const times = <T>(fn: (index: number) => T, repetitions: number): T[] => {
+  return [...Array(repetitions)].map((value, index) => fn(index))
+}
