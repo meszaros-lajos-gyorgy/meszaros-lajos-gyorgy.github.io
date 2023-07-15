@@ -39,14 +39,8 @@ export const Slider: FC<SliderProps> = ({ min, max, step = 1, value, onChange, i
   }
 
   return (
-    <input
-      className={cn(s.Slider, { [s.active]: isActive })}
-      type="range"
-      min={min}
-      max={max}
-      step={step}
-      value={value}
-      onInput={handleOnInput}
-    />
+    <div className={cn(s.Slider, { [s.active]: isActive })}>
+      <input type="range" min={min} max={max} step={step} value={value} onInput={handleOnInput} />
+    </div>
   )
 }

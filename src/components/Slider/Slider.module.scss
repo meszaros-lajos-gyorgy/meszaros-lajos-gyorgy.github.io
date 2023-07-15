@@ -18,46 +18,79 @@
 }
 
 .Slider {
-  -webkit-appearance: none;
-  background: transparent;
+  $sliderHeight: 24px;
 
-  &::-webkit-slider-thumb {
+  position: relative;
+  height: $sliderHeight;
+
+  input {
+    width: 100%;
     -webkit-appearance: none;
-    margin-top: -7px;
-    @include thumb();
-  }
-  &::-webkit-slider-runnable-track {
-    @include track();
-  }
-  &::-moz-range-thumb {
-    @include thumb();
-  }
-  &::-moz-range-track {
-    @include track();
-  }
+    background: transparent;
+    margin: 0;
 
-  &:focus {
-    outline: none;
     &::-webkit-slider-thumb {
-      border-color: var(--color-black);
+      -webkit-appearance: none;
+      margin-top: -7px;
+      @include thumb();
     }
     &::-webkit-slider-runnable-track {
-      background: var(--color-black);
+      @include track();
     }
     &::-moz-range-thumb {
-      border-color: var(--color-black);
+      @include thumb();
     }
     &::-moz-range-track {
-      background: var(--color-black);
+      @include track();
+    }
+
+    &:focus {
+      outline: none;
+      &::-webkit-slider-thumb {
+        border-color: var(--color-black);
+      }
+      &::-webkit-slider-runnable-track {
+        background: var(--color-black);
+      }
+      &::-moz-range-thumb {
+        border-color: var(--color-black);
+      }
+      &::-moz-range-track {
+        background: var(--color-black);
+      }
     }
   }
 
   &.active {
-    &::-webkit-slider-thumb {
-      background: var(--color-white);
+    input {
+      &::-webkit-slider-thumb {
+        background: var(--color-white);
+      }
+      &::-moz-range-thumb {
+        background: var(--color-white);
+      }
     }
-    &::-moz-range-thumb {
-      background: var(--color-white);
-    }
+  }
+
+  &::before {
+    $steps: 16;
+    $barHeight: 6px;
+    $barWidth: 1px;
+
+    content: '';
+    display: block;
+    position: absolute;
+    top: ($sliderHeight - $barHeight) / 2 + 1px;
+    left: 7px;
+    width: calc(100% - 14px);
+    height: $barHeight;
+    z-index: -1;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--color-brown),
+      var(--color-brown) $barWidth,
+      transparent $barWidth,
+      transparent calc((100% - $barWidth) / ($steps - 1))
+    );
   }
 }
