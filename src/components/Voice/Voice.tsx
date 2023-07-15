@@ -2,6 +2,7 @@ import React, { FC, useState } from 'react'
 import { setFrequency, soundOff, soundOn } from '@services/Audio'
 import { Slider } from '@components/Slider/Slider'
 import { ToggleSwitch } from '@components/ToggleSwitch/ToggleSwitch'
+import { BASE_FREQUENCY, INITIAL_HARMONIC } from '@src/constants'
 import s from './Voice.module.scss'
 
 type VoiceProps = {
@@ -13,7 +14,7 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
 
   const [isSoundChanging, setIsSoundChanging] = useState(false)
   const [isSoundOn, setIsSoundOn] = useState(false)
-  const [harmonic, setHarmonic] = useState(2)
+  const [harmonic, setHarmonic] = useState(INITIAL_HARMONIC)
 
   const toggleSoundOn = async () => {
     setIsSoundChanging(true)
@@ -28,8 +29,7 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
 
   const changeHarmonic = async (newHarmonic: number) => {
     if (newHarmonic != harmonic) {
-      const baseFrequency = 100
-      await setFrequency(newHarmonic * baseFrequency, idx)
+      await setFrequency(newHarmonic * BASE_FREQUENCY, idx)
       setHarmonic(newHarmonic)
     }
   }
@@ -46,7 +46,7 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
         onChange={changeHarmonic}
         isActive={(!isSoundOn && isSoundChanging) || (isSoundOn && !isSoundChanging)}
       />
-      <span className={s.frequency}>{harmonic * 100} Hz</span>
+      <span className={s.frequency}>{harmonic * BASE_FREQUENCY} Hz</span>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
-import { NUMBER_OF_VOICES } from '@services/Audio'
 import { Voice } from '@components/Voice/Voice'
+import { NUMBER_OF_VOICES } from '@src/constants'
 import s from './Voices.module.scss'
 
 type VoicesProps = {}

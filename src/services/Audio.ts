@@ -1,7 +1,5 @@
+import { BASE_FREQUENCY, INITIAL_HARMONIC, MAX_VOLUME, NUMBER_OF_VOICES } from '@src/constants'
 import { wait } from '@src/functions'
-
-export const NUMBER_OF_VOICES = 8
-const MAX_VOLUME = 0.8
 
 type Voice = {
   nodes: {
@@ -28,7 +26,7 @@ const initCtx = () => {
         oscillator: ctx.createOscillator(),
         gain: ctx.createGain()
       },
-      frequency: 200,
+      frequency: INITIAL_HARMONIC * BASE_FREQUENCY,
       volume: 0
     }
 
