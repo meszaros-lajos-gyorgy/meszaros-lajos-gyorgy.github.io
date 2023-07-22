@@ -14,7 +14,6 @@
   cursor: pointer;
   width: 100%;
   height: 1px;
-  // background: var(--color-brown);
   background: transparent;
 }
 
@@ -50,15 +49,9 @@
       &::-webkit-slider-thumb {
         border-color: var(--color-black);
       }
-      // &::-webkit-slider-runnable-track {
-      //   background: var(--color-black);
-      // }
       &::-moz-range-thumb {
         border-color: var(--color-black);
       }
-      // &::-moz-range-track {
-      //   background: var(--color-black);
-      // }
     }
   }
 
