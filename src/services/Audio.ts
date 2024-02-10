@@ -1,4 +1,4 @@
-import { BASE_FREQUENCY, INITIAL_HARMONIC, MAX_VOLUME, NUMBER_OF_VOICES } from '@src/constants'
+import { MAX_VOLUME, NUMBER_OF_VOICES } from '@src/constants'
 import { times, wait } from '@src/functions'
 
 type Voice = {
@@ -19,10 +19,38 @@ type InitializedVoice = {
   volume: number
 }
 
+export type MODES = 'harmonics' | 'subharmonics'
+
+export let mode: MODES = 'harmonics'
+
+export const getBaseFrequency = () => {
+  if (mode === 'harmonics') {
+    return 110
+  } else {
+    return 1760
+  }
+}
+
+export const getInitialHarmonic = () => {
+  if (mode === 'harmonics') {
+    return 4 // 110 * 4 = 440
+  } else {
+    return 4 // 1760 / 4 = 440
+  }
+}
+
+export const calculateFrequency = (harmonic: number) => {
+  if (mode === 'harmonics') {
+    return getBaseFrequency() * harmonic
+  } else {
+    return getBaseFrequency() / harmonic
+  }
+}
+
 let ctx: AudioContext
 const voices: Voice[] = times(
   () => ({
-    frequency: INITIAL_HARMONIC * BASE_FREQUENCY,
+    frequency: calculateFrequency(getInitialHarmonic()),
     volume: 0
   }),
   NUMBER_OF_VOICES

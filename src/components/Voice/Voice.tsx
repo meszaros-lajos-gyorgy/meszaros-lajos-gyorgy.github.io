@@ -1,8 +1,8 @@
 import React, { FC, useState } from 'react'
-import { setFrequency, soundOff, soundOn } from '@services/Audio'
+import { calculateFrequency, getInitialHarmonic, mode, setFrequency, soundOff, soundOn } from '@services/Audio'
 import { Slider } from '@components/Slider/Slider'
 import { ToggleSwitch } from '@components/ToggleSwitch/ToggleSwitch'
-import { BASE_FREQUENCY, INITIAL_HARMONIC } from '@src/constants'
+import { roundToNDecimals } from '@src/functions'
 import s from './Voice.module.scss'
 
 type VoiceProps = {
@@ -10,11 +10,9 @@ type VoiceProps = {
 }
 
 export const Voice: FC<VoiceProps> = ({ idx }) => {
-  // TODO: move this to redux
-
   const [isSoundChanging, setIsSoundChanging] = useState(false)
   const [isSoundOn, setIsSoundOn] = useState(false)
-  const [harmonic, setHarmonic] = useState(INITIAL_HARMONIC)
+  const [harmonic, setHarmonic] = useState(getInitialHarmonic())
 
   const toggleSoundOn = async () => {
     setIsSoundChanging(true)
@@ -29,7 +27,7 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
 
   const changeHarmonic = async (newHarmonic: number) => {
     if (newHarmonic != harmonic) {
-      await setFrequency(newHarmonic * BASE_FREQUENCY, idx)
+      await setFrequency(calculateFrequency(newHarmonic), idx)
       setHarmonic(newHarmonic)
     }
   }
@@ -46,7 +44,7 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
         onChange={changeHarmonic}
         isActive={(!isSoundOn && isSoundChanging) || (isSoundOn && !isSoundChanging)}
       />
-      <span className={s.frequency}>{harmonic * BASE_FREQUENCY} Hz</span>
+      <span className={s.frequency}>{roundToNDecimals(1, calculateFrequency(harmonic))} Hz</span>
     </div>
   )
 }

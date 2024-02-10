@@ -29,3 +29,7 @@ export const clamp = (min: number, max: number, n: number) => {
 export const times = <T>(fn: (index: number) => T, repetitions: number): T[] => {
   return [...Array(repetitions)].map((value, index) => fn(index))
 }
+
+export const roundToNDecimals = (decimals: number, x: number) => {
+  return Math.round(x * 10 ** decimals) / 10 ** decimals
+}
