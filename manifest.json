@@ -40,10 +40,10 @@
     }
   ],
   "start_url": "/",
-  "background_color": "#1E1E1B",
+  "background_color": "#020204",
   "display": "standalone",
   "scope": "/",
-  "theme_color": "#1E1E1B",
+  "theme_color": "#020204",
   "shortcuts": [],
   "description": "Online microtonal synthesizer",
   "screenshots": []
