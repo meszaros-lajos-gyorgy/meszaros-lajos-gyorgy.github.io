@@ -21,21 +21,27 @@ type InitializedVoice = {
 
 export type MODES = 'harmonics' | 'subharmonics'
 
-export let mode: MODES = 'harmonics'
+const loadModeFromUrl = (): MODES => {
+  const params = new URLSearchParams(window.location.search)
+  if (!params.has('mode')) {
+    return 'harmonics'
+  }
+
+  const mode = params.get('mode') as string
+  if (mode !== 'harmonics' && mode !== 'subharmonics') {
+    return 'harmonics'
+  }
+
+  return mode
+}
+
+export const mode = loadModeFromUrl()
 
 export const getBaseFrequency = () => {
   if (mode === 'harmonics') {
     return 110
   } else {
     return 1760
-  }
-}
-
-export const getInitialHarmonic = () => {
-  if (mode === 'harmonics') {
-    return 4 // 110 * 4 = 440
-  } else {
-    return 4 // 1760 / 4 = 440
   }
 }
 
@@ -49,8 +55,8 @@ export const calculateFrequency = (harmonic: number) => {
 
 let ctx: AudioContext
 const voices: Voice[] = times(
-  () => ({
-    frequency: calculateFrequency(getInitialHarmonic()),
+  (idx) => ({
+    frequency: calculateFrequency(idx + (mode === 'harmonics' ? 1 : 4)),
     volume: 0
   }),
   NUMBER_OF_VOICES

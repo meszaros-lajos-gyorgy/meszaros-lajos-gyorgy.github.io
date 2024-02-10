@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react'
-import { calculateFrequency, getInitialHarmonic, mode, setFrequency, soundOff, soundOn } from '@services/Audio'
+import { calculateFrequency, mode, setFrequency, soundOff, soundOn } from '@services/Audio'
 import { Slider } from '@components/Slider/Slider'
 import { ToggleSwitch } from '@components/ToggleSwitch/ToggleSwitch'
 import { roundToNDecimals } from '@src/functions'
@@ -12,7 +12,7 @@ type VoiceProps = {
 export const Voice: FC<VoiceProps> = ({ idx }) => {
   const [isSoundChanging, setIsSoundChanging] = useState(false)
   const [isSoundOn, setIsSoundOn] = useState(false)
-  const [harmonic, setHarmonic] = useState(getInitialHarmonic())
+  const [harmonic, setHarmonic] = useState(idx + (mode === 'harmonics' ? 1 : 4))
 
   const toggleSoundOn = async () => {
     setIsSoundChanging(true)
