@@ -48,9 +48,11 @@
       outline: none;
       &::-webkit-slider-thumb {
         border-color: var(--color-black);
+        box-shadow: 0 0 0 2px var(--color-white);
       }
       &::-moz-range-thumb {
         border-color: var(--color-black);
+        box-shadow: 0 0 0 2px var(--color-white);
       }
     }
   }
@@ -62,6 +64,15 @@
       }
       &::-moz-range-thumb {
         background: var(--color-white);
+      }
+
+      &:focus {
+        &::-webkit-slider-thumb {
+          box-shadow: 0 0 0 2px var(--color-brown);
+        }
+        &::-moz-range-thumb {
+          box-shadow: 0 0 0 2px var(--color-brown);
+        }
       }
     }
   }
