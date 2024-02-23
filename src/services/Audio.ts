@@ -148,3 +148,19 @@ export const setFrequency = async (frequency: number, voiceIdx: number) => {
 
   voices[voiceIdx].frequency = frequency
 }
+
+export const soundOnAll = async () => {
+  return Promise.all(times(soundOn, NUMBER_OF_VOICES))
+}
+
+export const soundOffAll = async () => {
+  return Promise.all(times(soundOff, NUMBER_OF_VOICES))
+}
+
+export const isVoiceOn = (idx: number) => {
+  return voices[idx].volume > 0
+}
+
+export const areAnyVoicesOn = () => {
+  return times((idx) => idx, NUMBER_OF_VOICES).some(isVoiceOn)
+}
