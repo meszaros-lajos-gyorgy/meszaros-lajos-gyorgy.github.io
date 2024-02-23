@@ -4,7 +4,7 @@ import s from './ToggleSwitch.module.scss'
 
 type ToggleSwitchProps = {
   isOn: boolean
-  onClick: () => Promise<void>
+  onClick: () => void | Promise<void>
 }
 
 export const ToggleSwitch: FC<ToggleSwitchProps> = ({ isOn, onClick }) => {
