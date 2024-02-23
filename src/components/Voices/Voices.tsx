@@ -36,16 +36,13 @@ export const Voices: FC<VoicesProps> = () => {
 
   return (
     <section className={s.Voices}>
-      <a
-        style={{ float: 'right', marginTop: 15, marginRight: 8 }}
-        href={mode === 'harmonics' ? '?mode=subharmonics' : '?mode=harmonics'}
-      >
+      <a className={s.modeLink} href={`?mode=${mode === 'harmonics' ? 'subharmonics' : 'harmonics'}`}>
         {mode === 'harmonics' ? 'subharmonics' : 'harmonics'}
       </a>
 
-      <h2>{mode === 'harmonics' ? 'Voices (harmonics)' : 'Voices (subharmonics)'}</h2>
+      <h2>Voices ({mode})</h2>
 
-      <div style={{ padding: '11px', margin: '0 0 -5px 0' }}>
+      <div className={s.allChannelControls}>
         <ToggleSwitch
           isOn={areAnyVoicesOn}
           label={areAnyVoicesOn ? 'turn all off' : 'turn all on'}
@@ -58,6 +55,7 @@ export const Voices: FC<VoicesProps> = () => {
           }}
         />
       </div>
+
       {times((idx) => {
         return <Voice key={idx} idx={idx} />
       }, NUMBER_OF_VOICES)}
