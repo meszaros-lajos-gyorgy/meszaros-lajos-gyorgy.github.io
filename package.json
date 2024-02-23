@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/meszaros-lajos-gyorgy/meszaros-lajos-gyorgy.github.io#readme",
   "devDependencies": {
+    "@reduxjs/toolkit": "^2.2.1",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/node": "^20.11.17",
     "@types/react-dom": "^18.2.19",
@@ -33,6 +34,7 @@
     "postcss-modules": "^6.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-redux": "^9.1.0",
     "sass": "^1.70.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
