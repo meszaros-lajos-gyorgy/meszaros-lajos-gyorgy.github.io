@@ -8,7 +8,8 @@ body {
 
 #app {
   width: 100%;
-  height: 100%;
+  height: calc(100% - 90px);
+  overflow: hidden;
 }
 
 .fullpage-loading {
@@ -46,5 +47,37 @@ body {
   }
   100% {
     content: '.';
+  }
+}
+
+header {
+  background-color: var(--color-black);
+  color: var(--color-beige);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 45px;
+  padding: 0 14px;
+
+  h1 {
+    margin: 0;
+    font-size: 1.3em;
+  }
+}
+
+footer {
+  background-color: var(--color-black);
+  color: var(--color-beige);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  height: 45px;
+  padding: 0 14px;
+
+  a {
+    font-weight: bold;
+    color: var(--color-text);
+    margin-left: 10px;
   }
 }
