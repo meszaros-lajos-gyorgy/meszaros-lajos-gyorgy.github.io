@@ -139,6 +139,10 @@ export const AudioSlice = createSlice({
       const voiceIdx = arg
       const voice = state.voices[voiceIdx] as InitializedVoice
 
+      if (voice.volume === endVolume) {
+        return
+      }
+
       voice.nodes.gain.gain.value = voice.volume
       voice.nodes.gain.gain.linearRampToValueAtTime(endVolume, endTime)
       voice.transition = 'ramping-up'
@@ -162,6 +166,10 @@ export const AudioSlice = createSlice({
 
       const voiceIdx = arg
       const voice = state.voices[voiceIdx] as InitializedVoice
+
+      if (voice.volume === endVolume) {
+        return
+      }
 
       voice.nodes.gain.gain.value = voice.volume
       voice.nodes.gain.gain.linearRampToValueAtTime(endVolume, endTime)
