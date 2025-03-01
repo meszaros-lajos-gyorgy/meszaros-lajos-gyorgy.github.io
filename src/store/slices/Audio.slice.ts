@@ -22,12 +22,6 @@ type InitializedVoice = {
   transition: 'ramping-up' | 'ramping-down' | 'idle'
 }
 
-export type AudioState = {
-  ctx?: AudioContext
-  voices: Voice[]
-  // TODO: move mode here instead of having it in a variable
-}
-
 export type MODES = 'harmonics' | 'subharmonics'
 
 function parseURLParams(): { mode: MODES } {
@@ -47,9 +41,7 @@ function parseURLParams(): { mode: MODES } {
   return settings
 }
 
-export const { mode } = parseURLParams()
-
-export function getBaseFrequency(): number {
+export function getBaseFrequency(mode: MODES): number {
   if (mode === 'harmonics') {
     return 440 / 4
   } else {
@@ -57,11 +49,11 @@ export function getBaseFrequency(): number {
   }
 }
 
-export function calculateFrequency(harmonic: number): number {
+export function calculateFrequency(mode: MODES, harmonic: number): number {
   if (mode === 'harmonics') {
-    return getBaseFrequency() * harmonic
+    return getBaseFrequency(mode) * harmonic
   } else {
-    return getBaseFrequency() / harmonic
+    return getBaseFrequency(mode) / harmonic
   }
 }
 
@@ -116,11 +108,20 @@ export const setFrequency = createAsyncThunk<void, { frequency: number; voiceIdx
   }
 )
 
+// TODO: move this into state
+export const { mode } = parseURLParams()
+
+export type AudioState = {
+  ctx?: AudioContext
+  voices: Voice[]
+  // TODO: move mode here instead of having it in a variable
+}
+
 const initialState: AudioState = {
   ctx: undefined,
   voices: times(
     (idx) => ({
-      frequency: calculateFrequency(idx + (mode === 'harmonics' ? 1 : 4)),
+      frequency: calculateFrequency(mode, idx + (mode === 'harmonics' ? 1 : 4)),
       volume: 0,
       transition: 'idle'
     }),

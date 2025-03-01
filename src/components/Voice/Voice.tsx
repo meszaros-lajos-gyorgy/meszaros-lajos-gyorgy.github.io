@@ -43,7 +43,7 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
       return
     }
 
-    await dispatch(setFrequency({ frequency: calculateFrequency(newHarmonic), voiceIdx: idx })).unwrap()
+    await dispatch(setFrequency({ frequency: calculateFrequency(mode, newHarmonic), voiceIdx: idx })).unwrap()
     setHarmonic(newHarmonic)
   }
 
@@ -70,7 +70,7 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
         onChange={changeHarmonic}
         isActive={soundState === 'ramping-up' || soundState === 'on'}
       />
-      <span className={s.frequency}>{roundToNDecimals(1, calculateFrequency(harmonic))} Hz</span>
+      <span className={s.frequency}>{roundToNDecimals(1, calculateFrequency(mode, harmonic))} Hz</span>
     </div>
   )
 }
