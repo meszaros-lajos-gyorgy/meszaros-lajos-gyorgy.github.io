@@ -1,5 +1,5 @@
-import { createAsyncThunk, createSlice, Draft, PayloadAction } from '@reduxjs/toolkit'
-import { MAX_VOLUME, NUMBER_OF_VOICES } from '@src/constants'
+import { createAsyncThunk, createSlice, Draft } from '@reduxjs/toolkit'
+import { MAX_VOLUME, DEFAULT_NUMBER_OF_VOICES } from '@src/constants'
 import { times, wait } from '@src/functions'
 
 export type Voice = {
@@ -30,21 +30,24 @@ export type AudioState = {
 
 export type MODES = 'harmonics' | 'subharmonics'
 
-function loadModeFromUrl(): MODES {
+function parseURLParams(): { mode: MODES } {
   const params = new URLSearchParams(window.location.search)
-  if (!params.has('mode')) {
-    return 'harmonics'
+
+  const settings: { mode: MODES } = {
+    mode: 'harmonics'
   }
 
-  const mode = params.get('mode') as string
-  if (mode !== 'harmonics' && mode !== 'subharmonics') {
-    return 'harmonics'
+  if (params.has('mode')) {
+    const mode = params.get('mode') as string
+    if (mode === 'harmonics' || mode === 'subharmonics') {
+      settings.mode = mode
+    }
   }
 
-  return mode
+  return settings
 }
 
-export const mode = loadModeFromUrl()
+export const { mode } = parseURLParams()
 
 export function getBaseFrequency(): number {
   if (mode === 'harmonics') {
@@ -121,7 +124,7 @@ const initialState: AudioState = {
       volume: 0,
       transition: 'idle'
     }),
-    NUMBER_OF_VOICES
+    DEFAULT_NUMBER_OF_VOICES
   )
 }
 

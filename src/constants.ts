@@ -2,7 +2,7 @@
  * The number of different sounds the app can make.
  * Each voice has an oscillator and a gain.
  */
-export const NUMBER_OF_VOICES = 8
+export const DEFAULT_NUMBER_OF_VOICES = 8
 
 /**
  * The maximum voice the whole app will emit when all voices are enabled.
