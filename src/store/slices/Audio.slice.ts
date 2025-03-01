@@ -62,18 +62,6 @@ export function calculateFrequency(harmonic: number): number {
   }
 }
 
-const initialState: AudioState = {
-  ctx: undefined,
-  voices: times(
-    (idx) => ({
-      frequency: calculateFrequency(idx + (mode === 'harmonics' ? 1 : 4)),
-      volume: 0,
-      transition: 'idle'
-    }),
-    NUMBER_OF_VOICES
-  )
-}
-
 function initCtx(state: Draft<AudioState>) {
   if (state.ctx !== undefined) {
     return
@@ -125,6 +113,18 @@ export const setFrequency = createAsyncThunk<void, { frequency: number; voiceIdx
   }
 )
 
+const initialState: AudioState = {
+  ctx: undefined,
+  voices: times(
+    (idx) => ({
+      frequency: calculateFrequency(idx + (mode === 'harmonics' ? 1 : 4)),
+      volume: 0,
+      transition: 'idle'
+    }),
+    NUMBER_OF_VOICES
+  )
+}
+
 export const AudioSlice = createSlice({
   name: 'audio',
   initialState,
@@ -133,7 +133,7 @@ export const AudioSlice = createSlice({
     builder.addCase(soundOn.pending, (state: AudioState, { meta: { arg } }) => {
       initCtx(state)
 
-      const endVolume = MAX_VOLUME / NUMBER_OF_VOICES
+      const endVolume = MAX_VOLUME / state.voices.length
       const endTime = (state.ctx as AudioContext).currentTime + volumeChangeTransitionInMs / 1000
 
       const voiceIdx = arg
@@ -147,8 +147,9 @@ export const AudioSlice = createSlice({
       voice.nodes.gain.gain.linearRampToValueAtTime(endVolume, endTime)
       voice.transition = 'ramping-up'
     })
+
     builder.addCase(soundOn.fulfilled, (state: AudioState, { meta: { arg } }) => {
-      const endVolume = MAX_VOLUME / NUMBER_OF_VOICES
+      const endVolume = MAX_VOLUME / state.voices.length
 
       const voiceIdx = arg
       const voice = state.voices[voiceIdx] as InitializedVoice
@@ -157,6 +158,8 @@ export const AudioSlice = createSlice({
       voice.volume = endVolume
       voice.transition = 'idle'
     })
+
+    // ---
 
     builder.addCase(soundOff.pending, (state: AudioState, { meta: { arg } }) => {
       initCtx(state)
@@ -175,6 +178,7 @@ export const AudioSlice = createSlice({
       voice.nodes.gain.gain.linearRampToValueAtTime(endVolume, endTime)
       voice.transition = 'ramping-down'
     })
+
     builder.addCase(soundOff.fulfilled, (state: AudioState, { meta: { arg } }) => {
       const endVolume = 0
 
@@ -185,6 +189,8 @@ export const AudioSlice = createSlice({
       voice.volume = endVolume
       voice.transition = 'idle'
     })
+
+    // ---
 
     builder.addCase(setFrequency.pending, (state: AudioState, { meta: { arg } }) => {
       const { voiceIdx, frequency } = arg
@@ -199,6 +205,7 @@ export const AudioSlice = createSlice({
       voice.nodes.oscillator.frequency.value = voice.frequency
       voice.nodes.oscillator.frequency.linearRampToValueAtTime(frequency, endTime)
     })
+
     builder.addCase(setFrequency.fulfilled, (state: AudioState, { meta: { arg } }) => {
       const { voiceIdx, frequency } = arg
 

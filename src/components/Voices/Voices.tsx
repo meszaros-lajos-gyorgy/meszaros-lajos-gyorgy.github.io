@@ -1,7 +1,6 @@
 import React, { FC } from 'react'
 import { ToggleSwitch } from '@components/ToggleSwitch/ToggleSwitch'
 import { Voice } from '@components/Voice/Voice'
-import { NUMBER_OF_VOICES } from '@src/constants'
 import { times } from '@src/functions'
 import { useDispatch, useSelector } from '@src/store/hooks'
 import { mode, soundOff, soundOn } from '@src/store/slices/Audio.slice'
@@ -24,14 +23,26 @@ export const Voices: FC<VoicesProps> = () => {
     })
   })
 
+  const numberOfVoices = useSelector((state) => {
+    return state.audio.voices.length
+  })
+
   const dispatch = useDispatch()
 
   async function soundOnAll() {
-    return Promise.all(times((idx) => dispatch(soundOn(idx)), NUMBER_OF_VOICES))
+    return Promise.all(
+      times((idx) => {
+        return dispatch(soundOn(idx))
+      }, numberOfVoices)
+    )
   }
 
   async function soundOffAll() {
-    return Promise.all(times((idx) => dispatch(soundOff(idx)), NUMBER_OF_VOICES))
+    return Promise.all(
+      times((idx) => {
+        return dispatch(soundOff(idx))
+      }, numberOfVoices)
+    )
   }
 
   return (
@@ -58,7 +69,7 @@ export const Voices: FC<VoicesProps> = () => {
 
       {times((idx) => {
         return <Voice key={idx} idx={idx} />
-      }, NUMBER_OF_VOICES)}
+      }, numberOfVoices)}
     </section>
   )
 }
