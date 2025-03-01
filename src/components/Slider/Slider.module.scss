@@ -24,6 +24,10 @@
   height: $sliderHeight;
 
   input {
+    // increasing the clickable height of range input's slider with padding
+    // source https://stackoverflow.com/a/46092178/1806628
+    padding: ($sliderHeight / 2) 0 ($sliderHeight / 2 - 1px) 0;
+
     width: 100%;
     -webkit-appearance: none;
     background: transparent;
