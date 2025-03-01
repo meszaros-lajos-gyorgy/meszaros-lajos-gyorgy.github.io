@@ -26,11 +26,11 @@ export const Voices: FC<VoicesProps> = () => {
 
   const dispatch = useDispatch()
 
-  const soundOnAll = async () => {
+  async function soundOnAll() {
     return Promise.all(times((idx) => dispatch(soundOn(idx)), NUMBER_OF_VOICES))
   }
 
-  const soundOffAll = async () => {
+  async function soundOffAll() {
     return Promise.all(times((idx) => dispatch(soundOff(idx)), NUMBER_OF_VOICES))
   }
 

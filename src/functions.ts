@@ -1,4 +1,4 @@
-export const onReady = (fn: () => void) => {
+export function onReady(fn: () => void): void {
   if (document.readyState !== 'loading') {
     fn()
   } else {
@@ -6,7 +6,7 @@ export const onReady = (fn: () => void) => {
   }
 }
 
-export const wait = (delayInMs: number): Promise<void> => {
+export function wait(delayInMs: number): Promise<void> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve(undefined)
@@ -14,7 +14,7 @@ export const wait = (delayInMs: number): Promise<void> => {
   })
 }
 
-export const clamp = (min: number, max: number, n: number) => {
+export function clamp(min: number, max: number, n: number): number {
   if (n < min) {
     return min
   }
@@ -26,10 +26,10 @@ export const clamp = (min: number, max: number, n: number) => {
   return n
 }
 
-export const times = <T>(fn: (index: number) => T, repetitions: number): T[] => {
+export function times<T>(fn: (index: number) => T, repetitions: number): T[] {
   return [...Array(repetitions)].map((value, index) => fn(index))
 }
 
-export const roundToNDecimals = (decimals: number, x: number) => {
+export function roundToNDecimals(decimals: number, x: number): number {
   return Math.round(x * 10 ** decimals) / 10 ** decimals
 }

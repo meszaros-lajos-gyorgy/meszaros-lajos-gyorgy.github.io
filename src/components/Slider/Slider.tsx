@@ -21,7 +21,7 @@ type SliderProps = {
 export const Slider: FC<SliderProps> = ({ min, max, step = 1, value, onChange, isActive = true }) => {
   const [isChanging, setIsChanging] = useState(false)
 
-  const handleOnInput = async (e: ChangeEvent<HTMLInputElement>) => {
+  async function handleOnInput(e: ChangeEvent<HTMLInputElement>): Promise<void> {
     if (isChanging) {
       return
     }

@@ -30,7 +30,7 @@ export type AudioState = {
 
 export type MODES = 'harmonics' | 'subharmonics'
 
-const loadModeFromUrl = (): MODES => {
+function loadModeFromUrl(): MODES {
   const params = new URLSearchParams(window.location.search)
   if (!params.has('mode')) {
     return 'harmonics'
@@ -46,15 +46,15 @@ const loadModeFromUrl = (): MODES => {
 
 export const mode = loadModeFromUrl()
 
-export const getBaseFrequency = () => {
+export function getBaseFrequency(): number {
   if (mode === 'harmonics') {
-    return 110
+    return 440 / 4
   } else {
-    return 1760
+    return 440 * 4
   }
 }
 
-export const calculateFrequency = (harmonic: number) => {
+export function calculateFrequency(harmonic: number): number {
   if (mode === 'harmonics') {
     return getBaseFrequency() * harmonic
   } else {
@@ -74,8 +74,8 @@ const initialState: AudioState = {
   )
 }
 
-const initCtx = (state: Draft<AudioState>) => {
-  if (typeof state.ctx !== 'undefined') {
+function initCtx(state: Draft<AudioState>) {
+  if (state.ctx !== undefined) {
     return
   }
 
@@ -119,7 +119,7 @@ export const setFrequency = createAsyncThunk<void, { frequency: number; voiceIdx
   async (payload, { getState }) => {
     const { audio } = getState() as { audio: AudioState }
 
-    if (typeof audio.ctx !== 'undefined') {
+    if (audio.ctx !== undefined) {
       await wait(frequencyChangeTransitionInMs)
     }
   }
@@ -188,7 +188,7 @@ export const AudioSlice = createSlice({
 
     builder.addCase(setFrequency.pending, (state: AudioState, { meta: { arg } }) => {
       const { voiceIdx, frequency } = arg
-      if (typeof state.ctx === 'undefined') {
+      if (state.ctx === undefined) {
         return
       }
 
@@ -202,7 +202,7 @@ export const AudioSlice = createSlice({
     builder.addCase(setFrequency.fulfilled, (state: AudioState, { meta: { arg } }) => {
       const { voiceIdx, frequency } = arg
 
-      if (typeof state.ctx === 'undefined') {
+      if (state.ctx === undefined) {
         const voice = state.voices[voiceIdx]
         voice.frequency = frequency
       } else {
