@@ -22,11 +22,12 @@
 
   position: relative;
   height: $sliderHeight;
+  margin-top: -20px;
 
   input {
     // increasing the clickable height of range input's slider with padding
     // source https://stackoverflow.com/a/46092178/1806628
-    padding: ($sliderHeight / 2) 0 ($sliderHeight / 2 - 1px) 0;
+    padding: ($sliderHeight / 2 + 10px) 0 ($sliderHeight / 2 - 1px + 10px) 0;
 
     width: 100%;
     -webkit-appearance: none;
@@ -91,7 +92,7 @@
     display: block;
     position: absolute;
     z-index: -1;
-    top: ($sliderHeight - $barHeight) / 2 + 1px;
+    top: ($sliderHeight - $barHeight) / 2 + 10px;
     left: 7px;
     width: calc(100% - 14px);
     height: $barHeight;
