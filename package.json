@@ -4,8 +4,8 @@
   "description": "https://the-monochord.com/",
   "main": "index.js",
   "scripts": {
-    "build": "ts-node scripts/build.ts",
-    "build:watch": "nodemon scripts/build.ts --watch src -e css,scss,ts,tsx",
+    "build": "BROWSERSLIST_IGNORE_OLD_DATA=1 ts-node scripts/build.ts",
+    "build:watch": "nodemon --exec \"npm run build\" --watch src -e css,scss,ts,tsx",
     "serve": "http-server .",
     "dev": "npm run build:watch & npm run serve"
   },
