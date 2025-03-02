@@ -4,7 +4,14 @@ import { Slider } from '@components/Slider/Slider'
 import { ToggleSwitch } from '@components/ToggleSwitch/ToggleSwitch'
 import { roundToNDecimals } from '@src/functions'
 import { useDispatch, useSelector } from '@src/store/hooks'
-import { calculateFrequency, mode, setFrequency, soundOff, soundOn } from '@src/store/slices/Audio.slice'
+import {
+  calculateFrequency,
+  getStarterHarmonic,
+  mode,
+  setFrequency,
+  soundOff,
+  soundOn
+} from '@src/store/slices/Audio.slice'
 import s from './Voice.module.scss'
 
 type VoiceProps = {
@@ -14,7 +21,7 @@ type VoiceProps = {
 type SoundState = 'ramping-up' | 'ramping-down' | 'on' | 'off'
 
 export const Voice: FC<VoiceProps> = ({ idx }) => {
-  const [harmonic, setHarmonic] = useState(idx + (mode === 'harmonics' ? 1 : 4))
+  const [harmonic, setHarmonic] = useState(idx + getStarterHarmonic(mode))
 
   const soundState = useSelector<SoundState>((state) => {
     const voice = state.audio.voices[idx]
@@ -44,7 +51,7 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
       return
     }
 
-    await dispatch(setFrequency({ frequency: calculateFrequency(mode, newHarmonic), voiceIdx: idx })).unwrap()
+    await dispatch(setFrequency({ frequency: calculateFrequency(mode, newHarmonic, 440), voiceIdx: idx })).unwrap()
     setHarmonic(newHarmonic)
   }
 
@@ -71,7 +78,7 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
         onChange={changeHarmonic}
         isActive={soundState === 'ramping-up' || soundState === 'on'}
       />
-      <span className={s.frequency}>{roundToNDecimals(1, calculateFrequency(mode, harmonic))} Hz</span>
+      <span className={s.frequency}>{roundToNDecimals(1, calculateFrequency(mode, harmonic, 440))} Hz</span>
     </div>
   )
 }

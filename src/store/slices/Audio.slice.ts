@@ -42,19 +42,21 @@ function parseURLParams(): { mode: MODES } {
   return settings
 }
 
-export function getBaseFrequency(mode: MODES): number {
+export function adjustBaseFrequency(mode: MODES, baseFrequency: number): number {
   if (mode === 'harmonics') {
-    return 440 / 4
+    // harmonics go too high too quickly
+    return baseFrequency / 4
   } else {
-    return 440 * 4
+    // subharmonics go too deep too quickly
+    return baseFrequency * 4
   }
 }
 
-export function calculateFrequency(mode: MODES, harmonic: number): number {
+export function calculateFrequency(mode: MODES, harmonic: number, baseFrequency: number): number {
   if (mode === 'harmonics') {
-    return getBaseFrequency(mode) * harmonic
+    return adjustBaseFrequency(mode, baseFrequency) * harmonic
   } else {
-    return getBaseFrequency(mode) / harmonic
+    return adjustBaseFrequency(mode, baseFrequency) / harmonic
   }
 }
 
@@ -85,6 +87,14 @@ function initCtx(state: Draft<AudioState>) {
   })
 
   state.ctx = ctx
+}
+
+export function getStarterHarmonic(mode: MODES): number {
+  if (mode === 'harmonics') {
+    return 1
+  } else {
+    return 4
+  }
 }
 
 const volumeChangeTransitionInMs = 500
@@ -122,7 +132,7 @@ const initialState: AudioState = {
   ctx: undefined,
   voices: times(
     (idx) => ({
-      frequency: calculateFrequency(mode, idx + (mode === 'harmonics' ? 1 : 4)),
+      frequency: calculateFrequency(mode, idx + getStarterHarmonic(mode), 440),
       volume: 0,
       transition: 'idle'
     }),
