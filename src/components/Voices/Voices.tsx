@@ -28,6 +28,10 @@ export const Voices: FC<VoicesProps> = () => {
     return state.audio.voices.length
   })
 
+  const baseFrequency = useSelector<number>((state) => {
+    return state.audio.baseFrequency
+  })
+
   const dispatch = useDispatch()
 
   async function soundOnAll() {
@@ -48,7 +52,12 @@ export const Voices: FC<VoicesProps> = () => {
 
   return (
     <section className={s.Voices}>
-      <a className={s.modeLink} href={`?mode=${mode === 'harmonics' ? 'subharmonics' : 'harmonics'}`}>
+      <a
+        className={s.modeLink}
+        href={`?mode=${
+          mode === 'harmonics' ? 'subharmonics' : 'harmonics'
+        }&base-frequency=${baseFrequency}&number-of-voices=${numberOfVoices}`}
+      >
         {mode === 'harmonics' ? 'subharmonics' : 'harmonics'}
       </a>
 

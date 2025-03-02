@@ -6,7 +6,9 @@ import {
   DEFAULT_BASE_FREQUENCY,
   MIN_BASE_FREQUENCY,
   MAX_BASE_FREQUENCY,
-  DEFAULT_MODE
+  DEFAULT_MODE,
+  MIN_NUMBER_OF_VOICES,
+  MAX_NUMBER_OF_VOICES
 } from '@src/constants'
 import { clamp, times, wait } from '@src/functions'
 
@@ -35,6 +37,7 @@ export type MODES = 'harmonics' | 'subharmonics'
 type ParsedURLParams = {
   mode: MODES
   baseFrequency: number
+  numberOfVoices: number
 }
 
 function parseURLParams(): ParsedURLParams {
@@ -42,7 +45,8 @@ function parseURLParams(): ParsedURLParams {
 
   const settings: ParsedURLParams = {
     mode: DEFAULT_MODE,
-    baseFrequency: DEFAULT_BASE_FREQUENCY
+    baseFrequency: DEFAULT_BASE_FREQUENCY,
+    numberOfVoices: DEFAULT_NUMBER_OF_VOICES
   }
 
   if (params.has('mode')) {
@@ -58,6 +62,15 @@ function parseURLParams(): ParsedURLParams {
 
     if (!Number.isNaN(baseFrequency)) {
       settings.baseFrequency = clamp(MIN_BASE_FREQUENCY, MAX_BASE_FREQUENCY, baseFrequency)
+    }
+  }
+
+  if (params.has('number-of-voices')) {
+    const rawNumberOfVoices = params.get('number-of-voices') as string
+    const numberOfVoices = Number.parseInt(rawNumberOfVoices, 10)
+
+    if (!Number.isNaN(numberOfVoices)) {
+      settings.numberOfVoices = clamp(MIN_NUMBER_OF_VOICES, MAX_NUMBER_OF_VOICES, numberOfVoices)
     }
   }
 
@@ -143,7 +156,7 @@ export const setFrequency = createAsyncThunk<void, { frequency: number; voiceIdx
 )
 
 // TODO: move "mode" into AudioState
-export const { mode, baseFrequency } = parseURLParams()
+export const { mode, baseFrequency, numberOfVoices } = parseURLParams()
 
 export type AudioState = {
   ctx?: AudioContext
@@ -160,7 +173,7 @@ const initialState: AudioState = {
       volume: 0,
       transition: 'idle'
     }),
-    DEFAULT_NUMBER_OF_VOICES
+    numberOfVoices
   )
 }
 
