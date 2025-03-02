@@ -28,5 +28,5 @@ Default value is `8` (controlled by `DEFAULT_NUMBER_OF_VOICES`)
 
 ## Interesting presets
 
-- raspy 16 part harmonic series: https://the-monochord.com?mode=harmonics&base-frequency=200&number-of-voices=16
-- high pitched subharmonics: https://the-monochord.com/?mode=subharmonics&base-frequency=1500&number-of-voices=6
+- [raspy 16 part harmonic series](https://the-monochord.com?mode=harmonics&base-frequency=200&number-of-voices=16)
+- [high pitched subharmonics](https://the-monochord.com/?mode=subharmonics&base-frequency=1500&number-of-voices=6)
