@@ -1,7 +1,14 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import type { Draft } from '@reduxjs/toolkit'
-import { MAX_VOLUME, DEFAULT_NUMBER_OF_VOICES } from '@src/constants'
-import { times, wait } from '@src/functions'
+import {
+  MAX_VOLUME,
+  DEFAULT_NUMBER_OF_VOICES,
+  DEFAULT_BASE_FREQUENCY,
+  MIN_BASE_FREQUENCY,
+  MAX_BASE_FREQUENCY,
+  DEFAULT_MODE
+} from '@src/constants'
+import { clamp, times, wait } from '@src/functions'
 
 export type Voice = {
   nodes?: {
@@ -25,17 +32,32 @@ type InitializedVoice = {
 
 export type MODES = 'harmonics' | 'subharmonics'
 
-function parseURLParams(): { mode: MODES } {
+type ParsedURLParams = {
+  mode: MODES
+  baseFrequency: number
+}
+
+function parseURLParams(): ParsedURLParams {
   const params = new URLSearchParams(window.location.search)
 
-  const settings: { mode: MODES } = {
-    mode: 'harmonics'
+  const settings: ParsedURLParams = {
+    mode: DEFAULT_MODE,
+    baseFrequency: DEFAULT_BASE_FREQUENCY
   }
 
   if (params.has('mode')) {
     const mode = params.get('mode') as string
     if (mode === 'harmonics' || mode === 'subharmonics') {
       settings.mode = mode
+    }
+  }
+
+  if (params.has('base-frequency')) {
+    const rawBaseFrequency = params.get('base-frequency') as string
+    const baseFrequency = Number.parseInt(rawBaseFrequency, 10)
+
+    if (!Number.isNaN(baseFrequency)) {
+      settings.baseFrequency = clamp(MIN_BASE_FREQUENCY, MAX_BASE_FREQUENCY, baseFrequency)
     }
   }
 
@@ -93,6 +115,7 @@ export function getStarterHarmonic(mode: MODES): number {
   if (mode === 'harmonics') {
     return 1
   } else {
+    // opinionated step: subharmonics start to get interesting at the 4th step
     return 4
   }
 }
@@ -119,20 +142,21 @@ export const setFrequency = createAsyncThunk<void, { frequency: number; voiceIdx
   }
 )
 
-// TODO: move this into state
-export const { mode } = parseURLParams()
+// TODO: move "mode" into AudioState
+export const { mode, baseFrequency } = parseURLParams()
 
 export type AudioState = {
   ctx?: AudioContext
+  baseFrequency: number
   voices: Voice[]
-  // TODO: move mode here instead of having it in a variable
 }
 
 const initialState: AudioState = {
   ctx: undefined,
+  baseFrequency,
   voices: times(
     (idx) => ({
-      frequency: calculateFrequency(mode, idx + getStarterHarmonic(mode), 440),
+      frequency: calculateFrequency(mode, idx + getStarterHarmonic(mode), baseFrequency),
       volume: 0,
       transition: 'idle'
     }),

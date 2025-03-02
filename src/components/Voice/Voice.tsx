@@ -33,6 +33,10 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
     return voice.volume > 0 ? 'on' : 'off'
   })
 
+  const baseFrequency = useSelector<number>((state) => {
+    return state.audio.baseFrequency
+  })
+
   const dispatch = useDispatch()
 
   async function toggleSoundOn(): Promise<void> {
@@ -51,7 +55,13 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
       return
     }
 
-    await dispatch(setFrequency({ frequency: calculateFrequency(mode, newHarmonic, 440), voiceIdx: idx })).unwrap()
+    await dispatch(
+      setFrequency({
+        frequency: calculateFrequency(mode, newHarmonic, baseFrequency),
+        voiceIdx: idx
+      })
+    ).unwrap()
+
     setHarmonic(newHarmonic)
   }
 
@@ -78,7 +88,7 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
         onChange={changeHarmonic}
         isActive={soundState === 'ramping-up' || soundState === 'on'}
       />
-      <span className={s.frequency}>{roundToNDecimals(1, calculateFrequency(mode, harmonic, 440))} Hz</span>
+      <span className={s.frequency}>{roundToNDecimals(1, calculateFrequency(mode, harmonic, baseFrequency))} Hz</span>
     </div>
   )
 }

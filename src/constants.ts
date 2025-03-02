@@ -10,3 +10,11 @@ export const DEFAULT_NUMBER_OF_VOICES = 8
  * Should be kept slightly below 1.0 to prevent clipping.
  */
 export const MAX_VOLUME = 0.8
+
+export const DEFAULT_MODE = 'harmonics'
+
+export const DEFAULT_BASE_FREQUENCY = 440
+
+export const MIN_BASE_FREQUENCY = 50
+
+export const MAX_BASE_FREQUENCY = 10000

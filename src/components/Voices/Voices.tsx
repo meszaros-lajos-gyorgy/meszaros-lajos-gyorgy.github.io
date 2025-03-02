@@ -10,7 +10,7 @@ import s from './Voices.module.scss'
 type VoicesProps = {}
 
 export const Voices: FC<VoicesProps> = () => {
-  const areAnyVoicesOn = useSelector((state) => {
+  const areAnyVoicesOn = useSelector<boolean>((state) => {
     return state.audio.voices.some((voice) => {
       if (voice.transition === 'ramping-up') {
         return true
@@ -24,7 +24,7 @@ export const Voices: FC<VoicesProps> = () => {
     })
   })
 
-  const numberOfVoices = useSelector((state) => {
+  const numberOfVoices = useSelector<number>((state) => {
     return state.audio.voices.length
   })
 
