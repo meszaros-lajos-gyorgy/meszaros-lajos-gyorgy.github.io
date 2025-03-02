@@ -1,4 +1,5 @@
-import React, { ChangeEvent, FC, useState } from 'react'
+import React, { useState } from 'react'
+import type { ChangeEvent, FC } from 'react'
 import cn from 'classnames'
 import { clamp } from '@src/functions'
 import s from './Slider.module.scss'

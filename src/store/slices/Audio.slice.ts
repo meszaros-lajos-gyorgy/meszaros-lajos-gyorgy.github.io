@@ -1,4 +1,5 @@
-import { createAsyncThunk, createSlice, Draft } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import type { Draft } from '@reduxjs/toolkit'
 import { MAX_VOLUME, DEFAULT_NUMBER_OF_VOICES } from '@src/constants'
 import { times, wait } from '@src/functions'
 

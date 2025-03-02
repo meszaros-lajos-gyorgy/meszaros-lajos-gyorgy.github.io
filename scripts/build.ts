@@ -1,8 +1,8 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import autoprefixer from 'autoprefixer'
 import { build } from 'esbuild'
 import { sassPlugin, postcssModules } from 'esbuild-sass-plugin'
-import fs from 'node:fs'
-import path from 'node:path'
 
 const clearOutputFolder = async (outputFolder: string) => {
   try {
