@@ -1,6 +1,6 @@
 # The Monochord
 
-A small webapp on listening to harmonics and subharmonics and to learn how they interact with each other by ear.
+A small web app on listening to harmonics and subharmonics and to learn how they interact with each other by ear.
 
 https://the-monochord.com/
 
