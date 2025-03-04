@@ -12,6 +12,7 @@ type ToggleSwitchProps = {
 export const ToggleSwitch: FC<ToggleSwitchProps> = ({ isOn, onClick, label }) => {
   return (
     <button
+      type="button"
       onClick={onClick}
       className={cn(s.ToggleSwitch, {
         [s.isActive]: isOn

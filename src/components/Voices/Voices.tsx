@@ -1,5 +1,4 @@
-import React from 'react'
-import type { FC } from 'react'
+import React, { type FC } from 'react'
 import { ToggleSwitch } from '@components/ToggleSwitch/ToggleSwitch'
 import { Voice } from '@components/Voice/Voice'
 import { times } from '@src/functions'
