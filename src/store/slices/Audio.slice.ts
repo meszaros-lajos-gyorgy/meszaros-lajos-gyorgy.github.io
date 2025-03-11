@@ -112,6 +112,7 @@ function initCtx(state: Draft<AudioState>) {
 // functions to calculate stuff based on modes
 
 // TODO: abstract MODES into a list of values in a scale
+// https://github.com/meszaros-lajos-gyorgy/meszaros-lajos-gyorgy.github.io/issues/5
 
 export function adjustBaseFrequency(mode: MODES, baseFrequency: number): number {
   if (mode === 'harmonics') {
