@@ -8,7 +8,9 @@ import {
   MAX_BASE_FREQUENCY,
   DEFAULT_MODE,
   MIN_NUMBER_OF_VOICES,
-  MAX_NUMBER_OF_VOICES
+  MAX_NUMBER_OF_VOICES,
+  volumeChangeTransitionInMs,
+  frequencyChangeTransitionInMs
 } from '@src/constants'
 import { clamp, times, wait } from '@src/functions'
 
@@ -77,24 +79,6 @@ function parseURLParams(): ParsedURLParams {
   return settings
 }
 
-export function adjustBaseFrequency(mode: MODES, baseFrequency: number): number {
-  if (mode === 'harmonics') {
-    // harmonics go too high too quickly
-    return baseFrequency / 4
-  } else {
-    // subharmonics go too deep too quickly
-    return baseFrequency * 4
-  }
-}
-
-export function calculateFrequency(mode: MODES, harmonic: number, baseFrequency: number): number {
-  if (mode === 'harmonics') {
-    return adjustBaseFrequency(mode, baseFrequency) * harmonic
-  } else {
-    return adjustBaseFrequency(mode, baseFrequency) / harmonic
-  }
-}
-
 function initCtx(state: Draft<AudioState>) {
   if (state.ctx !== undefined) {
     return
@@ -124,6 +108,29 @@ function initCtx(state: Draft<AudioState>) {
   state.ctx = ctx
 }
 
+// --------------------------
+// functions to calculate stuff based on modes
+
+// TODO: abstract MODES into a list of values in a scale
+
+export function adjustBaseFrequency(mode: MODES, baseFrequency: number): number {
+  if (mode === 'harmonics') {
+    // harmonics go too high too quickly -> baseFrequency is moved lower 2 octaves
+    return baseFrequency / 4
+  } else {
+    // subharmonics go too deep too quickly -> baseFrequency is moved higher 2 octaves
+    return baseFrequency * 4
+  }
+}
+
+export function calculateFrequency(mode: MODES, harmonic: number, baseFrequency: number): number {
+  if (mode === 'harmonics') {
+    return adjustBaseFrequency(mode, baseFrequency) * harmonic
+  } else {
+    return adjustBaseFrequency(mode, baseFrequency) / harmonic
+  }
+}
+
 export function getStarterHarmonic(mode: MODES): number {
   if (mode === 'harmonics') {
     return 1
@@ -133,8 +140,8 @@ export function getStarterHarmonic(mode: MODES): number {
   }
 }
 
-const volumeChangeTransitionInMs = 500
-const frequencyChangeTransitionInMs = 50
+// --------------------------
+// actions
 
 export const soundOn = createAsyncThunk<void, number, {}>('audio/soundOn', async () => {
   await wait(volumeChangeTransitionInMs)
@@ -155,18 +162,26 @@ export const setFrequency = createAsyncThunk<void, { frequency: number; voiceIdx
   }
 )
 
-// TODO: move "mode" into AudioState
-export const { mode, baseFrequency, numberOfVoices } = parseURLParams()
+// TODO: create an action for changing baseFrequency
+
+// TODO: create an action for changing mode
+
+// --------------------------
+// setting up state
+
+const { mode, baseFrequency, numberOfVoices } = parseURLParams()
 
 export type AudioState = {
   ctx?: AudioContext
   baseFrequency: number
+  mode: MODES
   voices: Voice[]
 }
 
 const initialState: AudioState = {
   ctx: undefined,
   baseFrequency,
+  mode,
   voices: times(
     (idx) => ({
       frequency: calculateFrequency(mode, idx + getStarterHarmonic(mode), baseFrequency),

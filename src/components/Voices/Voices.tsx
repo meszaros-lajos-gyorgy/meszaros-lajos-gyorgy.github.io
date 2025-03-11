@@ -3,7 +3,7 @@ import { ToggleSwitch } from '@components/ToggleSwitch/ToggleSwitch'
 import { Voice } from '@components/Voice/Voice'
 import { times } from '@src/functions'
 import { useDispatch, useSelector } from '@src/store/hooks'
-import { mode, soundOff, soundOn } from '@src/store/slices/Audio.slice'
+import { MODES, soundOff, soundOn } from '@src/store/slices/Audio.slice'
 import s from './Voices.module.scss'
 
 type VoicesProps = {}
@@ -29,6 +29,10 @@ export const Voices: FC<VoicesProps> = () => {
 
   const baseFrequency = useSelector<number>((state) => {
     return state.audio.baseFrequency
+  })
+
+  const mode = useSelector<MODES>((state) => {
+    return state.audio.mode
   })
 
   const dispatch = useDispatch()

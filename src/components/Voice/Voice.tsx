@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from '@src/store/hooks'
 import {
   calculateFrequency,
   getStarterHarmonic,
-  mode,
+  MODES,
   setFrequency,
   soundOff,
   soundOn
@@ -21,7 +21,9 @@ type VoiceProps = {
 type SoundState = 'ramping-up' | 'ramping-down' | 'on' | 'off'
 
 export const Voice: FC<VoiceProps> = ({ idx }) => {
-  const [harmonic, setHarmonic] = useState(idx + getStarterHarmonic(mode))
+  const mode = useSelector<MODES>((state) => {
+    return state.audio.mode
+  })
 
   const soundState = useSelector<SoundState>((state) => {
     const voice = state.audio.voices[idx]
@@ -38,6 +40,8 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
   })
 
   const dispatch = useDispatch()
+
+  const [harmonic, setHarmonic] = useState(idx + getStarterHarmonic(mode))
 
   async function toggleSoundOn(): Promise<void> {
     if (soundState === 'on') {

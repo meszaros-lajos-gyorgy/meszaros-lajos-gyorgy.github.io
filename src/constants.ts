@@ -18,3 +18,6 @@ export const DEFAULT_MODE = 'harmonics'
 export const DEFAULT_BASE_FREQUENCY = 440
 export const MIN_BASE_FREQUENCY = 200
 export const MAX_BASE_FREQUENCY = 2000
+
+export const volumeChangeTransitionInMs = 500
+export const frequencyChangeTransitionInMs = 50
