@@ -3,7 +3,7 @@ import { Voices } from '@components/Voices/Voices'
 import { DEFAULT_BASE_FREQUENCY, MAX_BASE_FREQUENCY, MIN_BASE_FREQUENCY } from '@src/constants'
 import { randomBetween, roundToNDecimals } from '@src/functions'
 import { useDispatch, useSelector } from '@src/store/hooks'
-import { MODES, setBaseFrequency } from '@src/store/slices/Audio.slice'
+import { type MODES, setBaseFrequency } from '@src/store/slices/Audio.slice'
 import s from './App.module.scss'
 
 type AppProps = {}
@@ -13,12 +13,26 @@ export const App: FC<AppProps> = () => {
     return state.audio.baseFrequency
   })
 
+  const numberOfVoices = useSelector<number>((state) => {
+    return state.audio.voices.length
+  })
+
   const mode = useSelector<MODES>((state) => {
     return state.audio.mode
   })
 
-  const numberOfVoices = useSelector<number>((state) => {
-    return state.audio.voices.length
+  const nextMode = useSelector<string>((state) => {
+    return mode === 'harmonics' ? 'subharmonics' : 'harmonics'
+  })
+
+  const linkToNextMode = useSelector<string>((state) => {
+    const params = new URLSearchParams({
+      mode: nextMode,
+      'base-frequency': baseFrequency.toString(),
+      'number-of-voices': numberOfVoices.toString()
+    })
+
+    return '?' + params.toString()
   })
 
   const dispatch = useDispatch()
@@ -31,10 +45,6 @@ export const App: FC<AppProps> = () => {
   function resetBaseFrequency() {
     dispatch(setBaseFrequency({ frequency: DEFAULT_BASE_FREQUENCY }))
   }
-
-  const nextMode = mode === 'harmonics' ? 'subharmonics' : 'harmonics'
-
-  const linkToNextMode = `?mode=${nextMode}&base-frequency=${baseFrequency}&number-of-voices=${numberOfVoices}`
 
   return (
     <div className={s.App}>
