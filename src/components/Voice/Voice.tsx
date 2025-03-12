@@ -12,6 +12,13 @@ type VoiceProps = {
 
 type SoundState = 'ramping-up' | 'ramping-down' | 'on' | 'off'
 
+const switchLabels: Record<SoundState, string> = {
+  on: 'on',
+  off: 'off',
+  'ramping-up': 'turning on',
+  'ramping-down': 'turning off'
+}
+
 export const Voice: FC<VoiceProps> = ({ idx }) => {
   const soundState = useSelector<SoundState>((state) => {
     const voice = state.audio.voices[idx]
@@ -33,35 +40,25 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
 
   const dispatch = useDispatch()
 
-  async function toggleSoundOn(): Promise<void> {
+  function toggleSoundOn(): void {
     if (soundState === 'on') {
-      await dispatch(soundOff(idx)).unwrap()
-      return
-    }
-
-    if (soundState === 'off') {
-      await dispatch(soundOn(idx)).unwrap()
+      dispatch(soundOff(idx))
+    } else if (soundState === 'off') {
+      dispatch(soundOn(idx))
     }
   }
 
-  async function changeHarmonic(newHarmonic: number): Promise<void> {
+  function changeHarmonic(newHarmonic: number): void {
     if (newHarmonic === harmonic) {
       return
     }
 
-    await dispatch(
+    dispatch(
       setVoiceHarmonic({
         harmonic: newHarmonic,
         voiceIdx: idx
       })
-    ).unwrap()
-  }
-
-  const switchLabels: Record<SoundState, string> = {
-    on: 'on',
-    off: 'off',
-    'ramping-up': 'turning on',
-    'ramping-down': 'turning off'
+    )
   }
 
   return (

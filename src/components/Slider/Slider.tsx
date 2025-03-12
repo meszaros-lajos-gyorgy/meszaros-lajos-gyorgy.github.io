@@ -11,7 +11,7 @@ type SliderProps = {
    */
   step?: number
   value: number
-  onChange: (value: number) => Promise<void>
+  onChange: (value: number) => Promise<void> | void
   /**
    * Default value is true
    */
