@@ -1,4 +1,5 @@
 import React, { type FC } from 'react'
+import { Button } from '@components/Button/Button'
 import { Voices } from '@components/Voices/Voices'
 import { DEFAULT_BASE_FREQUENCY, MAX_BASE_FREQUENCY, MIN_BASE_FREQUENCY } from '@src/constants'
 import { randomBetween, roundToNDecimals } from '@src/functions'
@@ -56,12 +57,8 @@ export const App: FC<AppProps> = () => {
 
       <p className={s.infoWithButtons}>
         Base Frequency: {baseFrequency} Hz
-        <button type="button" onClick={randomizeBaseFrequency}>
-          randomize
-        </button>
-        <button type="button" onClick={resetBaseFrequency}>
-          reset to {DEFAULT_BASE_FREQUENCY} Hz
-        </button>
+        <Button onClick={randomizeBaseFrequency}>randomize</Button>
+        <Button onClick={resetBaseFrequency}>reset to {DEFAULT_BASE_FREQUENCY} Hz</Button>
       </p>
 
       <Voices />

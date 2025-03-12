@@ -8,15 +8,16 @@
   user-select: none;
   box-shadow: 0 3px 5px -5px var(--color-brown);
   &:hover {
-    background: rgba(white, 0.1);
+    background: rgba(white, 0.25);
   }
 
   > * {
     margin-left: 10px;
     &:first-child {
       margin-left: 0;
+      width: 25px;
     }
-    &:nth-child(2) {
+    &:nth-child(3) {
       flex: 1;
     }
   }

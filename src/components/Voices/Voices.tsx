@@ -29,36 +29,32 @@ export const Voices: FC<VoicesProps> = () => {
 
   const dispatch = useDispatch()
 
-  async function soundOnAll() {
-    return Promise.all(
-      times((idx) => {
-        return dispatch(soundOn(idx))
-      }, numberOfVoices)
-    )
+  function soundOnAll() {
+    times((idx) => {
+      return dispatch(soundOn(idx))
+    }, numberOfVoices)
   }
 
-  async function soundOffAll() {
-    return Promise.all(
-      times((idx) => {
-        return dispatch(soundOff(idx))
-      }, numberOfVoices)
-    )
+  function soundOffAll() {
+    times((idx) => {
+      return dispatch(soundOff(idx))
+    }, numberOfVoices)
+  }
+
+  function toggleAllVoices() {
+    if (areAnyVoicesOn) {
+      soundOffAll()
+    } else {
+      soundOnAll()
+    }
   }
 
   return (
     <section className={s.Voices}>
       <div className={s.allChannelControls}>
-        <ToggleSwitch
-          isOn={areAnyVoicesOn}
-          label={areAnyVoicesOn ? 'turn all off' : 'turn all on'}
-          onClick={() => {
-            if (areAnyVoicesOn) {
-              soundOffAll()
-            } else {
-              soundOnAll()
-            }
-          }}
-        />
+        <ToggleSwitch isOn={areAnyVoicesOn} smooth onClick={toggleAllVoices}>
+          {areAnyVoicesOn ? 'turn all off' : 'turn all on'}
+        </ToggleSwitch>
       </div>
 
       {times((idx) => {

@@ -1,5 +1,5 @@
 import type { SetOptional } from 'type-fest'
-import { createAsyncThunk, createSlice, type Draft } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, type PayloadAction, type Draft } from '@reduxjs/toolkit'
 import {
   MAX_VOLUME,
   DEFAULT_NUMBER_OF_VOICES,
@@ -21,6 +21,7 @@ type InitializedVoice = {
   }
   frequency: number
   harmonic: number
+  isLocked: boolean
   volume: number
   transition: 'ramping-up' | 'ramping-down' | 'idle'
 }
@@ -122,6 +123,7 @@ function generateInitialState(): AudioState {
         harmonic,
         frequency: calculateFrequency(mode, harmonic, baseFrequency),
         volume: 0,
+        isLocked: false,
         transition: 'idle'
       }
 
@@ -207,7 +209,16 @@ export const setBaseFrequency = createAsyncThunk<void, { frequency: number }, {}
 export const AudioSlice = createSlice({
   name: 'audio',
   initialState: generateInitialState(),
-  reducers: {},
+  reducers: {
+    lock: (state, action: PayloadAction<{ voiceIdx: number }>) => {
+      const { voiceIdx } = action.payload
+      state.voices[voiceIdx].isLocked = true
+    },
+    unlock: (state, action: PayloadAction<{ voiceIdx: number }>) => {
+      const { voiceIdx } = action.payload
+      state.voices[voiceIdx].isLocked = false
+    }
+  },
   extraReducers: (builder) => {
     builder.addCase(soundOn.pending, (state: AudioState, { meta: { arg } }) => {
       initCtx(state)
@@ -351,3 +362,5 @@ export const AudioSlice = createSlice({
 })
 
 export default AudioSlice.reducer
+
+export const { lock: lockVoice, unlock: unlockVoice } = AudioSlice.actions

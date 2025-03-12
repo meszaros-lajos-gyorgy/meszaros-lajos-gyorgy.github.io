@@ -1,23 +1,19 @@
-import React, { type FC } from 'react'
+import React, { type ReactNode, type FC } from 'react'
 import cn from 'classnames'
+import { Button } from '@components/Button/Button'
 import s from './ToggleSwitch.module.scss'
 
 type ToggleSwitchProps = {
   isOn: boolean
-  label: string
-  onClick: () => any
+  onClick: () => Promise<void> | void
+  children: ReactNode
+  smooth?: boolean
 }
 
-export const ToggleSwitch: FC<ToggleSwitchProps> = ({ isOn, onClick, label }) => {
+export const ToggleSwitch: FC<ToggleSwitchProps> = ({ isOn, onClick, children, smooth = false }) => {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(s.ToggleSwitch, {
-        [s.isActive]: isOn
-      })}
-    >
-      {label}
-    </button>
+    <Button onClick={onClick} className={cn(s.ToggleSwitch, { [s.smooth]: smooth })} theme={isOn ? 'light' : 'dark'}>
+      {children}
+    </Button>
   )
 }

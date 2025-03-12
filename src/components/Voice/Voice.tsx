@@ -1,9 +1,18 @@
 import React, { type FC } from 'react'
+import { faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Slider } from '@components/Slider/Slider'
 import { ToggleSwitch } from '@components/ToggleSwitch/ToggleSwitch'
 import { roundToNDecimals } from '@src/functions'
 import { useDispatch, useSelector } from '@src/store/hooks'
-import { setVoiceHarmonic, soundOff, soundOn } from '@src/store/slices/Audio.slice'
+import {
+  lockVoice,
+  setVoiceHarmonic,
+  soundOff,
+  soundOn,
+  unlockVoice,
+  type Voice as VoiceType
+} from '@src/store/slices/Audio.slice'
 import s from './Voice.module.scss'
 
 type VoiceProps = {
@@ -30,12 +39,8 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
     return voice.volume > 0 ? 'on' : 'off'
   })
 
-  const frequency = useSelector<number>((state) => {
-    return state.audio.voices[idx].frequency
-  })
-
-  const harmonic = useSelector<number>((state) => {
-    return state.audio.voices[idx].harmonic
+  const { frequency, harmonic, isLocked } = useSelector<VoiceType>((state) => {
+    return state.audio.voices[idx]
   })
 
   const dispatch = useDispatch()
@@ -61,15 +66,23 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
     )
   }
 
+  function toggleLock() {
+    if (isLocked) {
+      dispatch(unlockVoice({ voiceIdx: idx }))
+    } else {
+      dispatch(lockVoice({ voiceIdx: idx }))
+    }
+  }
+
   return (
     <div className={s.Voice}>
-      <span>
-        <ToggleSwitch
-          onClick={toggleSoundOn}
-          isOn={soundState === 'ramping-up' || soundState === 'on'}
-          label={switchLabels[soundState]}
-        />
-      </span>
+      <ToggleSwitch isOn={!isLocked} onClick={toggleLock}>
+        <FontAwesomeIcon icon={isLocked ? faLock : faLockOpen} />
+      </ToggleSwitch>
+
+      <ToggleSwitch onClick={toggleSoundOn} isOn={soundState === 'ramping-up' || soundState === 'on'} smooth>
+        {switchLabels[soundState]}
+      </ToggleSwitch>
 
       <Slider
         min={1}

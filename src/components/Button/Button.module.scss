@@ -1,0 +1,26 @@
+.Button {
+  border: 0;
+  cursor: pointer;
+  height: 24px;
+  border-radius: 2px;
+
+  &:focus {
+    outline: none;
+  }
+
+  &[data-theme='dark'] {
+    background-color: var(--color-black);
+    color: var(--color-beige);
+    &:focus {
+      box-shadow: 0 0 0 2px var(--color-white);
+    }
+  }
+
+  &[data-theme='light'] {
+    background-color: var(--color-white);
+    color: var(--color-brown);
+    &:focus {
+      box-shadow: 0 0 0 2px var(--color-brown);
+    }
+  }
+}
