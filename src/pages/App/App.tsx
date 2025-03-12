@@ -1,6 +1,6 @@
 import React, { type FC } from 'react'
 import { Voices } from '@components/Voices/Voices'
-import { MAX_BASE_FREQUENCY, MIN_BASE_FREQUENCY } from '@src/constants'
+import { DEFAULT_BASE_FREQUENCY, MAX_BASE_FREQUENCY, MIN_BASE_FREQUENCY } from '@src/constants'
 import { randomBetween, roundToNDecimals } from '@src/functions'
 import { useDispatch, useSelector } from '@src/store/hooks'
 import { MODES, setBaseFrequency } from '@src/store/slices/Audio.slice'
@@ -23,27 +23,36 @@ export const App: FC<AppProps> = () => {
 
   const dispatch = useDispatch()
 
-  function changeBaseFrequency() {
+  function randomizeBaseFrequency() {
     const newFrequency = roundToNDecimals(2, randomBetween(MIN_BASE_FREQUENCY, MAX_BASE_FREQUENCY))
     dispatch(setBaseFrequency({ frequency: newFrequency }))
   }
 
+  function resetBaseFrequency() {
+    dispatch(setBaseFrequency({ frequency: DEFAULT_BASE_FREQUENCY }))
+  }
+
+  const nextMode = mode === 'harmonics' ? 'subharmonics' : 'harmonics'
+
+  const linkToNextMode = `?mode=${nextMode}&base-frequency=${baseFrequency}&number-of-voices=${numberOfVoices}`
+
   return (
     <div className={s.App}>
-      <a
-        className={s.modeLink}
-        href={`?mode=${
-          mode === 'harmonics' ? 'subharmonics' : 'harmonics'
-        }&base-frequency=${baseFrequency}&number-of-voices=${numberOfVoices}`}
-      >
-        {mode === 'harmonics' ? 'subharmonics' : 'harmonics'}
+      <a className={s.modeLink} href={linkToNextMode}>
+        {nextMode}
       </a>
 
       <h2>Voices ({mode})</h2>
 
-      <button type="button" onClick={changeBaseFrequency}>
-        randomize base frequency: {baseFrequency} Hz
-      </button>
+      <p className={s.infoWithButtons}>
+        Base Frequency: {baseFrequency} Hz
+        <button type="button" onClick={randomizeBaseFrequency}>
+          randomize
+        </button>
+        <button type="button" onClick={resetBaseFrequency}>
+          reset to {DEFAULT_BASE_FREQUENCY} Hz
+        </button>
+      </p>
 
       <Voices />
     </div>
