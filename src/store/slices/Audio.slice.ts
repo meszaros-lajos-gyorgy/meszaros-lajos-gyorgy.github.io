@@ -1,5 +1,5 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import type { Draft } from '@reduxjs/toolkit'
+import type { SetOptional } from 'type-fest'
+import { createAsyncThunk, createSlice, type Draft } from '@reduxjs/toolkit'
 import {
   MAX_VOLUME,
   DEFAULT_NUMBER_OF_VOICES,
@@ -14,27 +14,27 @@ import {
 } from '@src/constants'
 import { clamp, times, wait } from '@src/functions'
 
-export type Voice = {
-  nodes?: {
-    oscillator: OscillatorNode
-    gain: GainNode
-  }
-  frequency: number
-  volume: number
-  transition: 'ramping-up' | 'ramping-down' | 'idle'
-}
-
 type InitializedVoice = {
   nodes: {
     oscillator: OscillatorNode
     gain: GainNode
   }
   frequency: number
+  harmonic: number
   volume: number
   transition: 'ramping-up' | 'ramping-down' | 'idle'
 }
 
+export type Voice = SetOptional<InitializedVoice, 'nodes'>
+
 export type MODES = 'harmonics' | 'subharmonics'
+
+export type AudioState = {
+  ctx?: AudioContext
+  baseFrequency: number
+  mode: MODES
+  voices: Voice[]
+}
 
 type ParsedURLParams = {
   mode: MODES
@@ -108,6 +108,28 @@ function initCtx(state: Draft<AudioState>) {
   state.ctx = ctx
 }
 
+function generateInitialState(): AudioState {
+  const { mode, baseFrequency, numberOfVoices } = parseURLParams()
+
+  return {
+    ctx: undefined,
+    baseFrequency,
+    mode,
+    voices: times<Voice>((idx) => {
+      const harmonic = idx + getStarterHarmonic(mode)
+
+      const voice: Voice = {
+        harmonic,
+        frequency: calculateFrequency(mode, harmonic, baseFrequency),
+        volume: 0,
+        transition: 'idle'
+      }
+
+      return voice
+    }, numberOfVoices)
+  }
+}
+
 // --------------------------
 // functions to calculate stuff based on modes
 
@@ -152,8 +174,8 @@ export const soundOff = createAsyncThunk<void, number, {}>('audio/soundOff', asy
   await wait(volumeChangeTransitionInMs)
 })
 
-export const setFrequency = createAsyncThunk<void, { frequency: number; voiceIdx: number }, {}>(
-  'audio/setFrequency',
+export const setVoiceHarmonic = createAsyncThunk<void, { harmonic: number; voiceIdx: number }, {}>(
+  'audio/setVoiceHarmonic',
   async (payload, { getState }) => {
     const { audio } = getState() as { audio: AudioState }
 
@@ -181,34 +203,10 @@ export const setBaseFrequency = createAsyncThunk<void, { frequency: number }, {}
 // TODO: create an action for changing mode
 
 // --------------------------
-// setting up state
-
-const { mode, baseFrequency, numberOfVoices } = parseURLParams()
-
-export type AudioState = {
-  ctx?: AudioContext
-  baseFrequency: number
-  mode: MODES
-  voices: Voice[]
-}
-
-const initialState: AudioState = {
-  ctx: undefined,
-  baseFrequency,
-  mode,
-  voices: times(
-    (idx) => ({
-      frequency: calculateFrequency(mode, idx + getStarterHarmonic(mode), baseFrequency),
-      volume: 0,
-      transition: 'idle'
-    }),
-    numberOfVoices
-  )
-}
 
 export const AudioSlice = createSlice({
   name: 'audio',
-  initialState,
+  initialState: generateInitialState(),
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(soundOn.pending, (state: AudioState, { meta: { arg } }) => {
@@ -273,30 +271,35 @@ export const AudioSlice = createSlice({
 
     // ---
 
-    builder.addCase(setFrequency.pending, (state: AudioState, { meta: { arg } }) => {
-      const { voiceIdx, frequency } = arg
+    builder.addCase(setVoiceHarmonic.pending, (state: AudioState, { meta: { arg } }) => {
+      const { voiceIdx, harmonic } = arg
       if (state.ctx === undefined) {
         return
       }
 
       const endTime = state.ctx.currentTime + frequencyChangeTransitionInMs / 1000
+      const newFrequency = calculateFrequency(state.mode, harmonic, state.baseFrequency)
 
       const voice = state.voices[voiceIdx] as InitializedVoice
 
       voice.nodes.oscillator.frequency.value = voice.frequency
-      voice.nodes.oscillator.frequency.linearRampToValueAtTime(frequency, endTime)
+      voice.nodes.oscillator.frequency.linearRampToValueAtTime(newFrequency, endTime)
     })
 
-    builder.addCase(setFrequency.fulfilled, (state: AudioState, { meta: { arg } }) => {
-      const { voiceIdx, frequency } = arg
+    builder.addCase(setVoiceHarmonic.fulfilled, (state: AudioState, { meta: { arg } }) => {
+      const { voiceIdx, harmonic } = arg
+
+      const newFrequency = calculateFrequency(state.mode, harmonic, state.baseFrequency)
 
       if (state.ctx === undefined) {
         const voice = state.voices[voiceIdx]
-        voice.frequency = frequency
+        voice.frequency = newFrequency
+        voice.harmonic = harmonic
       } else {
         const voice = state.voices[voiceIdx] as InitializedVoice
-        voice.nodes.oscillator.frequency.value = frequency
-        voice.frequency = frequency
+        voice.nodes.oscillator.frequency.value = newFrequency
+        voice.frequency = newFrequency
+        voice.harmonic = harmonic
       }
     })
 
@@ -311,8 +314,8 @@ export const AudioSlice = createSlice({
       const endTime = state.ctx.currentTime + frequencyChangeTransitionInMs / 1000
 
       const voices = state.voices as InitializedVoice[]
-      voices.forEach((voice, idx) => {
-        const newFrequency = calculateFrequency(mode, idx + getStarterHarmonic(mode), frequency)
+      voices.forEach((voice) => {
+        const newFrequency = calculateFrequency(state.mode, voice.harmonic, frequency)
 
         voice.nodes.oscillator.frequency.value = voice.frequency
         voice.nodes.oscillator.frequency.linearRampToValueAtTime(newFrequency, endTime)
@@ -328,15 +331,15 @@ export const AudioSlice = createSlice({
 
       if (state.ctx === undefined) {
         const voices = state.voices
-        voices.forEach((voice, idx) => {
-          const newFrequency = calculateFrequency(mode, idx + getStarterHarmonic(mode), frequency)
+        voices.forEach((voice) => {
+          const newFrequency = calculateFrequency(state.mode, voice.harmonic, frequency)
 
           voice.frequency = newFrequency
         })
       } else {
         const voices = state.voices as InitializedVoice[]
-        voices.forEach((voice, idx) => {
-          const newFrequency = calculateFrequency(mode, idx + getStarterHarmonic(mode), frequency)
+        voices.forEach((voice) => {
+          const newFrequency = calculateFrequency(state.mode, voice.harmonic, frequency)
 
           voice.nodes.oscillator.frequency.value = newFrequency
           voice.frequency = newFrequency

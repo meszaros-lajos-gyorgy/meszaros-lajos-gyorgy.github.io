@@ -1,17 +1,9 @@
-import React, { useState } from 'react'
-import type { FC } from 'react'
+import React, { type FC } from 'react'
 import { Slider } from '@components/Slider/Slider'
 import { ToggleSwitch } from '@components/ToggleSwitch/ToggleSwitch'
 import { roundToNDecimals } from '@src/functions'
 import { useDispatch, useSelector } from '@src/store/hooks'
-import {
-  calculateFrequency,
-  getStarterHarmonic,
-  MODES,
-  setFrequency,
-  soundOff,
-  soundOn
-} from '@src/store/slices/Audio.slice'
+import { setVoiceHarmonic, soundOff, soundOn } from '@src/store/slices/Audio.slice'
 import s from './Voice.module.scss'
 
 type VoiceProps = {
@@ -21,10 +13,6 @@ type VoiceProps = {
 type SoundState = 'ramping-up' | 'ramping-down' | 'on' | 'off'
 
 export const Voice: FC<VoiceProps> = ({ idx }) => {
-  const mode = useSelector<MODES>((state) => {
-    return state.audio.mode
-  })
-
   const soundState = useSelector<SoundState>((state) => {
     const voice = state.audio.voices[idx]
 
@@ -35,13 +23,15 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
     return voice.volume > 0 ? 'on' : 'off'
   })
 
-  const baseFrequency = useSelector<number>((state) => {
-    return state.audio.baseFrequency
+  const frequency = useSelector<number>((state) => {
+    return state.audio.voices[idx].frequency
+  })
+
+  const harmonic = useSelector<number>((state) => {
+    return state.audio.voices[idx].harmonic
   })
 
   const dispatch = useDispatch()
-
-  const [harmonic, setHarmonic] = useState(idx + getStarterHarmonic(mode))
 
   async function toggleSoundOn(): Promise<void> {
     if (soundState === 'on') {
@@ -60,13 +50,11 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
     }
 
     await dispatch(
-      setFrequency({
-        frequency: calculateFrequency(mode, newHarmonic, baseFrequency),
+      setVoiceHarmonic({
+        harmonic: newHarmonic,
         voiceIdx: idx
       })
     ).unwrap()
-
-    setHarmonic(newHarmonic)
   }
 
   const switchLabels: Record<SoundState, string> = {
@@ -85,6 +73,7 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
           label={switchLabels[soundState]}
         />
       </span>
+
       <Slider
         min={1}
         max={16}
@@ -92,7 +81,8 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
         onChange={changeHarmonic}
         isActive={soundState === 'ramping-up' || soundState === 'on'}
       />
-      <span className={s.frequency}>{roundToNDecimals(1, calculateFrequency(mode, harmonic, baseFrequency))} Hz</span>
+
+      <span className={s.frequency}>{roundToNDecimals(1, frequency)} Hz</span>
     </div>
   )
 }

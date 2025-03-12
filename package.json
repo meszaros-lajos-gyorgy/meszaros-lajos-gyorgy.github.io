@@ -37,6 +37,7 @@
     "react-redux": "^9.1.0",
     "sass": "^1.70.0",
     "ts-node": "^10.9.2",
+    "type-fest": "^4.37.0",
     "typescript": "^5.3.3"
   }
 }
