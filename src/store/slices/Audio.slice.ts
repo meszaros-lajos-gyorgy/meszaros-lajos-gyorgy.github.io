@@ -327,7 +327,8 @@ export const AudioSlice = createSlice({
 
       state.baseFrequency = frequency
 
-      // TODO: change URL
+      // TODO: sync baseFrequency to URL
+      // https://github.com/meszaros-lajos-gyorgy/meszaros-lajos-gyorgy.github.io/issues/8
 
       if (state.ctx === undefined) {
         const voices = state.voices
