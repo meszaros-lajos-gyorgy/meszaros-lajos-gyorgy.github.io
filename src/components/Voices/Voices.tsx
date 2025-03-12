@@ -1,9 +1,10 @@
 import React, { type FC } from 'react'
 import { ToggleSwitch } from '@components/ToggleSwitch/ToggleSwitch'
 import { Voice } from '@components/Voice/Voice'
-import { times } from '@src/functions'
+import { MAX_BASE_FREQUENCY, MIN_BASE_FREQUENCY } from '@src/constants'
+import { randomBetween, roundToNDecimals, times } from '@src/functions'
 import { useDispatch, useSelector } from '@src/store/hooks'
-import { MODES, soundOff, soundOn } from '@src/store/slices/Audio.slice'
+import { MODES, setBaseFrequency, soundOff, soundOn } from '@src/store/slices/Audio.slice'
 import s from './Voices.module.scss'
 
 type VoicesProps = {}
@@ -53,6 +54,11 @@ export const Voices: FC<VoicesProps> = () => {
     )
   }
 
+  function changeBaseFrequency() {
+    const newFrequency = roundToNDecimals(2, randomBetween(MIN_BASE_FREQUENCY, MAX_BASE_FREQUENCY))
+    dispatch(setBaseFrequency({ frequency: newFrequency }))
+  }
+
   return (
     <section className={s.Voices}>
       <a
@@ -65,6 +71,10 @@ export const Voices: FC<VoicesProps> = () => {
       </a>
 
       <h2>Voices ({mode})</h2>
+
+      <button type="button" onClick={changeBaseFrequency}>
+        randomize base frequency: {baseFrequency} Hz
+      </button>
 
       <div className={s.allChannelControls}>
         <ToggleSwitch

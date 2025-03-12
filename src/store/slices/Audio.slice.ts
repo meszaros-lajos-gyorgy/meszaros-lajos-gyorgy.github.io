@@ -157,13 +157,26 @@ export const setFrequency = createAsyncThunk<void, { frequency: number; voiceIdx
   async (payload, { getState }) => {
     const { audio } = getState() as { audio: AudioState }
 
-    if (audio.ctx !== undefined) {
-      await wait(frequencyChangeTransitionInMs)
+    if (audio.ctx === undefined) {
+      return
     }
+
+    await wait(frequencyChangeTransitionInMs)
   }
 )
 
-// TODO: create an action for changing baseFrequency
+export const setBaseFrequency = createAsyncThunk<void, { frequency: number }, {}>(
+  'audio/setBaseFrequency',
+  async (payload, { getState }) => {
+    const { audio } = getState() as { audio: AudioState }
+
+    if (audio.ctx === undefined) {
+      return
+    }
+
+    await wait(frequencyChangeTransitionInMs)
+  }
+)
 
 // TODO: create an action for changing mode
 
@@ -284,6 +297,50 @@ export const AudioSlice = createSlice({
         const voice = state.voices[voiceIdx] as InitializedVoice
         voice.nodes.oscillator.frequency.value = frequency
         voice.frequency = frequency
+      }
+    })
+
+    // ---
+
+    builder.addCase(setBaseFrequency.pending, (state: AudioState, { meta: { arg } }) => {
+      const { frequency } = arg
+      if (state.ctx === undefined) {
+        return
+      }
+
+      const endTime = state.ctx.currentTime + frequencyChangeTransitionInMs / 1000
+
+      const voices = state.voices as InitializedVoice[]
+      voices.forEach((voice, idx) => {
+        const newFrequency = calculateFrequency(mode, idx + getStarterHarmonic(mode), frequency)
+
+        voice.nodes.oscillator.frequency.value = voice.frequency
+        voice.nodes.oscillator.frequency.linearRampToValueAtTime(newFrequency, endTime)
+      })
+    })
+
+    builder.addCase(setBaseFrequency.fulfilled, (state: AudioState, { meta: { arg } }) => {
+      const { frequency } = arg
+
+      state.baseFrequency = frequency
+
+      // TODO: change URL
+
+      if (state.ctx === undefined) {
+        const voices = state.voices
+        voices.forEach((voice, idx) => {
+          const newFrequency = calculateFrequency(mode, idx + getStarterHarmonic(mode), frequency)
+
+          voice.frequency = newFrequency
+        })
+      } else {
+        const voices = state.voices as InitializedVoice[]
+        voices.forEach((voice, idx) => {
+          const newFrequency = calculateFrequency(mode, idx + getStarterHarmonic(mode), frequency)
+
+          voice.nodes.oscillator.frequency.value = newFrequency
+          voice.frequency = newFrequency
+        })
       }
     })
   }

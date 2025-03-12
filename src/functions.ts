@@ -33,3 +33,10 @@ export function times<T>(fn: (index: number) => T, repetitions: number): T[] {
 export function roundToNDecimals(decimals: number, x: number): number {
   return Math.round(x * 10 ** decimals) / 10 ** decimals
 }
+
+/**
+ * creates a random floating point number between a (inclusive) and b (exclusive)
+ */
+export function randomBetween(a: number, b: number): number {
+  return a + Math.random() * (b - a)
+}
