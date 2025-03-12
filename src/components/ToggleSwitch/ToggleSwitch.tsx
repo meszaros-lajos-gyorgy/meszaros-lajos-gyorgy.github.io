@@ -1,5 +1,4 @@
-import React from 'react'
-import type { FC } from 'react'
+import React, { type FC } from 'react'
 import cn from 'classnames'
 import s from './ToggleSwitch.module.scss'
 
