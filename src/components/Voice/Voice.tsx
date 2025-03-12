@@ -47,9 +47,9 @@ export const Voice: FC<VoiceProps> = ({ idx }) => {
 
   function toggleSoundOn(): void {
     if (soundState === 'on') {
-      dispatch(soundOff(idx))
+      dispatch(soundOff({ voiceIdx: idx }))
     } else if (soundState === 'off') {
-      dispatch(soundOn(idx))
+      dispatch(soundOn({ voiceIdx: idx }))
     }
   }
 

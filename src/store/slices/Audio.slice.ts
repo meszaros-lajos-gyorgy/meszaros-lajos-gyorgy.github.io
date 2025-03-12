@@ -168,18 +168,43 @@ export function getStarterHarmonic(mode: MODES): number {
 // --------------------------
 // actions
 
-export const soundOn = createAsyncThunk<void, number, {}>('audio/soundOn', async () => {
-  await wait(volumeChangeTransitionInMs)
-})
+export const soundOn = createAsyncThunk<void, { voiceIdx: number }, {}>(
+  'audio/soundOn',
+  async (payload, { getState }) => {
+    const { audio } = getState() as { audio: AudioState }
 
-export const soundOff = createAsyncThunk<void, number, {}>('audio/soundOff', async () => {
-  await wait(volumeChangeTransitionInMs)
-})
+    const voice = audio.voices[payload.voiceIdx]
+    if (voice.isLocked) {
+      throw new Error('voice locked')
+    }
+
+    await wait(volumeChangeTransitionInMs)
+  }
+)
+
+export const soundOff = createAsyncThunk<void, { voiceIdx: number }, {}>(
+  'audio/soundOff',
+  async (payload, { getState }) => {
+    const { audio } = getState() as { audio: AudioState }
+
+    const voice = audio.voices[payload.voiceIdx]
+    if (voice.isLocked) {
+      throw new Error('voice locked')
+    }
+
+    await wait(volumeChangeTransitionInMs)
+  }
+)
 
 export const setVoiceHarmonic = createAsyncThunk<void, { harmonic: number; voiceIdx: number }, {}>(
   'audio/setVoiceHarmonic',
   async (payload, { getState }) => {
     const { audio } = getState() as { audio: AudioState }
+
+    const voice = audio.voices[payload.voiceIdx]
+    if (voice.isLocked) {
+      throw new Error('voice locked')
+    }
 
     if (audio.ctx === undefined) {
       return
@@ -226,8 +251,12 @@ export const AudioSlice = createSlice({
       const endVolume = MAX_VOLUME / state.voices.length
       const endTime = (state.ctx as AudioContext).currentTime + volumeChangeTransitionInMs / 1000
 
-      const voiceIdx = arg
+      const { voiceIdx } = arg
       const voice = state.voices[voiceIdx] as InitializedVoice
+
+      if (voice.isLocked) {
+        throw new Error('voice locked')
+      }
 
       if (voice.volume === endVolume) {
         return
@@ -241,7 +270,7 @@ export const AudioSlice = createSlice({
     builder.addCase(soundOn.fulfilled, (state: AudioState, { meta: { arg } }) => {
       const endVolume = MAX_VOLUME / state.voices.length
 
-      const voiceIdx = arg
+      const { voiceIdx } = arg
       const voice = state.voices[voiceIdx] as InitializedVoice
 
       voice.nodes.gain.gain.value = endVolume
@@ -257,8 +286,12 @@ export const AudioSlice = createSlice({
       const endVolume = 0
       const endTime = (state.ctx as AudioContext).currentTime + volumeChangeTransitionInMs / 1000
 
-      const voiceIdx = arg
+      const { voiceIdx } = arg
       const voice = state.voices[voiceIdx] as InitializedVoice
+
+      if (voice.isLocked) {
+        throw new Error('voice locked')
+      }
 
       if (voice.volume === endVolume) {
         return
@@ -272,7 +305,7 @@ export const AudioSlice = createSlice({
     builder.addCase(soundOff.fulfilled, (state: AudioState, { meta: { arg } }) => {
       const endVolume = 0
 
-      const voiceIdx = arg
+      const { voiceIdx } = arg
       const voice = state.voices[voiceIdx] as InitializedVoice
 
       voice.nodes.gain.gain.value = endVolume
@@ -292,6 +325,10 @@ export const AudioSlice = createSlice({
       const newFrequency = calculateFrequency(state.mode, harmonic, state.baseFrequency)
 
       const voice = state.voices[voiceIdx] as InitializedVoice
+
+      if (voice.isLocked) {
+        throw new Error('voice locked')
+      }
 
       voice.nodes.oscillator.frequency.value = voice.frequency
       voice.nodes.oscillator.frequency.linearRampToValueAtTime(newFrequency, endTime)

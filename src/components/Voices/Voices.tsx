@@ -9,18 +9,22 @@ import s from './Voices.module.scss'
 type VoicesProps = {}
 
 export const Voices: FC<VoicesProps> = () => {
-  const areAnyVoicesOn = useSelector<boolean>((state) => {
-    return state.audio.voices.some((voice) => {
-      if (voice.transition === 'ramping-up') {
-        return true
-      }
+  const areAnyUnlockedVoicesOn = useSelector<boolean>((state) => {
+    return state.audio.voices
+      .filter((voice) => {
+        return !voice.isLocked
+      })
+      .some((voice) => {
+        if (voice.transition === 'ramping-up') {
+          return true
+        }
 
-      if (voice.transition === 'idle' && voice.volume > 0) {
-        return true
-      }
+        if (voice.transition === 'idle' && voice.volume > 0) {
+          return true
+        }
 
-      return false
-    })
+        return false
+      })
   })
 
   const numberOfVoices = useSelector<number>((state) => {
@@ -31,18 +35,18 @@ export const Voices: FC<VoicesProps> = () => {
 
   function soundOnAll() {
     times((idx) => {
-      return dispatch(soundOn(idx))
+      return dispatch(soundOn({ voiceIdx: idx }))
     }, numberOfVoices)
   }
 
   function soundOffAll() {
     times((idx) => {
-      return dispatch(soundOff(idx))
+      return dispatch(soundOff({ voiceIdx: idx }))
     }, numberOfVoices)
   }
 
   function toggleAllVoices() {
-    if (areAnyVoicesOn) {
+    if (areAnyUnlockedVoicesOn) {
       soundOffAll()
     } else {
       soundOnAll()
@@ -52,8 +56,8 @@ export const Voices: FC<VoicesProps> = () => {
   return (
     <section className={s.Voices}>
       <div className={s.allChannelControls}>
-        <ToggleSwitch isOn={areAnyVoicesOn} smooth onClick={toggleAllVoices}>
-          {areAnyVoicesOn ? 'turn all off' : 'turn all on'}
+        <ToggleSwitch isOn={areAnyUnlockedVoicesOn} smooth onClick={toggleAllVoices}>
+          {areAnyUnlockedVoicesOn ? 'turn all off' : 'turn all on'}
         </ToggleSwitch>
       </div>
 
